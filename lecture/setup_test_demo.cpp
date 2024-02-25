@@ -1,3 +1,4 @@
+#define GL_SILENCE_DEPRECATION
 #include <GL/glew.h>
 
 #ifdef __APPLE__
