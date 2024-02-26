@@ -11,4 +11,9 @@ if (NOT DEFINED GLM_INCLUDE_DIR)
   find_package(glm REQUIRED)
 endif()
 
+if (WIN32)
+  configure_file("${GLUT_LIBRARIES}/../../bin/freeglut.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/freeglut.dll" COPYONLY)
+  configure_file("${GLEW_LIBRARIES}/../../../../bin/Release/Win32/glew32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/glew32.dll" COPYONLY)
+endif()
+
 add_subdirectory(lecture)
