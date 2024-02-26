@@ -454,3 +454,6 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/cmake,c++,visualstudio
 build*/
 out/
+
+# We will exclude VS cmake settings because it contains device-specific paths.
+CMakeSettings.json
