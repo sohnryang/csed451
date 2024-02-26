@@ -1,2 +1,7 @@
 add_executable(setup_test_demo setup_test_demo.cpp)
-target_link_libraries(setup_test_demo OpenGL::GL GLUT::GLUT GLEW::glew glm::glm)
+target_link_libraries(setup_test_demo OpenGL::GL GLUT::GLUT GLEW::glew)
+if (DEFINED GLM_INCLUDE_DIR)
+  target_include_directories(setup_test_demo PRIVATE ${GLM_INCLUDE_DIR})
+else()
+  target_link_libraries(setup_test_demo glm::glm)
+endif()
