@@ -1,1 +1,2 @@
 add_gl_executable_single_file(setup_test_demo setup_test_demo.cpp)
+add_gl_executable_single_file(lec02_rectangle lec02_rectangle.cpp)
