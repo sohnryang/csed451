@@ -4,10 +4,36 @@ project(CSED451)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
+include(FetchContent)
+
 find_package(OpenGL REQUIRED)
+
+if(FETCH_GLUT)
+  FetchContent_Declare(
+    GLUT::GLUT
+    GIT_REPOSITORY https://github.com/freeglut/freeglut
+    GIT_TAG d35af9686a6c11b5ed1629a054fccc4414ba9854
+    OVERRIDE_FIND_PACKAGE)
+endif()
 find_package(GLUT REQUIRED)
+
+if(FETCH_GLEW)
+  FetchContent_Declare(
+    GLEW::glew
+    GIT_REPOSITORY https://github.com/nigels-com/glew
+    GIT_TAG 3a8eff77da3658c13fbd3634c943d5251d76322c
+    OVERRIDE_FIND_PACKAGE)
+endif()
 find_package(GLEW REQUIRED)
+
 if(NOT DEFINED GLM_INCLUDE_DIR)
+  if(FETCH_GLM)
+    FetchContent_Declare(
+      glm::glm
+      GIT_REPOSITORY https://github.com/g-truc/glm
+      GIT_TAG 13724cfae64a8b5313d1cabc9a963d2c9dbeda12
+      OVERRIDE_FIND_PACKAGE)
+  endif()
   find_package(glm REQUIRED)
 endif()
 
