@@ -14,17 +14,21 @@ if(FETCH_GLUT)
     GIT_REPOSITORY https://github.com/freeglut/freeglut
     GIT_TAG d35af9686a6c11b5ed1629a054fccc4414ba9854
     OVERRIDE_FIND_PACKAGE)
+  find_package(GLUT::GLUT REQUIRED)
+else()
+  find_package(GLUT REQUIRED)
 endif()
-find_package(GLUT REQUIRED)
 
 if(FETCH_GLEW)
   FetchContent_Declare(
-    GLEW::glew
+    GLEW::GLEW
     GIT_REPOSITORY https://github.com/nigels-com/glew
     GIT_TAG 3a8eff77da3658c13fbd3634c943d5251d76322c
     OVERRIDE_FIND_PACKAGE)
+  find_package(GLEW::GLEW REQUIRED)
+else()
+  find_package(GLEW REQUIRED)
 endif()
-find_package(GLEW REQUIRED)
 
 if(NOT DEFINED GLM_INCLUDE_DIR)
   if(FETCH_GLM)
@@ -33,8 +37,10 @@ if(NOT DEFINED GLM_INCLUDE_DIR)
       GIT_REPOSITORY https://github.com/g-truc/glm
       GIT_TAG 13724cfae64a8b5313d1cabc9a963d2c9dbeda12
       OVERRIDE_FIND_PACKAGE)
+    find_package(glm::glm REQUIRED)
+  else()
+    find_package(glm REQUIRED)
   endif()
-  find_package(glm REQUIRED)
 endif()
 
 if(WIN32)
