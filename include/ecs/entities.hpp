@@ -12,6 +12,8 @@ private:
 
 public:
   EntityManager();
+  EntityManager(const EntityManager &) = delete;
+  EntityManager(EntityManager &&) = default;
 
   EntityId next_id();
   EntityId end_id() const;
