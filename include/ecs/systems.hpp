@@ -1,10 +1,12 @@
 #pragma once
 
 namespace ecs {
+template <class T> class Context;
+
 namespace systems {
 template <class T> class System {
 public:
-  virtual void operator()(T &registry) = 0;
+  virtual void operator()(Context<T> &registry) = 0;
   virtual ~System();
 };
 
