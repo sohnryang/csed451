@@ -30,3 +30,4 @@ function(add_gl_executable_single_file exec_name source_file)
 endfunction()
 
 add_subdirectory(lecture)
+add_subdirectory(src)
