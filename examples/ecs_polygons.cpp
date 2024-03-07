@@ -12,10 +12,14 @@
 #include <gl/glut.h>
 #endif
 
+#include <cmath>
+#include <iterator>
 #include <memory>
 #include <random>
 #include <unordered_map>
 #include <vector>
+
+const double PI = std::acos(-1);
 
 namespace components {
 struct Polygon {
@@ -122,7 +126,7 @@ void idle() { glutPostRedisplay(); }
 
 template <typename G>
 std::vector<glm::vec4> random_n_gon(G &gen, int n, float radius) {
-  std::uniform_real_distribution<> dist(0, 2 * M_PI);
+  std::uniform_real_distribution<> dist(0, 2 * PI);
   std::vector<float> angles;
   for (int i = 0; i < n; i++)
     angles.push_back(dist(gen));
