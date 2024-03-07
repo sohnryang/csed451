@@ -59,7 +59,7 @@ std::vector<std::unique_ptr<systems::System<T>>> &Context<T>::systems() {
   return _systems;
 }
 
-template <typename T>
+template <class T>
 std::chrono::time_point<std::chrono::system_clock> &Context<T>::last_updated() {
   return _last_updated;
 }
