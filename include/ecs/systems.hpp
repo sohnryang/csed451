@@ -9,7 +9,7 @@ template <class T> class Context;
 namespace systems {
 template <class T> class System {
 private:
-  virtual bool should_apply(Context<T> &ctx);
+  virtual bool should_apply(Context<T> &ctx, entities::EntityId id);
   virtual void update_single(Context<T> &ctx, entities::EntityId id) = 0;
   virtual void pre_update(Context<T> &ctx);
   virtual void post_update(Context<T> &ctx);
@@ -78,7 +78,8 @@ template <class T> void Context<T>::update() {
 }
 
 namespace systems {
-template <class T> bool System<T>::should_apply(Context<T> &ctx) {
+template <class T>
+bool System<T>::should_apply(Context<T> &ctx, entities::EntityId id) {
   return true;
 }
 
@@ -90,7 +91,7 @@ template <class T> void System<T>::operator()(Context<T> &ctx) {
   pre_update(ctx);
 
   for (entities::EntityId i = 0; i < ctx.entity_manager().end_id(); i++)
-    if (should_apply(ctx))
+    if (should_apply(ctx, i))
       update_single(ctx, i);
 
   post_update(ctx);
