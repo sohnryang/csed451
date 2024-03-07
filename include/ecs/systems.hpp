@@ -3,6 +3,7 @@
 #include "ecs/entities.hpp"
 
 #include <chrono>
+#include <memory>
 #include <vector>
 
 namespace ecs {
