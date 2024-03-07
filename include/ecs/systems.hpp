@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ecs/entities.hpp"
+
+#include <chrono>
 #include <vector>
 
 namespace ecs {
@@ -38,6 +40,7 @@ public:
   T &registry();
   std::vector<std::unique_ptr<systems::System<T>>> &systems();
   std::chrono::time_point<std::chrono::system_clock> &last_updated();
+  float delta_time() const;
 
   void update();
 };
@@ -64,8 +67,15 @@ std::chrono::time_point<std::chrono::system_clock> &Context<T>::last_updated() {
   return _last_updated;
 }
 
+template <class T> float Context<T>::delta_time() const {
+  const auto now = std::chrono::system_clock::now();
+  const auto duration = now - _last_updated;
+  return std::chrono::duration_cast<std::chrono::duration<float>>(duration)
+      .count();
+}
+
 template <class T> void Context<T>::update() {
-  auto now = std::chrono::system_clock::now();
+  const auto now = std::chrono::system_clock::now();
   if (!_loop_started) {
     _last_updated = now;
     _loop_started = true;
