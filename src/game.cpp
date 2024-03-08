@@ -41,8 +41,9 @@ void keyboard_handle(int key, int x, int y) {
 }
 
 // TODO: map generation
-// divide the map with NxN grid. let every entity placement, movement and collision check can be done by those grid
-// row 0 (start) and row N-1 (end) is fixed to be a ground, the other are randomly chosen to be a ground or a road
+// divide the map with NxN grid. let every entity placement, movement and
+// collision check can be done by those grid row 0 (start) and row N-1 (end) is
+// fixed to be a ground, the other are randomly chosen to be a ground or a road
 // on the ground row, place woods at randomly chosen 0 ~ N/2 columns
 // on the road row, randomly choose the direction and speed of the cars
 // draw dotted line between continuous road rows
@@ -50,13 +51,14 @@ void keyboard_handle(int key, int x, int y) {
 const size_t grid_size = 8;
 const double step_size = 2.0f / grid_size;
 
-void fill_map_row(size_t row_index, const components::Color& color) {
-    ctx_ptr->registry().add_render_info(
-        *ctx_ptr, {{glm::vec4(-1.0, -1.0 + step_size * row_index, 0.0, 1.0),
-                    glm::vec4(1.0, -1.0 + step_size * row_index, 0.0, 1.0),
-                    glm::vec4(1.0, -1.0 + step_size * (row_index + 1), 0.0, 1.0),
-                    glm::vec4(-1.0,-1.0 + step_size * (row_index + 1), 0.0, 1.0)},
-                   color });
+void fill_map_row(size_t row_index, const components::Color &color) {
+  ctx_ptr->registry().add_render_info(
+      *ctx_ptr,
+      {{glm::vec4(-1.0, -1.0 + step_size * row_index, 0.0, 1.0),
+        glm::vec4(1.0, -1.0 + step_size * row_index, 0.0, 1.0),
+        glm::vec4(1.0, -1.0 + step_size * (row_index + 1), 0.0, 1.0),
+        glm::vec4(-1.0, -1.0 + step_size * (row_index + 1), 0.0, 1.0)},
+       color});
 }
 
 void create_tree(size_t row_index, size_t col_index,
@@ -75,7 +77,7 @@ void create_tree(size_t row_index, size_t col_index,
   ctx_ptr->registry().transforms[id] = {
       glm::vec3(actual_pos_x, actual_pos_y, 0.0f), glm::vec3(0)};
 
-    // TODO: add tree context
+  // TODO: add tree context
 }
 
 void create_map() {
