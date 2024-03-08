@@ -1,5 +1,6 @@
 #include "systems.hpp"
 
+#include "components.hpp"
 #include "ecs/entities.hpp"
 #include "ecs/systems.hpp"
 
@@ -58,4 +59,38 @@ Render::Render() {
   glDepthRange(0, 1);
   glClearDepth(1);
 }
+
+bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
+                                ecs::entities::EntityId id) {
+  return ctx.registry().characters.count(id);
+}
+
+void InputHandler::update_single(ecs::Context<Registry> &ctx,
+                                 ecs::entities::EntityId id) {
+  // TODO: enforce one character limit
+  auto &character = ctx.registry().characters[id];
+  while (!_input_queue.empty()) {
+    const auto input = _input_queue.front();
+    _input_queue.pop();
+
+    switch (input) {
+    case InputKind::UP:
+      character.actions.push(components::ActionKind::MOVE_UP);
+      break;
+    case InputKind::DOWN:
+      character.actions.push(components::ActionKind::MOVE_DOWN);
+      break;
+    case InputKind::LEFT:
+      character.actions.push(components::ActionKind::MOVE_LEFT);
+      break;
+    case InputKind::RIGHT:
+      character.actions.push(components::ActionKind::MOVE_RIGHT);
+      break;
+    }
+  }
+}
+
+InputHandler::InputHandler() : _input_queue() {}
+
+void InputHandler::push_input(InputKind input) { _input_queue.push(input); }
 } // namespace systems
