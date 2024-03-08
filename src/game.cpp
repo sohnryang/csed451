@@ -59,18 +59,21 @@ void fill_map_row(size_t row_index, const components::Color& color) {
                    color });
 }
 
-void create_tree(size_t row_index, size_t col_index, const components::Color& color) {
-    // might move this constant (0.75) to somewhere
-    const double tree_size = step_size * 0.75;
-    const double actual_pos_x = -1.0 + step_size * col_index;
-    const double actual_pos_y = -1.0 + step_size * row_index;
-    const double gap = (step_size - tree_size) / 2.0;
-    ctx_ptr->registry().add_render_info(
-        *ctx_ptr, { {glm::vec4(actual_pos_x + gap, actual_pos_y + gap, 1.0, 1.0),
-                    glm::vec4(actual_pos_x + gap + tree_size, actual_pos_y + gap, 1.0, 1.0),
-                    glm::vec4(actual_pos_x + gap + tree_size, actual_pos_y + gap + tree_size, 1.0, 1.0),
-                    glm::vec4(actual_pos_x + gap, actual_pos_y + gap + tree_size, 1.0, 1.0)},
-                   color });
+void create_tree(size_t row_index, size_t col_index,
+                 const components::Color &color) {
+  const auto id = ctx_ptr->entity_manager().next_id();
+  // might move this constant (0.75) to somewhere
+  const float tree_radius = step_size * 0.75f / 2.0f;
+  const float actual_pos_x = -1.0 + step_size * col_index + step_size * 0.5f;
+  const float actual_pos_y = -1.0 + step_size * row_index + step_size * 0.5f;
+  ctx_ptr->registry().render_infos[id] = {
+      {glm::vec4(-tree_radius, -tree_radius, 0.5f, 1.0f),
+       glm::vec4(tree_radius, -tree_radius, 0.5f, 1.0f),
+       glm::vec4(tree_radius, tree_radius, 0.5f, 1.0f),
+       glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)},
+      color};
+  ctx_ptr->registry().transforms[id] = {
+      glm::vec3(actual_pos_x, actual_pos_y, 0.0f), glm::vec3(0)};
 
     // TODO: add tree context
 }
