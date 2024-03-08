@@ -77,7 +77,24 @@ void create_tree(size_t row_index, size_t col_index,
   ctx_ptr->registry().transforms[id] = {
       glm::vec3(actual_pos_x, actual_pos_y, 0.0f), glm::vec3(0)};
 
-  // TODO: add tree context
+  std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos = {
+      {{-1, 0}, components::ActionKind::MOVE_RIGHT},
+      {{1, 0}, components::ActionKind::MOVE_LEFT},
+      {{0, -1}, components::ActionKind::MOVE_UP},
+      {{0, 1}, components::ActionKind::MOVE_DOWN}};
+  for (const auto &p : adjacent_pos) {
+    const auto delta = p.first;
+    const auto action = p.second;
+    const auto rect_center =
+        step_size * delta + glm::vec2(actual_pos_x, actual_pos_y);
+    const auto diagonal = glm::vec2(tree_radius, tree_radius);
+    const auto top_left = rect_center - diagonal;
+    const auto bottom_right = rect_center + diagonal;
+    const auto restriction_id = ctx_ptr->entity_manager().next_id();
+
+    ctx_ptr->registry().action_restrictions[restriction_id] = {
+        top_left, bottom_right, {action}};
+  }
 }
 
 void create_map() {
