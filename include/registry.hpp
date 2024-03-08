@@ -12,6 +12,8 @@ struct Registry {
       render_infos;
   std::unordered_map<ecs::entities::EntityId, components::Transform> transforms;
   std::unordered_map<ecs::entities::EntityId, components::Character> characters;
+  std::unordered_map<ecs::entities::EntityId, components::ActionRestriction>
+      action_restrictions;
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);
