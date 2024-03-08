@@ -87,7 +87,7 @@ void create_tree(size_t row_index, size_t col_index,
     const auto action = p.second;
     const auto rect_center =
         step_size * delta + glm::vec2(actual_pos_x, actual_pos_y);
-    const auto diagonal = glm::vec2(tree_radius, tree_radius);
+    const auto diagonal = glm::vec2(tree_radius, -tree_radius);
     const auto top_left = rect_center - diagonal;
     const auto bottom_right = rect_center + diagonal;
     const auto restriction_id = ctx_ptr->entity_manager().next_id();
@@ -117,6 +117,25 @@ void create_map() {
   create_tree(7, 2, tree_color);
   create_tree(7, 3, tree_color);
   create_tree(7, 5, tree_color);
+
+  std::vector<std::tuple<glm::vec2, glm::vec2, components::ActionKind>> adjacent_pos = {
+                      {{1.0f - step_size, 1.0f},
+                       {1.0f, -1.0f},
+                       components::ActionKind::MOVE_RIGHT},
+                      {{-1.0f, 1.0f},
+                       {-1.0f + step_size, -1.0f},
+                       components::ActionKind::MOVE_LEFT},
+                      {{-1.0f, 1.0f},
+                       {1.0f, 1.0f - step_size},
+                       components::ActionKind::MOVE_UP},
+                      {{-1.0f, -1.0f + step_size},
+                       {1.0f, -1.0f},
+                       components::ActionKind::MOVE_DOWN}};
+  for (const auto &p : adjacent_pos) {
+    const auto restriction_id = ctx_ptr->entity_manager().next_id();
+    ctx_ptr->registry().action_restrictions[restriction_id] = {
+        std::get<0>(p), std::get<1>(p), {std::get<2>(p)}};
+  }
 }
 
 void create_character() {
