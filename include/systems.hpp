@@ -3,8 +3,12 @@
 #include "ecs/entities.hpp"
 #include "ecs/systems.hpp"
 
-#include <queue>
+#include <glm/glm.hpp>
 
+#include <queue>
+#include <unordered_set>
+
+#include "components.hpp"
 #include "registry.hpp"
 
 namespace systems {
@@ -44,10 +48,24 @@ public:
 
 class Character : public ecs::systems::System<Registry> {
 private:
+  bool character_found;
+  ecs::entities::EntityId character_id;
+  std::unordered_set<components::ActionKind> blocked_actions;
+
   bool should_apply(ecs::Context<Registry> &ctx,
                     ecs::entities::EntityId id) override;
 
+  void pre_update(ecs::Context<Registry> &ctx) override;
+
+  void post_update(ecs::Context<Registry> &ctx) override;
+
   void update_single(ecs::Context<Registry> &ctx,
                      ecs::entities::EntityId id) override;
+
+public:
+  static bool intersect(glm::vec2 top_left1, glm::vec2 bottom_right1,
+                        glm::vec2 top_left2, glm::vec2 bottom_right2);
+
+  Character();
 };
 } // namespace systems
