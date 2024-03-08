@@ -49,7 +49,7 @@ void keyboard_handle(int key, int x, int y) {
 // draw dotted line between continuous road rows
 
 const size_t grid_size = 8;
-const double step_size = 2.0f / grid_size;
+const float step_size = 2.0f / grid_size;
 
 void fill_map_row(size_t row_index, const components::Color &color) {
   ctx_ptr->registry().add_render_info(
