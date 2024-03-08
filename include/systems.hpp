@@ -41,4 +41,13 @@ public:
 
   void push_input(InputKind input);
 };
+
+class Character : public ecs::systems::System<Registry> {
+private:
+  bool should_apply(ecs::Context<Registry> &ctx,
+                    ecs::entities::EntityId id) override;
+
+  void update_single(ecs::Context<Registry> &ctx,
+                     ecs::entities::EntityId id) override;
+};
 } // namespace systems
