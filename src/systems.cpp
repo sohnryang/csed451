@@ -15,8 +15,6 @@
 #include <gl/glut.h>
 #endif
 
-#include <iostream>
-
 #include "registry.hpp"
 
 namespace systems {
@@ -77,19 +75,15 @@ void InputHandler::update_single(ecs::Context<Registry> &ctx,
 
     switch (input) {
     case InputKind::UP:
-      std::cout << "UP" << std::endl;
       character.actions.push(components::ActionKind::MOVE_UP);
       break;
     case InputKind::DOWN:
-      std::cout << "DOWN" << std::endl;
       character.actions.push(components::ActionKind::MOVE_DOWN);
       break;
     case InputKind::LEFT:
-      std::cout << "LEFT" << std::endl;
       character.actions.push(components::ActionKind::MOVE_LEFT);
       break;
     case InputKind::RIGHT:
-      std::cout << "RIGHT" << std::endl;
       character.actions.push(components::ActionKind::MOVE_RIGHT);
       break;
     }
