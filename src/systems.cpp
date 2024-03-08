@@ -93,4 +93,36 @@ void InputHandler::update_single(ecs::Context<Registry> &ctx,
 InputHandler::InputHandler() : _input_queue() {}
 
 void InputHandler::push_input(InputKind input) { _input_queue.push(input); }
+
+bool Character::should_apply(ecs::Context<Registry> &ctx,
+                             ecs::entities::EntityId id) {
+  return ctx.registry().characters.count(id) &&
+         ctx.registry().transforms.count(id);
+}
+
+void Character::update_single(ecs::Context<Registry> &ctx,
+                              ecs::entities::EntityId id) {
+  auto &character = ctx.registry().characters[id];
+  auto &transform = ctx.registry().transforms[id];
+  const float step_size = 2.0f / 8;
+  while (!character.actions.empty()) {
+    auto action = character.actions.front();
+    character.actions.pop();
+
+    switch (action) {
+    case components::ActionKind::MOVE_UP:
+      transform.disp[1] += step_size;
+      break;
+    case components::ActionKind::MOVE_DOWN:
+      transform.disp[1] -= step_size;
+      break;
+    case components::ActionKind::MOVE_LEFT:
+      transform.disp[0] -= step_size;
+      break;
+    case components::ActionKind::MOVE_RIGHT:
+      transform.disp[0] += step_size;
+      break;
+    }
+  }
+}
 } // namespace systems
