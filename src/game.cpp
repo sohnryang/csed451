@@ -1,3 +1,4 @@
+#include "components.hpp"
 #include "ecs/systems.hpp"
 
 #include <memory>
@@ -79,7 +80,18 @@ void create_map() {
 }
 
 void create_character() {
-  ctx_ptr->registry().characters[ctx_ptr->entity_manager().next_id()] = {};
+  const auto id = ctx_ptr->entity_manager().next_id();
+  const auto character_radius = 0.1f;
+  const components::Color color = {1.0f, 1.0f, 1.0f};
+  ctx_ptr->registry().characters[id] = {};
+  ctx_ptr->registry().render_infos[id] = {
+      {glm::vec4(-character_radius, -character_radius, 0.5f, 1.0f),
+       glm::vec4(character_radius, -character_radius, 0.5f, 1.0f),
+       glm::vec4(character_radius, character_radius, 0.5f, 1.0f),
+       glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)},
+      color};
+  ctx_ptr->registry().transforms[id] = {glm::vec3(0.125f, -0.875f, 0.0f),
+                                        glm::vec3(0)};
 }
 
 int main(int argc, char **argv) {
@@ -93,10 +105,9 @@ int main(int argc, char **argv) {
   std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
   systems.emplace_back(new systems::Render);
   systems.push_back(input_handler);
+  systems.emplace_back(new systems::Character);
   ctx_ptr =
       std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
-
-  ctx_ptr->registry().add_render_info(*ctx_ptr, {});
 
   create_map();
   create_character();
