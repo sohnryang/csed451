@@ -15,7 +15,7 @@
 #include "systems.hpp"
 
 // TODO: use singleton
-std::unique_ptr<ecs::Context<Registry>> ctx_ptr;
+std::shared_ptr<ecs::Context<Registry>> ctx_ptr;
 
 void display() { ctx_ptr->update(); }
 
@@ -66,10 +66,10 @@ int main(int argc, char **argv) {
   glutInitWindowSize(512, 512);
   glutCreateWindow("Crossy Phonix");
 
-  std::vector<std::unique_ptr<ecs::systems::System<Registry>>> systems;
+  std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
   systems.emplace_back(new systems::Render);
   ctx_ptr =
-      std::make_unique<ecs::Context<Registry>>(Registry(), std::move(systems));
+      std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
 
   ctx_ptr->registry().add_render_info(*ctx_ptr, {});
 

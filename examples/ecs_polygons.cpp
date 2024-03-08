@@ -118,7 +118,7 @@ public:
   }
 };
 
-std::unique_ptr<ecs::Context<Registry>> ctx_ptr;
+std::shared_ptr<ecs::Context<Registry>> ctx_ptr;
 
 void display() { ctx_ptr->update(); }
 
@@ -146,11 +146,11 @@ int main(int argc, char **argv) {
   glutInitWindowSize(512, 512);
   glutCreateWindow("ECS Demo");
 
-  std::vector<std::unique_ptr<ecs::systems::System<Registry>>> systems;
+  std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
   systems.emplace_back(new Transform);
   systems.emplace_back(new Render);
   ctx_ptr =
-      std::make_unique<ecs::Context<Registry>>(Registry(), std::move(systems));
+      std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
 
   const int polygon_count = 100;
   std::random_device rd;
