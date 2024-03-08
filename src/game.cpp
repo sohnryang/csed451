@@ -97,10 +97,26 @@ void create_tree(size_t row_index, size_t col_index,
   }
 }
 
+void create_road_line(const size_t row_index, const components::Color &color) {
+  const float line_width = step_size * 0.05f;
+  const float pos_y = -1.0f + step_size * (row_index + 1) - line_width / 2.0;
+  // TODO: randomize initial pos_x value?
+  for (float pos_x = -1.06; pos_x < 1.0; pos_x += step_size * 0.87) {
+    ctx_ptr->registry().add_render_info(
+        *ctx_ptr,
+        {{glm::vec4(pos_x, pos_y, 0.1, 1.0),
+          glm::vec4(pos_x + step_size * 0.6, pos_y, 0.1, 1.0),
+          glm::vec4(pos_x + step_size * 0.6, pos_y + line_width, 0.1, 1.0),
+          glm::vec4(pos_x, pos_y + line_width, 0.1, 1.0)},
+         color});
+  }
+}
+
 void create_map() {
   const components::Color grass_color = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                           road_color = {172.0 / 255, 172.0 / 255, 172.0 / 255},
-                          tree_color = {200.0 / 255, 131.0 / 255, 0.0 / 255};
+                          tree_color = {200.0 / 255, 131.0 / 255, 0.0 / 255},
+                          road_line_color = {255.0 / 255, 255.0 / 255, 255.0 / 255};
 
   fill_map_row(0, grass_color);
   fill_map_row(1, road_color);
@@ -117,6 +133,10 @@ void create_map() {
   create_tree(7, 2, tree_color);
   create_tree(7, 3, tree_color);
   create_tree(7, 5, tree_color);
+
+  create_road_line(1, road_line_color);
+  create_road_line(4, road_line_color);
+  create_road_line(5, road_line_color);
 
   std::vector<std::tuple<glm::vec2, glm::vec2, components::ActionKind>> adjacent_pos = {
                       {{1.0f - step_size, 1.0f},
