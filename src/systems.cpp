@@ -186,4 +186,34 @@ bool Character::intersect(glm::vec2 top_left1, glm::vec2 bottom_right1,
 
 Character::Character()
     : character_found(false), character_id(0), blocked_actions() {}
+
+bool Car::should_apply(ecs::Context<Registry> &ctx,
+                       ecs::entities::EntityId id) {
+  return ctx.registry().cars.count(id);
+}
+
+void Car::update_single(ecs::Context<Registry> &ctx,
+                        ecs::entities::EntityId id) {
+  auto &render_info = ctx.registry().render_infos.at(id);
+  auto &transform = ctx.registry().transforms.at(id);
+  const auto &vertices = render_info.vertices;
+
+  const glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
+  std::vector<glm::vec4> transformed;
+  std::transform(vertices.cbegin(), vertices.cend(),
+                 std::back_inserter(transformed),
+                 [&mat](const glm::vec4 &vertex) { return mat * vertex; });
+  float xmin = transformed[0][0], xmax = transformed[0][0];
+  for (const auto &v : transformed) {
+    xmin = std::min(xmin, v[0]);
+    xmax = std::max(xmax, v[0]);
+  }
+
+  if (transform.vel[0] < 0.0f && xmax < -1.0f)
+    transform.disp[0] += 3.0f;
+  else if (transform.vel[0] > 0.0f && xmin > 1.0f)
+    transform.disp[0] -= 3.0f;
+}
+
+Car::Car() {}
 } // namespace systems

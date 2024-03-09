@@ -33,4 +33,8 @@ struct ActionRestriction {
   glm::vec2 bottom_right;
   std::vector<ActionKind> restrictions;
 };
+
+struct Car {
+
+};
 } // namespace components

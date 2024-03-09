@@ -68,4 +68,16 @@ public:
 
   Character();
 };
+
+class Car : public ecs::systems::System<Registry> {
+private:
+  bool should_apply(ecs::Context<Registry> &ctx,
+                    ecs::entities::EntityId id) override;
+
+  void update_single(ecs::Context<Registry> &ctx,
+                     ecs::entities::EntityId id) override;
+
+public:
+  Car();
+};
 } // namespace systems

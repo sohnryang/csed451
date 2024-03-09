@@ -128,7 +128,8 @@ void create_car(const float pos_x, const size_t row_index,
   ctx_ptr->registry().transforms[id] = {
       glm::vec3(pos_x, actual_pos_y, 0.0f), glm::vec3(vel, 0.0, 0.0)};
 
-  }
+  ctx_ptr->registry().cars[id] = {};
+}
 
 void create_map() {
   const components::Color grass_color = {68.0 / 255, 132.0 / 255, 46.0 / 255},
@@ -209,6 +210,7 @@ int main(int argc, char **argv) {
   systems.emplace_back(new systems::Render);
   systems.push_back(input_handler);
   systems.emplace_back(new systems::Character);
+  systems.emplace_back(new systems::Car);
   ctx_ptr =
       std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
 

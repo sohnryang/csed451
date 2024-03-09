@@ -14,6 +14,7 @@ struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::Character> characters;
   std::unordered_map<ecs::entities::EntityId, components::ActionRestriction>
       action_restrictions;
+  std::unordered_map<ecs::entities::EntityId, components::Car> cars;
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);
