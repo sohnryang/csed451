@@ -136,7 +136,8 @@ void InputHandler::push_input(InputKind input) { _input_queue.push(input); }
 bool Character::should_apply(ecs::Context<Registry> &ctx,
                              ecs::entities::EntityId id) {
   return ctx.registry().state == GameState::IN_PROGRESS &&
-         ctx.registry().action_restrictions.count(id);
+         (ctx.registry().action_restrictions.count(id) ||
+          ctx.registry().cars.count(id));
 }
 
 void Character::pre_update(ecs::Context<Registry> &ctx) {
@@ -175,20 +176,30 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
 void Character::update_single(ecs::Context<Registry> &ctx,
                               ecs::entities::EntityId id) {
   const auto &action_restrictions = ctx.registry().action_restrictions;
-  if (action_restrictions.count(id)) {
-    const auto character_id = ctx.registry().character_id;
-    const auto &render_info = ctx.registry().render_infos.at(character_id);
-    const auto &vertices = render_info.vertices;
-    const auto &transform = ctx.registry().transforms.at(character_id);
+  const auto character_id = ctx.registry().character_id;
+  const auto &render_infos = ctx.registry().render_infos;
+  const auto &character_render_info = render_infos.at(character_id);
+  const auto &character_vertices = character_render_info.vertices;
+  const auto &transforms = ctx.registry().transforms;
+  const auto &character_transform = transforms.at(character_id);
+  const auto character_bb =
+      bounding_box(character_render_info, character_transform);
 
+  if (action_restrictions.count(id)) {
     const auto action_restriction = action_restrictions.at(id);
-    const auto character_bb = bounding_box(render_info, transform),
-               restriction_bb = BoundingBox(action_restriction.top_left,
+    const auto restriction_bb = BoundingBox(action_restriction.top_left,
                                             action_restriction.bottom_right);
     if (intersect(character_bb, restriction_bb)) {
       for (const auto &r : action_restriction.restrictions)
         blocked_actions.insert(r);
     }
+  } else {
+    const auto &car_render_info = render_infos.at(id);
+    const auto &car_vertices = car_render_info.vertices;
+    const auto &car_transform = transforms.at(id);
+    const auto car_bb = bounding_box(car_render_info, car_transform);
+    if (intersect(character_bb, car_bb))
+      ctx.registry().state = GameState::LOSE;
   }
 }
 
