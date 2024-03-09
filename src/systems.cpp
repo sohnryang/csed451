@@ -79,7 +79,8 @@ void Transform::update_single(ecs::Context<Registry> &ctx,
 
 bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
                                 ecs::entities::EntityId id) {
-  return ctx.registry().characters.count(id);
+  return ctx.registry().state == GameState::IN_PROGRESS &&
+         ctx.registry().characters.count(id);
 }
 
 void InputHandler::update_single(ecs::Context<Registry> &ctx,
@@ -113,10 +114,11 @@ void InputHandler::push_input(InputKind input) { _input_queue.push(input); }
 
 bool Character::should_apply(ecs::Context<Registry> &ctx,
                              ecs::entities::EntityId id) {
-  return ctx.registry().action_restrictions.count(id) ||
-         ctx.registry().characters.count(id) &&
-             ctx.registry().transforms.count(id) &&
-             ctx.registry().render_infos.count(id);
+  return ctx.registry().state == GameState::IN_PROGRESS &&
+         (ctx.registry().action_restrictions.count(id) ||
+          ctx.registry().characters.count(id) &&
+              ctx.registry().transforms.count(id) &&
+              ctx.registry().render_infos.count(id));
 }
 
 void Character::pre_update(ecs::Context<Registry> &ctx) {
@@ -150,6 +152,12 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     break;
   case components::ActionKind::MOVE_RIGHT:
     transform.disp[0] += step_size;
+    break;
+  case components::ActionKind::LOSE:
+    ctx.registry().state = GameState::LOSE;
+    break;
+  case components::ActionKind::WIN:
+    ctx.registry().state = GameState::WIN;
     break;
   }
 }
@@ -201,7 +209,8 @@ Character::Character()
 
 bool Car::should_apply(ecs::Context<Registry> &ctx,
                        ecs::entities::EntityId id) {
-  return ctx.registry().cars.count(id);
+  return ctx.registry().state == GameState::IN_PROGRESS &&
+         ctx.registry().cars.count(id);
 }
 
 void Car::update_single(ecs::Context<Registry> &ctx,
