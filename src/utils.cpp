@@ -5,6 +5,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 #include "components.hpp"
