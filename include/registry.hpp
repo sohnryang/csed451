@@ -7,6 +7,8 @@
 
 #include "components.hpp"
 
+enum class GameState { IN_PROGRESS, LOSE, WIN };
+
 struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::RenderInfo>
       render_infos;
@@ -15,6 +17,7 @@ struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::ActionRestriction>
       action_restrictions;
   std::unordered_map<ecs::entities::EntityId, components::Car> cars;
+  GameState state = GameState::IN_PROGRESS;
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);
