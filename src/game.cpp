@@ -199,6 +199,12 @@ void create_character() {
   ctx_ptr->registry().character_id = id;
 }
 
+void create_win_zone() {
+  const auto id = ctx_ptr->entity_manager().next_id();
+  ctx_ptr->registry().win_zones[id] = {glm::vec2(-1, 1),
+                                       glm::vec2(1, 1 - step_size)};
+}
+
 int main(int argc, char **argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -218,6 +224,7 @@ int main(int argc, char **argv) {
 
   create_map();
   create_character();
+  create_win_zone();
 
   glutDisplayFunc(display);
   glutIdleFunc(idle);

@@ -137,7 +137,7 @@ bool Character::should_apply(ecs::Context<Registry> &ctx,
                              ecs::entities::EntityId id) {
   return ctx.registry().state == GameState::IN_PROGRESS &&
          (ctx.registry().action_restrictions.count(id) ||
-          ctx.registry().cars.count(id));
+          ctx.registry().win_zones.count(id) || ctx.registry().cars.count(id));
 }
 
 void Character::pre_update(ecs::Context<Registry> &ctx) {
@@ -176,6 +176,7 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
 void Character::update_single(ecs::Context<Registry> &ctx,
                               ecs::entities::EntityId id) {
   const auto &action_restrictions = ctx.registry().action_restrictions;
+  const auto &win_zones = ctx.registry().win_zones;
   const auto character_id = ctx.registry().character_id;
   const auto &render_infos = ctx.registry().render_infos;
   const auto &character_render_info = render_infos.at(character_id);
@@ -193,6 +194,12 @@ void Character::update_single(ecs::Context<Registry> &ctx,
       for (const auto &r : action_restriction.restrictions)
         blocked_actions.insert(r);
     }
+  } else if (win_zones.count(id)) {
+    const auto &win_zone = win_zones.at(id);
+    const auto win_zone_bb =
+        BoundingBox(win_zone.top_left, win_zone.bottom_right);
+    if (intersect(character_bb, win_zone_bb))
+      ctx.registry().state = GameState::WIN;
   } else {
     const auto &car_render_info = render_infos.at(id);
     const auto &car_vertices = car_render_info.vertices;
