@@ -34,5 +34,10 @@ struct ActionRestriction {
   std::vector<ActionKind> restrictions;
 };
 
+struct WinZone {
+  glm::vec2 top_left;
+  glm::vec2 bottom_right;
+};
+
 struct Car {};
 } // namespace components
