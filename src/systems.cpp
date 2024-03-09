@@ -1,10 +1,8 @@
 #include "systems.hpp"
 
-#include "components.hpp"
 #include "ecs/entities.hpp"
 #include "ecs/systems.hpp"
 
-#include <algorithm>
 #include <glm/glm.hpp>
 
 #include <glm/ext/matrix_transform.hpp>
@@ -16,8 +14,12 @@
 #include <gl/glut.h>
 #endif
 
+#include <algorithm>
+#include <cstddef>
 #include <iterator>
+#include <string>
 
+#include "components.hpp"
 #include "registry.hpp"
 
 namespace systems {
@@ -30,7 +32,26 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Render::post_update(ecs::Context<Registry> &ctx) { glutSwapBuffers(); }
+void Render::post_update(ecs::Context<Registry> &ctx) {
+  const auto state = ctx.registry().state;
+  if (state != GameState::IN_PROGRESS) {
+    std::string text = state == GameState::LOSE ? "GAME OVER" : "YOU WIN!!";
+    glColor3f(1, 1, 0);
+    glLineWidth(5);
+
+    glPushMatrix();
+    const auto char_width = 0.2f;
+
+    for (size_t i = 0; i < text.length(); i++) {
+      glLoadIdentity();
+      glTranslatef(-0.95f + i * char_width, 0.0, 0.75);
+      glScalef(1.0f / 400, 1.0f / 400, 1);
+      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[i]);
+    }
+    glPopMatrix();
+  }
+  glutSwapBuffers();
+}
 
 void Render::update_single(ecs::Context<Registry> &ctx,
                            ecs::entities::EntityId id) {
