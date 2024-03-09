@@ -1,9 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include <queue>
 #include <vector>
-
-#include <glm/glm.hpp>
 
 namespace components {
 struct Color {
