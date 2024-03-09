@@ -208,6 +208,7 @@ int main(int argc, char **argv) {
 
   std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
   systems.emplace_back(new systems::Render);
+  systems.emplace_back(new systems::Transform);
   systems.push_back(input_handler);
   systems.emplace_back(new systems::Character);
   systems.emplace_back(new systems::Car);

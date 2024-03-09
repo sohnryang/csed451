@@ -42,9 +42,7 @@ void Render::update_single(ecs::Context<Registry> &ctx,
 
   glPushMatrix();
   if (registry.transforms.count(id)) {
-    auto &transform = registry.transforms.at(id);
-    transform.disp[0] += transform.vel[0] * ctx.delta_time();
-    transform.disp[1] += transform.vel[1] * ctx.delta_time();
+    const auto &transform = registry.transforms.at(id);
     glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
     glLoadMatrixf(glm::value_ptr(mat));
   } else
@@ -63,6 +61,20 @@ Render::Render() {
   glDepthFunc(GL_LESS);
   glDepthRange(0, 1);
   glClearDepth(1);
+}
+
+bool Transform::should_apply(ecs::Context<Registry> &ctx,
+                             ecs::entities::EntityId id) {
+  return ctx.registry().state == GameState::IN_PROGRESS &&
+         ctx.registry().transforms.count(id);
+}
+
+void Transform::update_single(ecs::Context<Registry> &ctx,
+                              ecs::entities::EntityId id) {
+  auto &transforms = ctx.registry().transforms;
+  const auto &vel = transforms.at(id).vel;
+  auto &disp = transforms[id].disp;
+  disp += ctx.delta_time() * vel;
 }
 
 bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
