@@ -112,8 +112,8 @@ void create_road_line(const size_t row_index, const components::Color &color) {
   }
 }
 
-void create_car(const float pos_x, const size_t row_index, 
-  const float vel, const components::Color& color) {
+void create_car(const float pos_x, const size_t row_index, const float vel,
+                const components::Color &color) {
   const auto id = ctx_ptr->entity_manager().next_id();
   // might move this constant (0.75) to somewhere
   const float car_radius_x = step_size * 1.5f / 2.0f;
@@ -125,8 +125,8 @@ void create_car(const float pos_x, const size_t row_index,
        glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
        glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)},
       color};
-  ctx_ptr->registry().transforms[id] = {
-      glm::vec3(pos_x, actual_pos_y, 0.0f), glm::vec3(vel, 0.0, 0.0)};
+  ctx_ptr->registry().transforms[id] = {glm::vec3(pos_x, actual_pos_y, 0.0f),
+                                        glm::vec3(vel, 0.0, 0.0)};
 
   ctx_ptr->registry().cars[id] = {};
 }
@@ -135,7 +135,8 @@ void create_map() {
   const components::Color grass_color = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                           road_color = {172.0 / 255, 172.0 / 255, 172.0 / 255},
                           tree_color = {200.0 / 255, 131.0 / 255, 0.0 / 255},
-                          road_line_color = {255.0 / 255, 255.0 / 255, 255.0 / 255},
+                          road_line_color = {255.0 / 255, 255.0 / 255,
+                                             255.0 / 255},
                           car_color = {66.0 / 255, 147.0 / 255, 252.0 / 255};
 
   fill_map_row(0, grass_color);
@@ -162,9 +163,8 @@ void create_map() {
   create_car(0.1f, 1, 0.2f, car_color);
   create_car(-0.3f, 2, -0.3f, car_color);
 
-
-  std::vector<std::tuple<glm::vec2, glm::vec2, components::ActionKind>> adjacent_pos = {
-                      {{1.0f - step_size, 1.0f},
+  std::vector<std::tuple<glm::vec2, glm::vec2, components::ActionKind>>
+      adjacent_pos = {{{1.0f - step_size, 1.0f},
                        {1.0f, -1.0f},
                        components::ActionKind::MOVE_RIGHT},
                       {{-1.0f, 1.0f},
