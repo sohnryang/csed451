@@ -34,7 +34,7 @@ void Render::post_update(ecs::Context<Registry> &ctx) { glutSwapBuffers(); }
 
 void Render::update_single(ecs::Context<Registry> &ctx,
                            ecs::entities::EntityId id) {
-  const auto &registry = ctx.registry();
+  auto &registry = ctx.registry();
 
   const auto &render_info = registry.render_infos.at(id);
   const auto &color = render_info.color;
@@ -42,7 +42,9 @@ void Render::update_single(ecs::Context<Registry> &ctx,
 
   glPushMatrix();
   if (registry.transforms.count(id)) {
-    const auto &transform = registry.transforms.at(id);
+    auto &transform = registry.transforms.at(id);
+    transform.disp[0] += transform.vel[0] * ctx.delta_time();
+    transform.disp[1] += transform.vel[1] * ctx.delta_time();
     glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
     glLoadMatrixf(glm::value_ptr(mat));
   } else
