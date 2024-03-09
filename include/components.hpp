@@ -22,7 +22,7 @@ struct Transform {
   glm::vec3 vel;
 };
 
-enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
+enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, LOSE, WIN };
 
 struct Character {
   std::queue<ActionKind> actions;
@@ -34,7 +34,5 @@ struct ActionRestriction {
   std::vector<ActionKind> restrictions;
 };
 
-struct Car {
-
-};
+struct Car {};
 } // namespace components
