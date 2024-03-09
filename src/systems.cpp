@@ -107,7 +107,6 @@ bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
 
 void InputHandler::update_single(ecs::Context<Registry> &ctx,
                                  ecs::entities::EntityId id) {
-  // TODO: enforce one character limit
   auto &character = ctx.registry().characters[id];
   while (!_input_queue.empty()) {
     const auto input = _input_queue.front();
