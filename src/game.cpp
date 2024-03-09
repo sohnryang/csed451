@@ -196,6 +196,7 @@ void create_character() {
       color};
   ctx_ptr->registry().transforms[id] = {glm::vec3(0.125f, -0.875f, 0.0f),
                                         glm::vec3(0)};
+  ctx_ptr->registry().character_id = id;
 }
 
 int main(int argc, char **argv) {

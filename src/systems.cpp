@@ -115,10 +115,7 @@ void InputHandler::push_input(InputKind input) { _input_queue.push(input); }
 bool Character::should_apply(ecs::Context<Registry> &ctx,
                              ecs::entities::EntityId id) {
   return ctx.registry().state == GameState::IN_PROGRESS &&
-         (ctx.registry().action_restrictions.count(id) ||
-          ctx.registry().characters.count(id) &&
-              ctx.registry().transforms.count(id) &&
-              ctx.registry().render_infos.count(id));
+         ctx.registry().action_restrictions.count(id);
 }
 
 void Character::pre_update(ecs::Context<Registry> &ctx) {
@@ -126,9 +123,7 @@ void Character::pre_update(ecs::Context<Registry> &ctx) {
 }
 
 void Character::post_update(ecs::Context<Registry> &ctx) {
-  if (!character_found)
-    return;
-
+  const auto character_id = ctx.registry().character_id;
   auto &character = ctx.registry().characters[character_id];
   auto &transform = ctx.registry().transforms[character_id];
   const float step_size = 2.0f / 8;
@@ -165,8 +160,8 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
 void Character::update_single(ecs::Context<Registry> &ctx,
                               ecs::entities::EntityId id) {
   const auto &action_restrictions = ctx.registry().action_restrictions;
-  const auto &characters = ctx.registry().characters;
-  if (character_found && action_restrictions.count(id)) {
+  if (action_restrictions.count(id)) {
+    const auto character_id = ctx.registry().character_id;
     const auto &render_info = ctx.registry().render_infos.at(character_id);
     const auto &vertices = render_info.vertices;
     const auto &transform = ctx.registry().transforms.at(character_id);
@@ -192,9 +187,6 @@ void Character::update_single(ecs::Context<Registry> &ctx,
       for (const auto &r : action_restriction.restrictions)
         blocked_actions.insert(r);
     }
-  } else if (!character_found && characters.count(id)) {
-    character_found = true;
-    character_id = id;
   }
 }
 
@@ -204,8 +196,7 @@ bool Character::intersect(glm::vec2 top_left1, glm::vec2 bottom_right1,
          bottom_right1[1] <= top_left2[1] && bottom_right2[1] <= top_left1[1];
 }
 
-Character::Character()
-    : character_found(false), character_id(0), blocked_actions() {}
+Character::Character() : blocked_actions() {}
 
 bool Car::should_apply(ecs::Context<Registry> &ctx,
                        ecs::entities::EntityId id) {

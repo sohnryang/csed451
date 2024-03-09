@@ -18,6 +18,7 @@ struct Registry {
       action_restrictions;
   std::unordered_map<ecs::entities::EntityId, components::Car> cars;
   GameState state = GameState::IN_PROGRESS;
+  ecs::entities::EntityId character_id;
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);

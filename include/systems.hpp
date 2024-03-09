@@ -57,8 +57,6 @@ public:
 
 class Character : public ecs::systems::System<Registry> {
 private:
-  bool character_found;
-  ecs::entities::EntityId character_id;
   std::unordered_set<components::ActionKind> blocked_actions;
 
   bool should_apply(ecs::Context<Registry> &ctx,
