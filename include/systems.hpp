@@ -70,9 +70,6 @@ private:
                      ecs::entities::EntityId id) override;
 
 public:
-  static bool intersect(glm::vec2 top_left1, glm::vec2 bottom_right1,
-                        glm::vec2 top_left2, glm::vec2 bottom_right2);
-
   Character();
 };
 

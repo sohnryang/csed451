@@ -21,6 +21,7 @@
 
 #include "components.hpp"
 #include "registry.hpp"
+#include "utils.hpp"
 
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,
@@ -187,34 +188,15 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     const auto &vertices = render_info.vertices;
     const auto &transform = ctx.registry().transforms.at(character_id);
 
-    const glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
-    std::vector<glm::vec4> transformed;
-    std::transform(vertices.cbegin(), vertices.cend(),
-                   std::back_inserter(transformed),
-                   [&mat](const glm::vec4 &vertex) { return mat * vertex; });
-    float xmin = transformed[0][0], xmax = transformed[0][0],
-          ymin = transformed[0][1], ymax = transformed[0][1];
-    for (const auto &v : transformed) {
-      xmin = std::min(xmin, v[0]);
-      xmax = std::max(xmax, v[0]);
-      ymin = std::min(ymin, v[1]);
-      ymax = std::max(ymax, v[1]);
-    }
-
     const auto action_restriction = action_restrictions.at(id);
-    if (intersect(glm::vec2(xmin, ymax), glm::vec2(xmax, ymin),
-                  action_restriction.top_left,
-                  action_restriction.bottom_right)) {
+    const auto character_bb = bounding_box(render_info, transform),
+               restriction_bb = BoundingBox(action_restriction.top_left,
+                                            action_restriction.bottom_right);
+    if (intersect(character_bb, restriction_bb)) {
       for (const auto &r : action_restriction.restrictions)
         blocked_actions.insert(r);
     }
   }
-}
-
-bool Character::intersect(glm::vec2 top_left1, glm::vec2 bottom_right1,
-                          glm::vec2 top_left2, glm::vec2 bottom_right2) {
-  return top_left1[0] <= bottom_right2[0] && top_left2[0] <= bottom_right1[0] &&
-         bottom_right1[1] <= top_left2[1] && bottom_right2[1] <= top_left1[1];
 }
 
 Character::Character() : blocked_actions() {}
