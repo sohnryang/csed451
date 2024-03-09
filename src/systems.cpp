@@ -169,12 +169,6 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
   case components::ActionKind::MOVE_RIGHT:
     transform.disp[0] += step_size;
     break;
-  case components::ActionKind::LOSE:
-    ctx.registry().state = GameState::LOSE;
-    break;
-  case components::ActionKind::WIN:
-    ctx.registry().state = GameState::WIN;
-    break;
   }
 }
 

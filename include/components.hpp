@@ -22,7 +22,7 @@ struct Transform {
   glm::vec3 vel;
 };
 
-enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, LOSE, WIN };
+enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
 
 struct Character {
   std::queue<ActionKind> actions;
