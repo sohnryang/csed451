@@ -1,6 +1,6 @@
 add_subdirectory(ecs)
 
-add_executable(crossy_phonix game.cpp systems.cpp registry.cpp)
+add_executable(crossy_phonix game.cpp systems.cpp registry.cpp utils.cpp)
 target_link_libraries(crossy_phonix OpenGL::GL GLUT::GLUT GLEW::glew ECS)
 target_compile_definitions(crossy_phonix PRIVATE GL_SILENCE_DEPRECATION)
 if(DEFINED GLM_INCLUDE_DIR)
