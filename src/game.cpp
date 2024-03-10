@@ -162,6 +162,15 @@ void create_map() {
   create_car(-0.7f, 1, 0.2f, car_color);
   create_car(0.1f, 1, 0.2f, car_color);
   create_car(-0.3f, 2, -0.3f, car_color);
+  create_car(0.1f, 2, -0.3f, car_color);
+  create_car(-0.4f, 4, 0.25f, car_color);
+  create_car(0.6f, 4, 0.25f, car_color);
+  create_car(-1.0f, 5, 0.35f, car_color);
+  create_car(0.2f, 5, 0.35f, car_color);
+  create_car(0.7f, 5, 0.35f, car_color);
+  create_car(-0.8f, 6, -0.15f, car_color);
+  create_car(-0.1f, 6, -0.15f, car_color);
+  create_car(0.7f, 6, -0.15f, car_color);
 
   std::vector<std::tuple<glm::vec2, glm::vec2, components::ActionKind>>
       adjacent_pos = {{{1.0f - step_size, 1.0f},
