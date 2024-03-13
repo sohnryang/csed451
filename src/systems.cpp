@@ -184,7 +184,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto &transforms = ctx.registry().transforms;
   const auto &character_transform = transforms.at(character_id);
   const auto character_bb =
-      bounding_box(character_render_info, character_transform);
+      bounding_box_of_transformed(character_render_info, character_transform);
 
   if (action_restrictions.count(id)) {
     const auto action_restriction = action_restrictions.at(id);
@@ -204,7 +204,8 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     const auto &car_render_info = render_infos.at(id);
     const auto &car_vertices = car_render_info.vertices;
     const auto &car_transform = transforms.at(id);
-    const auto car_bb = bounding_box(car_render_info, car_transform);
+    const auto car_bb =
+        bounding_box_of_transformed(car_render_info, car_transform);
     if (intersect(character_bb, car_bb))
       ctx.registry().state = GameState::LOSE;
   }
