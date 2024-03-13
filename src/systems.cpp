@@ -36,7 +36,8 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
 void Render::post_update(ecs::Context<Registry> &ctx) {
   const auto state = ctx.registry().state;
   if (state != GameState::IN_PROGRESS) {
-    std::string text = state == GameState::LOSE ? "GAME OVER" : "YOU WIN!!";
+    const std::string text =
+        state == GameState::LOSE ? "GAME OVER" : "YOU WIN!!";
     glColor3f(1, 1, 0);
     glLineWidth(5);
 
@@ -56,8 +57,7 @@ void Render::post_update(ecs::Context<Registry> &ctx) {
 
 void Render::update_single(ecs::Context<Registry> &ctx,
                            ecs::entities::EntityId id) {
-  auto &registry = ctx.registry();
-
+  const auto &registry = ctx.registry();
   const auto &render_info = registry.render_infos.at(id);
   const auto &color = render_info.color;
   glColor3f(color.r, color.g, color.b);
@@ -65,7 +65,7 @@ void Render::update_single(ecs::Context<Registry> &ctx,
   glPushMatrix();
   if (registry.transforms.count(id)) {
     const auto &transform = registry.transforms.at(id);
-    glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
+    const glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
     glLoadMatrixf(glm::value_ptr(mat));
   } else
     glLoadIdentity();
@@ -220,7 +220,7 @@ bool Car::should_apply(ecs::Context<Registry> &ctx,
 
 void Car::update_single(ecs::Context<Registry> &ctx,
                         ecs::entities::EntityId id) {
-  auto &render_info = ctx.registry().render_infos.at(id);
+  const auto &render_info = ctx.registry().render_infos.at(id);
   auto &transform = ctx.registry().transforms.at(id);
   const auto &vertices = render_info.vertices;
 

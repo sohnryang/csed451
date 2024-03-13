@@ -77,11 +77,11 @@ void create_tree(size_t row_index, size_t col_index,
   ctx_ptr->registry().transforms[id] = {
       glm::vec3(actual_pos_x, actual_pos_y, 0.0f), glm::vec3(0)};
 
-  std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos = {
-      {{-1, 0}, components::ActionKind::MOVE_RIGHT},
-      {{1, 0}, components::ActionKind::MOVE_LEFT},
-      {{0, -1}, components::ActionKind::MOVE_UP},
-      {{0, 1}, components::ActionKind::MOVE_DOWN}};
+  const std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos =
+      {{{-1, 0}, components::ActionKind::MOVE_RIGHT},
+       {{1, 0}, components::ActionKind::MOVE_LEFT},
+       {{0, -1}, components::ActionKind::MOVE_UP},
+       {{0, 1}, components::ActionKind::MOVE_DOWN}};
   for (const auto &p : adjacent_pos) {
     const auto delta = p.first;
     const auto action = p.second;
@@ -172,7 +172,7 @@ void create_map() {
   create_car(-0.1f, 6, -0.15f, car_color);
   create_car(0.7f, 6, -0.15f, car_color);
 
-  std::vector<std::tuple<glm::vec2, glm::vec2, components::ActionKind>>
+  const std::vector<std::tuple<glm::vec2, glm::vec2, components::ActionKind>>
       adjacent_pos = {{{1.0f - step_size, 1.0f},
                        {1.0f, -1.0f},
                        components::ActionKind::MOVE_RIGHT},
