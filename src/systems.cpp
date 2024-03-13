@@ -14,9 +14,7 @@
 #include <gl/glut.h>
 #endif
 
-#include <algorithm>
 #include <cstddef>
-#include <iterator>
 #include <string>
 
 #include "components.hpp"
@@ -223,18 +221,8 @@ void Car::update_single(ecs::Context<Registry> &ctx,
                         ecs::entities::EntityId id) {
   const auto &render_info = ctx.registry().render_infos.at(id);
   auto &transform = ctx.registry().transforms.at(id);
-  const auto &vertices = render_info.vertices;
-
-  const glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
-  std::vector<glm::vec4> transformed;
-  std::transform(vertices.cbegin(), vertices.cend(),
-                 std::back_inserter(transformed),
-                 [&mat](const glm::vec4 &vertex) { return mat * vertex; });
-  float xmin = transformed[0][0], xmax = transformed[0][0];
-  for (const auto &v : transformed) {
-    xmin = std::min(xmin, v[0]);
-    xmax = std::max(xmax, v[0]);
-  }
+  const auto car_bb = bounding_box_of_transformed(render_info, transform);
+  const auto xmin = car_bb.first[0], xmax = car_bb.second[0];
 
   if (transform.vel[0] < 0.0f && xmax < -1.0f)
     transform.disp[0] += 3.0f;
