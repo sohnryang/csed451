@@ -10,7 +10,7 @@
 
 #include "components.hpp"
 
-BoundingBox
+components::BoundingBox
 bounding_box_of_transformed(const components::RenderInfo &render_info,
                             const components::Transform &transform) {
   const glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
@@ -32,7 +32,8 @@ bounding_box_of_transformed(const components::RenderInfo &render_info,
   return {glm::vec2(xmin, ymax), glm::vec2(xmax, ymin)};
 }
 
-bool intersect(const BoundingBox &box1, const BoundingBox &box2) {
+bool intersect(const components::BoundingBox &box1,
+               const components::BoundingBox &box2) {
   return box1.first[0] <= box2.second[0] && box2.first[0] <= box1.second[0] &&
          box1.second[1] <= box2.first[1] && box2.second[1] <= box1.first[1];
 }

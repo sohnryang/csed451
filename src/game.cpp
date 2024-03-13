@@ -93,7 +93,7 @@ void create_tree(size_t row_index, size_t col_index,
     const auto restriction_id = ctx_ptr->entity_manager().next_id();
 
     ctx_ptr->registry().action_restrictions[restriction_id] = {
-        top_left, bottom_right, {action}};
+        {top_left, bottom_right}, {action}};
   }
 }
 
@@ -172,23 +172,23 @@ void create_map() {
   create_car(-0.1f, 6, -0.15f, car_color);
   create_car(0.7f, 6, -0.15f, car_color);
 
-  const std::vector<std::tuple<glm::vec2, glm::vec2, components::ActionKind>>
-      adjacent_pos = {{{1.0f - step_size, 1.0f},
-                       {1.0f, -1.0f},
+  const std::vector<std::pair<components::BoundingBox, components::ActionKind>>
+      adjacent_pos = {{{
+                           {1.0f - step_size, 1.0f},
+                           {1.0f, -1.0f},
+                       },
                        components::ActionKind::MOVE_RIGHT},
-                      {{-1.0f, 1.0f},
-                       {-1.0f + step_size, -1.0f},
+                      {{{-1.0f, 1.0f}, {-1.0f + step_size, -1.0f}},
                        components::ActionKind::MOVE_LEFT},
-                      {{-1.0f, 1.0f},
-                       {1.0f, 1.0f - step_size},
+                      {{{-1.0f, 1.0f}, {1.0f, 1.0f - step_size}},
                        components::ActionKind::MOVE_UP},
-                      {{-1.0f, -1.0f + step_size},
-                       {1.0f, -1.0f},
+                      {{{-1.0f, -1.0f + step_size}, {1.0f, -1.0f}},
                        components::ActionKind::MOVE_DOWN}};
   for (const auto &p : adjacent_pos) {
     const auto restriction_id = ctx_ptr->entity_manager().next_id();
-    ctx_ptr->registry().action_restrictions[restriction_id] = {
-        std::get<0>(p), std::get<1>(p), {std::get<2>(p)}};
+    const auto &bb = p.first;
+    const auto &action = p.second;
+    ctx_ptr->registry().action_restrictions[restriction_id] = {bb, {action}};
   }
 }
 
@@ -210,8 +210,8 @@ void create_character() {
 
 void create_win_zone() {
   const auto id = ctx_ptr->entity_manager().next_id();
-  ctx_ptr->registry().win_zones[id] = {glm::vec2(-1, 1),
-                                       glm::vec2(1, 1 - step_size)};
+  ctx_ptr->registry().win_zones[id] = {
+      {glm::vec2(-1, 1), glm::vec2(1, 1 - step_size)}};
 }
 
 int main(int argc, char **argv) {

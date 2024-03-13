@@ -28,15 +28,15 @@ struct Character {
   std::queue<ActionKind> actions;
 };
 
+using BoundingBox = std::pair<glm::vec2, glm::vec2>;
+
 struct ActionRestriction {
-  glm::vec2 top_left;
-  glm::vec2 bottom_right;
+  BoundingBox bounding_box;
   std::vector<ActionKind> restrictions;
 };
 
 struct WinZone {
-  glm::vec2 top_left;
-  glm::vec2 bottom_right;
+  BoundingBox bounding_box;
 };
 
 struct Car {};

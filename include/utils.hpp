@@ -2,14 +2,11 @@
 
 #include <glm/glm.hpp>
 
-#include <utility>
-
 #include "components.hpp"
 
-using BoundingBox = std::pair<glm::vec2, glm::vec2>;
-
-BoundingBox
+components::BoundingBox
 bounding_box_of_transformed(const components::RenderInfo &render_info,
                             const components::Transform &transform);
 
-bool intersect(const BoundingBox &box1, const BoundingBox &box2);
+bool intersect(const components::BoundingBox &box1,
+               const components::BoundingBox &box2);
