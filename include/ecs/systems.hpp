@@ -40,7 +40,8 @@ public:
   entities::EntityManager &entity_manager();
   T &registry();
   std::vector<std::shared_ptr<systems::System<T>>> &systems();
-  std::chrono::time_point<std::chrono::system_clock> &last_updated();
+  const std::chrono::time_point<std::chrono::system_clock> &
+  last_updated() const;
   float delta_time() const;
 
   void update();
@@ -64,7 +65,8 @@ std::vector<std::shared_ptr<systems::System<T>>> &Context<T>::systems() {
 }
 
 template <class T>
-std::chrono::time_point<std::chrono::system_clock> &Context<T>::last_updated() {
+const std::chrono::time_point<std::chrono::system_clock> &
+Context<T>::last_updated() const {
   return _last_updated;
 }
 
