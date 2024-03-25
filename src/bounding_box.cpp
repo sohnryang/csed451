@@ -14,3 +14,7 @@ bool BoundingBox::intersect_with(const BoundingBox &other) const {
          bottom_right[1] <= other.top_left[1] &&
          other.bottom_right[1] <= top_left[1];
 }
+
+glm::vec2 BoundingBox::midpoint() const {
+  return 0.5f * (top_left + bottom_right);
+}
