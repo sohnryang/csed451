@@ -14,15 +14,12 @@ struct Color {
   float b;
 };
 
-struct Transform {
-  glm::mat4 mat;
-};
-
 struct RenderInfo {
   std::vector<glm::vec4> vertices;
   Color color;
+  glm::mat4 mat;
 
-  BoundingBox bounding_box_with_transform(const Transform &transform) const;
+  BoundingBox bounding_box() const;
 };
 
 enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };

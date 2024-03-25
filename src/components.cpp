@@ -10,13 +10,12 @@
 
 using namespace components;
 
-BoundingBox
-RenderInfo::bounding_box_with_transform(const Transform &transform) const {
+BoundingBox RenderInfo::bounding_box() const {
   std::vector<glm::vec4> transformed;
   const auto &vertices = this->vertices;
-  std::transform(
-      vertices.cbegin(), vertices.cend(), std::back_inserter(transformed),
-      [&transform](const glm::vec4 &vertex) { return transform.mat * vertex; });
+  std::transform(vertices.cbegin(), vertices.cend(),
+                 std::back_inserter(transformed),
+                 [this](const glm::vec4 &vertex) { return mat * vertex; });
 
   float xmin = transformed[0][0], xmax = transformed[0][0],
         ymin = transformed[0][1], ymax = transformed[0][1];

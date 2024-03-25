@@ -60,11 +60,7 @@ void Render::update_single(ecs::Context<Registry> &ctx,
   glColor3f(color.r, color.g, color.b);
 
   glPushMatrix();
-  if (registry.transforms.count(id)) {
-    const auto &transform = registry.transforms.at(id);
-    glLoadMatrixf(glm::value_ptr(transform.mat));
-  } else
-    glLoadIdentity();
+  glLoadMatrixf(glm::value_ptr(render_info.mat));
 
   glBegin(GL_POLYGON);
   const auto &vertices = render_info.vertices;
@@ -129,7 +125,7 @@ void Character::pre_update(ecs::Context<Registry> &ctx) {
 void Character::post_update(ecs::Context<Registry> &ctx) {
   const auto character_id = ctx.registry().character_id;
   auto &character = ctx.registry().characters[character_id];
-  auto &transform = ctx.registry().transforms[character_id];
+  auto &render_info = ctx.registry().render_infos[character_id];
   const float step_size = 2.0f / 8;
   if (character.actions.empty())
     return;
@@ -141,16 +137,18 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
 
   switch (action) {
   case components::ActionKind::MOVE_UP:
-    transform.mat *= glm::translate(glm::mat4(1), glm::vec3(0, step_size, 0));
+    render_info.mat *= glm::translate(glm::mat4(1), glm::vec3(0, step_size, 0));
     break;
   case components::ActionKind::MOVE_DOWN:
-    transform.mat *= glm::translate(glm::mat4(1), glm::vec3(0, -step_size, 0));
+    render_info.mat *=
+        glm::translate(glm::mat4(1), glm::vec3(0, -step_size, 0));
     break;
   case components::ActionKind::MOVE_LEFT:
-    transform.mat *= glm::translate(glm::mat4(1), glm::vec3(-step_size, 0, 0));
+    render_info.mat *=
+        glm::translate(glm::mat4(1), glm::vec3(-step_size, 0, 0));
     break;
   case components::ActionKind::MOVE_RIGHT:
-    transform.mat *= glm::translate(glm::mat4(1), glm::vec3(step_size, 0, 0));
+    render_info.mat *= glm::translate(glm::mat4(1), glm::vec3(step_size, 0, 0));
     break;
   }
 }
@@ -163,10 +161,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto &render_infos = ctx.registry().render_infos;
   const auto &character_render_info = render_infos.at(character_id);
   const auto &character_vertices = character_render_info.vertices;
-  const auto &transforms = ctx.registry().transforms;
-  const auto &character_transform = transforms.at(character_id);
-  const auto character_bb =
-      character_render_info.bounding_box_with_transform(character_transform);
+  const auto character_bb = character_render_info.bounding_box();
 
   if (action_restrictions.count(id)) {
     const auto action_restriction = action_restrictions.at(id);
@@ -181,9 +176,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   } else {
     const auto &car_render_info = render_infos.at(id);
     const auto &car_vertices = car_render_info.vertices;
-    const auto &car_transform = transforms.at(id);
-    const auto car_bb =
-        car_render_info.bounding_box_with_transform(car_transform);
+    const auto car_bb = car_render_info.bounding_box();
     if (character_bb.intersect_with(car_bb))
       ctx.registry().state = GameState::LOSE;
   }
@@ -199,10 +192,9 @@ bool Car::should_apply(ecs::Context<Registry> &ctx,
 
 void Car::update_single(ecs::Context<Registry> &ctx,
                         ecs::entities::EntityId id) {
-  const auto &render_info = ctx.registry().render_infos.at(id);
+  auto &render_info = ctx.registry().render_infos.at(id);
   auto &car = ctx.registry().cars[id];
-  auto &transform = ctx.registry().transforms.at(id);
-  const auto car_bb = render_info.bounding_box_with_transform(transform);
+  const auto car_bb = render_info.bounding_box();
   const auto xmin = car_bb.top_left[0], xmax = car_bb.bottom_right[0];
 
   if (car.vel[0] < 0.0f && xmax < -1.0f)
@@ -211,7 +203,7 @@ void Car::update_single(ecs::Context<Registry> &ctx,
     car.disp[0] -= 3.0f;
 
   car.disp += ctx.delta_time() * car.vel;
-  transform.mat = glm::translate(glm::mat4(1), car.disp);
+  render_info.mat = glm::translate(glm::mat4(1), car.disp);
 }
 
 Car::Car() {}

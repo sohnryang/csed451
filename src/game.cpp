@@ -59,7 +59,8 @@ void fill_map_row(std::size_t row_index, const components::Color &color) {
                   glm::vec4(top_right[0], bottom_left[1], 0.0, 1.0),
                   glm::vec4(top_right[0], top_right[1], 0.0, 1.0),
                   glm::vec4(bottom_left[0], top_right[1], 0.0, 1.0)},
-                 color});
+                 color,
+                 glm::mat4(1)});
 }
 
 void create_tree(std::size_t row_index, std::size_t col_index,
@@ -73,8 +74,7 @@ void create_tree(std::size_t row_index, std::size_t col_index,
        glm::vec4(tree_radius, -tree_radius, 0.5f, 1.0f),
        glm::vec4(tree_radius, tree_radius, 0.5f, 1.0f),
        glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)},
-      color};
-  ctx_ptr->registry().transforms[id] = {
+      color,
       glm::translate(glm::mat4(1), glm::vec3(tree_pos[0], tree_pos[1], 0))};
 
   const std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos =
@@ -108,7 +108,8 @@ void create_road_line(const std::size_t row_index,
           glm::vec4(pos_x + step_size * 0.6, pos_y, 0.1, 1.0),
           glm::vec4(pos_x + step_size * 0.6, pos_y + line_width, 0.1, 1.0),
           glm::vec4(pos_x, pos_y + line_width, 0.1, 1.0)},
-         color});
+         color,
+         glm::mat4(1)});
   }
 }
 
@@ -124,8 +125,8 @@ void create_car(const float pos_x, const std::size_t row_index, const float vel,
        glm::vec4(car_radius_x, -car_radius_y, 0.5f, 1.0f),
        glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
        glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)},
-      color};
-  ctx_ptr->registry().transforms[id] = {glm::mat4(1)};
+      color,
+      glm::mat4(1)};
 
   ctx_ptr->registry().cars[id] = {glm::vec3(pos_x, actual_pos_y, 0.0f),
                                   glm::vec3(vel, 0.0, 0.0)};
@@ -196,16 +197,16 @@ void create_character() {
   const auto id = ctx_ptr->entity_manager().next_id();
   const auto character_radius = 0.1f;
   const components::Color color = {1.0f, 1.0f, 1.0f};
+  const auto character_pos = grid_to_world_cell(4, 0).midpoint();
   ctx_ptr->registry().characters[id] = {};
   ctx_ptr->registry().render_infos[id] = {
       {glm::vec4(-character_radius, -character_radius, 0.5f, 1.0f),
        glm::vec4(character_radius, -character_radius, 0.5f, 1.0f),
        glm::vec4(character_radius, character_radius, 0.5f, 1.0f),
        glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)},
-      color};
-  const auto character_pos = grid_to_world_cell(4, 0).midpoint();
-  ctx_ptr->registry().transforms[id] = {glm::translate(
-      glm::mat4(1), glm::vec3(character_pos[0], character_pos[1], 0.0f))};
+      color,
+      glm::translate(glm::mat4(1),
+                     glm::vec3(character_pos[0], character_pos[1], 0.0f))};
   ctx_ptr->registry().character_id = id;
 }
 

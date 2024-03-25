@@ -12,7 +12,6 @@ enum class GameState { IN_PROGRESS, LOSE, WIN };
 struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::RenderInfo>
       render_infos;
-  std::unordered_map<ecs::entities::EntityId, components::Transform> transforms;
   std::unordered_map<ecs::entities::EntityId, components::Character> characters;
   std::unordered_map<ecs::entities::EntityId, components::ActionRestriction>
       action_restrictions;
