@@ -172,7 +172,7 @@ void create_map() {
   create_car(-0.1f, 6, -0.15f, car_color);
   create_car(0.7f, 6, -0.15f, car_color);
 
-  const std::vector<std::pair<components::BoundingBox, components::ActionKind>>
+  const std::vector<std::pair<BoundingBox, components::ActionKind>>
       adjacent_pos = {{{
                            {1.0f - step_size, 1.0f},
                            {1.0f, -1.0f},

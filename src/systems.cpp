@@ -19,7 +19,6 @@
 
 #include "components.hpp"
 #include "registry.hpp"
-#include "utils.hpp"
 
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,
@@ -182,25 +181,25 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto &transforms = ctx.registry().transforms;
   const auto &character_transform = transforms.at(character_id);
   const auto character_bb =
-      bounding_box_of_transformed(character_render_info, character_transform);
+      character_render_info.bounding_box_with_transform(character_transform);
 
   if (action_restrictions.count(id)) {
     const auto action_restriction = action_restrictions.at(id);
-    if (intersect(character_bb, action_restriction.bounding_box)) {
+    if (character_bb.intersect_with(action_restriction.bounding_box)) {
       for (const auto &r : action_restriction.restrictions)
         blocked_actions.insert(r);
     }
   } else if (win_zones.count(id)) {
     const auto &win_zone = win_zones.at(id);
-    if (intersect(character_bb, win_zone.bounding_box))
+    if (character_bb.intersect_with(win_zone.bounding_box))
       ctx.registry().state = GameState::WIN;
   } else {
     const auto &car_render_info = render_infos.at(id);
     const auto &car_vertices = car_render_info.vertices;
     const auto &car_transform = transforms.at(id);
     const auto car_bb =
-        bounding_box_of_transformed(car_render_info, car_transform);
-    if (intersect(character_bb, car_bb))
+        car_render_info.bounding_box_with_transform(car_transform);
+    if (character_bb.intersect_with(car_bb))
       ctx.registry().state = GameState::LOSE;
   }
 }
@@ -217,8 +216,8 @@ void Car::update_single(ecs::Context<Registry> &ctx,
                         ecs::entities::EntityId id) {
   const auto &render_info = ctx.registry().render_infos.at(id);
   auto &transform = ctx.registry().transforms.at(id);
-  const auto car_bb = bounding_box_of_transformed(render_info, transform);
-  const auto xmin = car_bb.first[0], xmax = car_bb.second[0];
+  const auto car_bb = render_info.bounding_box_with_transform(transform);
+  const auto xmin = car_bb.top_left[0], xmax = car_bb.bottom_right[0];
 
   if (transform.vel[0] < 0.0f && xmax < -1.0f)
     transform.disp[0] += 3.0f;

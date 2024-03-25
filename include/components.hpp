@@ -5,6 +5,8 @@
 #include <queue>
 #include <vector>
 
+#include "bounding_box.hpp"
+
 namespace components {
 struct Color {
   float r;
@@ -12,14 +14,16 @@ struct Color {
   float b;
 };
 
-struct RenderInfo {
-  std::vector<glm::vec4> vertices;
-  Color color;
-};
-
 struct Transform {
   glm::vec3 disp;
   glm::vec3 vel;
+};
+
+struct RenderInfo {
+  std::vector<glm::vec4> vertices;
+  Color color;
+
+  BoundingBox bounding_box_with_transform(const Transform &transform) const;
 };
 
 enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
@@ -27,8 +31,6 @@ enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
 struct Character {
   std::queue<ActionKind> actions;
 };
-
-using BoundingBox = std::pair<glm::vec2, glm::vec2>;
 
 struct ActionRestriction {
   BoundingBox bounding_box;

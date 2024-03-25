@@ -1,6 +1,6 @@
-#include "utils.hpp"
+#include "components.hpp"
 
-#include <glm/glm.hpp>
+#include "bounding_box.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 
@@ -8,14 +8,13 @@
 #include <iterator>
 #include <vector>
 
-#include "components.hpp"
+using namespace components;
 
-components::BoundingBox
-bounding_box_of_transformed(const components::RenderInfo &render_info,
-                            const components::Transform &transform) {
+BoundingBox
+RenderInfo::bounding_box_with_transform(const Transform &transform) const {
   const glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
   std::vector<glm::vec4> transformed;
-  const auto &vertices = render_info.vertices;
+  const auto &vertices = this->vertices;
   std::transform(vertices.cbegin(), vertices.cend(),
                  std::back_inserter(transformed),
                  [&mat](const glm::vec4 &vertex) { return mat * vertex; });
@@ -29,11 +28,5 @@ bounding_box_of_transformed(const components::RenderInfo &render_info,
     ymax = std::max(ymax, v[1]);
   }
 
-  return {glm::vec2(xmin, ymax), glm::vec2(xmax, ymin)};
-}
-
-bool intersect(const components::BoundingBox &box1,
-               const components::BoundingBox &box2) {
-  return box1.first[0] <= box2.second[0] && box2.first[0] <= box1.second[0] &&
-         box1.second[1] <= box2.first[1] && box2.second[1] <= box1.first[1];
+  return {{xmin, ymax}, {xmax, ymin}};
 }
