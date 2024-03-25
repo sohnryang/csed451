@@ -81,15 +81,6 @@ Render::Render() {
   glClearDepth(1);
 }
 
-bool Transform::should_apply(ecs::Context<Registry> &ctx,
-                             ecs::entities::EntityId id) {
-  return ctx.registry().state == GameState::IN_PROGRESS &&
-         ctx.registry().transforms.count(id);
-}
-
-void Transform::update_single(ecs::Context<Registry> &ctx,
-                              ecs::entities::EntityId id) {}
-
 bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
                                 ecs::entities::EntityId id) {
   return ctx.registry().state == GameState::IN_PROGRESS &&

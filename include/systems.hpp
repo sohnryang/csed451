@@ -28,15 +28,6 @@ public:
   Render();
 };
 
-class Transform : public ecs::systems::System<Registry> {
-private:
-  bool should_apply(ecs::Context<Registry> &ctx,
-                    ecs::entities::EntityId id) override;
-
-  void update_single(ecs::Context<Registry> &ctx,
-                     ecs::entities::EntityId id) override;
-};
-
 enum class InputKind { UP, DOWN, LEFT, RIGHT };
 
 class InputHandler : public ecs::systems::System<Registry> {
