@@ -1,7 +1,14 @@
 add_subdirectory(ecs)
 
-add_executable(crossy_ponix game.cpp components.cpp systems.cpp registry.cpp
-                            bounding_box.cpp grid.cpp)
+add_executable(
+  crossy_ponix
+  game.cpp
+  components.cpp
+  systems.cpp
+  registry.cpp
+  bounding_box.cpp
+  grid.cpp
+  scene.cpp)
 target_link_libraries(crossy_ponix OpenGL::GL GLUT::GLUT GLEW::glew ECS)
 target_compile_definitions(crossy_ponix PRIVATE GL_SILENCE_DEPRECATION)
 if(DEFINED GLM_INCLUDE_DIR)
