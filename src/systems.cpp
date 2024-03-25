@@ -41,7 +41,7 @@ void Render::post_update(ecs::Context<Registry> &ctx) {
     glPushMatrix();
     const auto char_width = 0.2f;
 
-    for (size_t i = 0; i < text.length(); i++) {
+    for (std::size_t i = 0; i < text.length(); i++) {
       glLoadIdentity();
       glTranslatef(-0.95f + i * char_width, 0.0, 0.75);
       glScalef(1.0f / 400, 1.0f / 400, 1);

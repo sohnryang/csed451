@@ -51,7 +51,7 @@ void keyboard_handle(int key, int x, int y) {
 const size_t grid_size = 8;
 const float step_size = 2.0f / grid_size;
 
-void fill_map_row(size_t row_index, const components::Color &color) {
+void fill_map_row(std::size_t row_index, const components::Color &color) {
   ctx_ptr->registry().add_render_info(
       *ctx_ptr,
       {{glm::vec4(-1.0, -1.0 + step_size * row_index, 0.0, 1.0),
@@ -61,7 +61,7 @@ void fill_map_row(size_t row_index, const components::Color &color) {
        color});
 }
 
-void create_tree(size_t row_index, size_t col_index,
+void create_tree(std::size_t row_index, std::size_t col_index,
                  const components::Color &color) {
   const auto id = ctx_ptr->entity_manager().next_id();
   // might move this constant (0.75) to somewhere
@@ -97,7 +97,8 @@ void create_tree(size_t row_index, size_t col_index,
   }
 }
 
-void create_road_line(const size_t row_index, const components::Color &color) {
+void create_road_line(const std::size_t row_index,
+                      const components::Color &color) {
   const float line_width = step_size * 0.05f;
   const float pos_y = -1.0f + step_size * (row_index + 1) - line_width / 2.0;
   // TODO: randomize initial pos_x value?
@@ -112,7 +113,7 @@ void create_road_line(const size_t row_index, const components::Color &color) {
   }
 }
 
-void create_car(const float pos_x, const size_t row_index, const float vel,
+void create_car(const float pos_x, const std::size_t row_index, const float vel,
                 const components::Color &color) {
   const auto id = ctx_ptr->entity_manager().next_id();
   // might move this constant (0.75) to somewhere

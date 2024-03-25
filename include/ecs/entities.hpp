@@ -5,7 +5,7 @@
 
 namespace ecs {
 namespace entities {
-using EntityId = size_t;
+using EntityId = std::size_t;
 
 class EntityManager {
 private:
