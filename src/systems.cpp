@@ -62,8 +62,7 @@ void Render::update_single(ecs::Context<Registry> &ctx,
   glPushMatrix();
   if (registry.transforms.count(id)) {
     const auto &transform = registry.transforms.at(id);
-    const glm::mat4 mat = glm::translate(glm::mat4(1), transform.disp);
-    glLoadMatrixf(glm::value_ptr(mat));
+    glLoadMatrixf(glm::value_ptr(transform.mat));
   } else
     glLoadIdentity();
 
@@ -89,12 +88,7 @@ bool Transform::should_apply(ecs::Context<Registry> &ctx,
 }
 
 void Transform::update_single(ecs::Context<Registry> &ctx,
-                              ecs::entities::EntityId id) {
-  auto &transforms = ctx.registry().transforms;
-  const auto &vel = transforms.at(id).vel;
-  auto &disp = transforms[id].disp;
-  disp += ctx.delta_time() * vel;
-}
+                              ecs::entities::EntityId id) {}
 
 bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
                                 ecs::entities::EntityId id) {
@@ -156,16 +150,16 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
 
   switch (action) {
   case components::ActionKind::MOVE_UP:
-    transform.disp[1] += step_size;
+    transform.mat *= glm::translate(glm::mat4(1), glm::vec3(0, step_size, 0));
     break;
   case components::ActionKind::MOVE_DOWN:
-    transform.disp[1] -= step_size;
+    transform.mat *= glm::translate(glm::mat4(1), glm::vec3(0, -step_size, 0));
     break;
   case components::ActionKind::MOVE_LEFT:
-    transform.disp[0] -= step_size;
+    transform.mat *= glm::translate(glm::mat4(1), glm::vec3(-step_size, 0, 0));
     break;
   case components::ActionKind::MOVE_RIGHT:
-    transform.disp[0] += step_size;
+    transform.mat *= glm::translate(glm::mat4(1), glm::vec3(step_size, 0, 0));
     break;
   }
 }
@@ -215,14 +209,18 @@ bool Car::should_apply(ecs::Context<Registry> &ctx,
 void Car::update_single(ecs::Context<Registry> &ctx,
                         ecs::entities::EntityId id) {
   const auto &render_info = ctx.registry().render_infos.at(id);
+  auto &car = ctx.registry().cars[id];
   auto &transform = ctx.registry().transforms.at(id);
   const auto car_bb = render_info.bounding_box_with_transform(transform);
   const auto xmin = car_bb.top_left[0], xmax = car_bb.bottom_right[0];
 
-  if (transform.vel[0] < 0.0f && xmax < -1.0f)
-    transform.disp[0] += 3.0f;
-  else if (transform.vel[0] > 0.0f && xmin > 1.0f)
-    transform.disp[0] -= 3.0f;
+  if (car.vel[0] < 0.0f && xmax < -1.0f)
+    car.disp[0] += 3.0f;
+  else if (car.vel[0] > 0.0f && xmin > 1.0f)
+    car.disp[0] -= 3.0f;
+
+  car.disp += ctx.delta_time() * car.vel;
+  transform.mat = glm::translate(glm::mat4(1), car.disp);
 }
 
 Car::Car() {}

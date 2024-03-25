@@ -5,6 +5,8 @@
 
 #include <glm/glm.hpp>
 
+#include <glm/ext/matrix_transform.hpp>
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -73,7 +75,7 @@ void create_tree(std::size_t row_index, std::size_t col_index,
        glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)},
       color};
   ctx_ptr->registry().transforms[id] = {
-      glm::vec3(tree_pos[0], tree_pos[1], 0.0f), glm::vec3(0)};
+      glm::translate(glm::mat4(1), glm::vec3(tree_pos[0], tree_pos[1], 0))};
 
   const std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos =
       {{{-1, 0}, components::ActionKind::MOVE_RIGHT},
@@ -123,10 +125,10 @@ void create_car(const float pos_x, const std::size_t row_index, const float vel,
        glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
        glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)},
       color};
-  ctx_ptr->registry().transforms[id] = {glm::vec3(pos_x, actual_pos_y, 0.0f),
-                                        glm::vec3(vel, 0.0, 0.0)};
+  ctx_ptr->registry().transforms[id] = {glm::mat4(1)};
 
-  ctx_ptr->registry().cars[id] = {};
+  ctx_ptr->registry().cars[id] = {glm::vec3(pos_x, actual_pos_y, 0.0f),
+                                  glm::vec3(vel, 0.0, 0.0)};
 }
 
 void create_map() {
@@ -202,8 +204,8 @@ void create_character() {
        glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)},
       color};
   const auto character_pos = grid_to_world_cell(4, 0).midpoint();
-  ctx_ptr->registry().transforms[id] = {
-      glm::vec3(character_pos[0], character_pos[1], 0.0f), glm::vec3(0)};
+  ctx_ptr->registry().transforms[id] = {glm::translate(
+      glm::mat4(1), glm::vec3(character_pos[0], character_pos[1], 0.0f))};
   ctx_ptr->registry().character_id = id;
 }
 

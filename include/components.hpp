@@ -15,8 +15,7 @@ struct Color {
 };
 
 struct Transform {
-  glm::vec3 disp;
-  glm::vec3 vel;
+  glm::mat4 mat;
 };
 
 struct RenderInfo {
@@ -41,5 +40,8 @@ struct WinZone {
   BoundingBox bounding_box;
 };
 
-struct Car {};
+struct Car {
+  glm::vec3 disp;
+  glm::vec3 vel;
+};
 } // namespace components
