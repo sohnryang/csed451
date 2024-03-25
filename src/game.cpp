@@ -1,4 +1,3 @@
-#include "components.hpp"
 #include "ecs/systems.hpp"
 
 #include <memory>
@@ -12,6 +11,7 @@
 #include <gl/glut.h>
 #endif
 
+#include "components.hpp"
 #include "registry.hpp"
 #include "systems.hpp"
 
