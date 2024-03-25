@@ -192,18 +192,15 @@ bool Car::should_apply(ecs::Context<Registry> &ctx,
 
 void Car::update_single(ecs::Context<Registry> &ctx,
                         ecs::entities::EntityId id) {
-  auto &render_info = ctx.registry().render_infos.at(id);
+  auto &render_info = ctx.registry().render_infos[id];
   auto &car = ctx.registry().cars[id];
   const auto car_bb = render_info.bounding_box();
   const auto xmin = car_bb.top_left[0], xmax = car_bb.bottom_right[0];
-
   if (car.vel[0] < 0.0f && xmax < -1.0f)
-    car.disp[0] += 3.0f;
+    render_info.mat = glm::translate(render_info.mat, glm::vec3(3.0f, 0, 0));
   else if (car.vel[0] > 0.0f && xmin > 1.0f)
-    car.disp[0] -= 3.0f;
-
-  car.disp += ctx.delta_time() * car.vel;
-  render_info.mat = glm::translate(glm::mat4(1), car.disp);
+    render_info.mat = glm::translate(render_info.mat, glm::vec3(-3.0f, 0, 0));
+  render_info.mat = glm::translate(render_info.mat, ctx.delta_time() * car.vel);
 }
 
 Car::Car() {}

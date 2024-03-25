@@ -126,10 +126,9 @@ void create_car(const float pos_x, const std::size_t row_index, const float vel,
        glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
        glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)},
       color,
-      glm::mat4(1)};
+      glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f))};
 
-  ctx_ptr->registry().cars[id] = {glm::vec3(pos_x, actual_pos_y, 0.0f),
-                                  glm::vec3(vel, 0.0, 0.0)};
+  ctx_ptr->registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
 }
 
 void create_map() {

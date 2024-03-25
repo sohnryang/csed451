@@ -38,7 +38,6 @@ struct WinZone {
 };
 
 struct Car {
-  glm::vec3 disp;
   glm::vec3 vel;
 };
 } // namespace components
