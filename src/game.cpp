@@ -12,6 +12,7 @@
 #endif
 
 #include "components.hpp"
+#include "grid.hpp"
 #include "registry.hpp"
 #include "systems.hpp"
 
@@ -48,17 +49,15 @@ void keyboard_handle(int key, int x, int y) {
 // on the road row, randomly choose the direction and speed of the cars
 // draw dotted line between continuous road rows
 
-const size_t grid_size = 8;
-const float step_size = 2.0f / grid_size;
-
 void fill_map_row(std::size_t row_index, const components::Color &color) {
+  const auto bottom_left = grid_to_world(0, row_index),
+             top_right = grid_to_world(8, row_index + 1);
   ctx_ptr->registry().add_render_info(
-      *ctx_ptr,
-      {{glm::vec4(-1.0, -1.0 + step_size * row_index, 0.0, 1.0),
-        glm::vec4(1.0, -1.0 + step_size * row_index, 0.0, 1.0),
-        glm::vec4(1.0, -1.0 + step_size * (row_index + 1), 0.0, 1.0),
-        glm::vec4(-1.0, -1.0 + step_size * (row_index + 1), 0.0, 1.0)},
-       color});
+      *ctx_ptr, {{glm::vec4(bottom_left[0], bottom_left[1], 0.0, 1.0),
+                  glm::vec4(top_right[0], bottom_left[1], 0.0, 1.0),
+                  glm::vec4(top_right[0], top_right[1], 0.0, 1.0),
+                  glm::vec4(bottom_left[0], top_right[1], 0.0, 1.0)},
+                 color});
 }
 
 void create_tree(std::size_t row_index, std::size_t col_index,
@@ -66,8 +65,7 @@ void create_tree(std::size_t row_index, std::size_t col_index,
   const auto id = ctx_ptr->entity_manager().next_id();
   // might move this constant (0.75) to somewhere
   const float tree_radius = step_size * 0.75f / 2.0f;
-  const float actual_pos_x = -1.0 + step_size * col_index + step_size * 0.5f;
-  const float actual_pos_y = -1.0 + step_size * row_index + step_size * 0.5f;
+  const auto tree_pos = grid_to_world_cell(col_index, row_index).midpoint();
   ctx_ptr->registry().render_infos[id] = {
       {glm::vec4(-tree_radius, -tree_radius, 0.5f, 1.0f),
        glm::vec4(tree_radius, -tree_radius, 0.5f, 1.0f),
@@ -75,7 +73,7 @@ void create_tree(std::size_t row_index, std::size_t col_index,
        glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)},
       color};
   ctx_ptr->registry().transforms[id] = {
-      glm::vec3(actual_pos_x, actual_pos_y, 0.0f), glm::vec3(0)};
+      glm::vec3(tree_pos[0], tree_pos[1], 0.0f), glm::vec3(0)};
 
   const std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos =
       {{{-1, 0}, components::ActionKind::MOVE_RIGHT},
@@ -85,8 +83,7 @@ void create_tree(std::size_t row_index, std::size_t col_index,
   for (const auto &p : adjacent_pos) {
     const auto delta = p.first;
     const auto action = p.second;
-    const auto rect_center =
-        step_size * delta + glm::vec2(actual_pos_x, actual_pos_y);
+    const auto rect_center = step_size * delta + tree_pos;
     const auto diagonal = glm::vec2(tree_radius, -tree_radius);
     const auto top_left = rect_center - diagonal;
     const auto bottom_right = rect_center + diagonal;
@@ -204,8 +201,9 @@ void create_character() {
        glm::vec4(character_radius, character_radius, 0.5f, 1.0f),
        glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)},
       color};
-  ctx_ptr->registry().transforms[id] = {glm::vec3(0.125f, -0.875f, 0.0f),
-                                        glm::vec3(0)};
+  const auto character_pos = grid_to_world_cell(4, 0).midpoint();
+  ctx_ptr->registry().transforms[id] = {
+      glm::vec3(character_pos[0], character_pos[1], 0.0f), glm::vec3(0)};
   ctx_ptr->registry().character_id = id;
 }
 
