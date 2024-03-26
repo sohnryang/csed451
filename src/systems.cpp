@@ -233,7 +233,7 @@ void Car::update_single(ecs::Context<Registry> &ctx,
   render_info.mat = glm::translate(render_info.mat, disp);
 
   const auto &wheel_ids = ctx.entity_manager().entity_graph()[id].children;
-  const auto angle = disp[0] / WHEEL_RADIUS;
+  const auto angle = -disp[0] / WHEEL_RADIUS;
   for (const auto wheel_id : wheel_ids) {
     auto &wheel_render_info = render_infos[wheel_id];
     wheel_render_info.mat =
