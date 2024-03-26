@@ -39,13 +39,12 @@ void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
 void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
                  std::size_t col_index, const components::Color &color) {
   // might move this constant (0.75) to somewhere
-  const float tree_radius = STEP_SIZE * 0.75f / 2.0f;
   const auto tree_pos = grid_to_world_cell(col_index, row_index).midpoint();
   std::vector<glm::vec4> vertices = {
-      glm::vec4(-tree_radius, -tree_radius, 0.5f, 1.0f),
-      glm::vec4(tree_radius, -tree_radius, 0.5f, 1.0f),
-      glm::vec4(tree_radius, tree_radius, 0.5f, 1.0f),
-      glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)};
+      glm::vec4(-TREE_RADIUS, -TREE_RADIUS, 0.5f, 1.0f),
+      glm::vec4(TREE_RADIUS, -TREE_RADIUS, 0.5f, 1.0f),
+      glm::vec4(TREE_RADIUS, TREE_RADIUS, 0.5f, 1.0f),
+      glm::vec4(-TREE_RADIUS, TREE_RADIUS, 0.5f, 1.0f)};
   const auto id = ctx.registry().add_render_info(
       ctx,
       {std::make_unique<components::VertexVector>(std::move(vertices)), color,
@@ -60,7 +59,7 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
     const auto delta = p.first;
     const auto action = p.second;
     const auto rect_center = STEP_SIZE * delta + tree_pos;
-    const auto diagonal = glm::vec2(tree_radius, -tree_radius);
+    const auto diagonal = glm::vec2(TREE_RADIUS, -TREE_RADIUS);
     const auto top_left = rect_center - diagonal;
     const auto bottom_right = rect_center + diagonal;
     const auto restriction_id = ctx.entity_manager().next_id();
@@ -72,15 +71,15 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
 
 void create_road_line(ecs::Context<Registry> &ctx, const std::size_t row_index,
                       const components::Color &color) {
-  const float line_width = STEP_SIZE * 0.05f;
-  const float pos_y = grid_ticks_to_float(row_index + 1) - line_width / 2.0;
+  const float pos_y =
+      grid_ticks_to_float(row_index + 1) - ROAD_LINE_WIDTH / 2.0;
   // TODO: randomize initial pos_x value?
   for (float pos_x = -1.06; pos_x < 1.0; pos_x += STEP_SIZE * 0.87) {
     std::vector<glm::vec4> vertices = {
         glm::vec4(pos_x, pos_y, 0.1, 1.0),
         glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y, 0.1, 1.0),
-        glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y + line_width, 0.1, 1.0),
-        glm::vec4(pos_x, pos_y + line_width, 0.1, 1.0)};
+        glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y + ROAD_LINE_WIDTH, 0.1, 1.0),
+        glm::vec4(pos_x, pos_y + ROAD_LINE_WIDTH, 0.1, 1.0)};
     ctx.registry().add_render_info(
         ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
               color, glm::mat4(1)});
@@ -91,14 +90,12 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,
                 const components::Color &color) {
   // might move this constant (0.75) to somewhere
-  const float car_radius_x = STEP_SIZE * 1.5f / 2.0f;
-  const float car_radius_y = STEP_SIZE * 0.7f / 2.0f;
   const float actual_pos_y = grid_ticks_to_float(row_index) + STEP_SIZE * 0.5f;
   std::vector<glm::vec4> vertices = {
-      glm::vec4(-car_radius_x, -car_radius_y, 0.5f, 1.0f),
-      glm::vec4(car_radius_x, -car_radius_y, 0.5f, 1.0f),
-      glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
-      glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)};
+      glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+      glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+      glm::vec4(CAR_RADIUS_X, CAR_RADIUS_Y, 0.5f, 1.0f),
+      glm::vec4(-CAR_RADIUS_X, CAR_RADIUS_Y, 0.5f, 1.0f)};
   const auto id = ctx.registry().add_render_info(
       ctx,
       {std::make_unique<components::VertexVector>(std::move(vertices)), color,
@@ -107,45 +104,38 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
 }
 
 void create_map(ecs::Context<Registry> &ctx) {
-  const components::Color grass_color = {68.0 / 255, 132.0 / 255, 46.0 / 255},
-                          road_color = {172.0 / 255, 172.0 / 255, 172.0 / 255},
-                          tree_color = {200.0 / 255, 131.0 / 255, 0.0 / 255},
-                          road_line_color = {255.0 / 255, 255.0 / 255,
-                                             255.0 / 255},
-                          car_color = {66.0 / 255, 147.0 / 255, 252.0 / 255};
+  fill_map_row(ctx, 0, GRASS_COLOR);
+  fill_map_row(ctx, 1, ROAD_COLOR);
+  fill_map_row(ctx, 2, ROAD_COLOR);
+  fill_map_row(ctx, 3, GRASS_COLOR);
+  fill_map_row(ctx, 4, ROAD_COLOR);
+  fill_map_row(ctx, 5, ROAD_COLOR);
+  fill_map_row(ctx, 6, ROAD_COLOR);
+  fill_map_row(ctx, 7, GRASS_COLOR);
 
-  fill_map_row(ctx, 0, grass_color);
-  fill_map_row(ctx, 1, road_color);
-  fill_map_row(ctx, 2, road_color);
-  fill_map_row(ctx, 3, grass_color);
-  fill_map_row(ctx, 4, road_color);
-  fill_map_row(ctx, 5, road_color);
-  fill_map_row(ctx, 6, road_color);
-  fill_map_row(ctx, 7, grass_color);
+  create_tree(ctx, 3, 0, TREE_COLOR);
+  create_tree(ctx, 3, 3, TREE_COLOR);
+  create_tree(ctx, 3, 6, TREE_COLOR);
+  create_tree(ctx, 7, 2, TREE_COLOR);
+  create_tree(ctx, 7, 3, TREE_COLOR);
+  create_tree(ctx, 7, 5, TREE_COLOR);
 
-  create_tree(ctx, 3, 0, tree_color);
-  create_tree(ctx, 3, 3, tree_color);
-  create_tree(ctx, 3, 6, tree_color);
-  create_tree(ctx, 7, 2, tree_color);
-  create_tree(ctx, 7, 3, tree_color);
-  create_tree(ctx, 7, 5, tree_color);
+  create_road_line(ctx, 1, ROAD_LINE_COLOR);
+  create_road_line(ctx, 4, ROAD_LINE_COLOR);
+  create_road_line(ctx, 5, ROAD_LINE_COLOR);
 
-  create_road_line(ctx, 1, road_line_color);
-  create_road_line(ctx, 4, road_line_color);
-  create_road_line(ctx, 5, road_line_color);
-
-  create_car(ctx, -0.7f, 1, 0.2f, car_color);
-  create_car(ctx, 0.1f, 1, 0.2f, car_color);
-  create_car(ctx, -0.3f, 2, -0.3f, car_color);
-  create_car(ctx, 0.1f, 2, -0.3f, car_color);
-  create_car(ctx, -0.4f, 4, 0.25f, car_color);
-  create_car(ctx, 0.6f, 4, 0.25f, car_color);
-  create_car(ctx, -1.0f, 5, 0.35f, car_color);
-  create_car(ctx, 0.2f, 5, 0.35f, car_color);
-  create_car(ctx, 0.7f, 5, 0.35f, car_color);
-  create_car(ctx, -0.8f, 6, -0.15f, car_color);
-  create_car(ctx, -0.1f, 6, -0.15f, car_color);
-  create_car(ctx, 0.7f, 6, -0.15f, car_color);
+  create_car(ctx, -0.7f, 1, 0.2f, CAR_COLOR);
+  create_car(ctx, 0.1f, 1, 0.2f, CAR_COLOR);
+  create_car(ctx, -0.3f, 2, -0.3f, CAR_COLOR);
+  create_car(ctx, 0.1f, 2, -0.3f, CAR_COLOR);
+  create_car(ctx, -0.4f, 4, 0.25f, CAR_COLOR);
+  create_car(ctx, 0.6f, 4, 0.25f, CAR_COLOR);
+  create_car(ctx, -1.0f, 5, 0.35f, CAR_COLOR);
+  create_car(ctx, 0.2f, 5, 0.35f, CAR_COLOR);
+  create_car(ctx, 0.7f, 5, 0.35f, CAR_COLOR);
+  create_car(ctx, -0.8f, 6, -0.15f, CAR_COLOR);
+  create_car(ctx, -0.1f, 6, -0.15f, CAR_COLOR);
+  create_car(ctx, 0.7f, 6, -0.15f, CAR_COLOR);
 
   const std::vector<std::pair<BoundingBox, components::ActionKind>>
       adjacent_pos = {{{
@@ -168,19 +158,17 @@ void create_map(ecs::Context<Registry> &ctx) {
 }
 
 void create_character(ecs::Context<Registry> &ctx) {
-  const auto character_radius = 0.1f;
-  const components::Color color = {1.0f, 1.0f, 1.0f};
   const auto character_pos = grid_to_world_cell(4, 0).midpoint();
   std::vector<glm::vec4> vertices = {
-      glm::vec4(-character_radius, -character_radius, 0.5f, 1.0f),
-      glm::vec4(character_radius, -character_radius, 0.5f, 1.0f),
-      glm::vec4(character_radius, character_radius, 0.5f, 1.0f),
-      glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)};
+      glm::vec4(-CHARACTER_RADIUS, -CHARACTER_RADIUS, 0.5f, 1.0f),
+      glm::vec4(CHARACTER_RADIUS, -CHARACTER_RADIUS, 0.5f, 1.0f),
+      glm::vec4(CHARACTER_RADIUS, CHARACTER_RADIUS, 0.5f, 1.0f),
+      glm::vec4(-CHARACTER_RADIUS, CHARACTER_RADIUS, 0.5f, 1.0f)};
   const auto id = ctx.registry().add_render_info(
-      ctx,
-      {std::make_unique<components::VertexVector>(std::move(vertices)), color,
-       glm::translate(glm::mat4(1),
-                      glm::vec3(character_pos[0], character_pos[1], 0.0f))});
+      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
+            CHARACTER_COLOR,
+            glm::translate(glm::mat4(1), glm::vec3(character_pos[0],
+                                                   character_pos[1], 0.0f))});
   ctx.registry().characters[id] = {};
   ctx.registry().character_id = id;
 }
