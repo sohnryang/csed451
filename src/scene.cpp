@@ -36,17 +36,17 @@ void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
 
 void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
                  std::size_t col_index, const components::Color &color) {
-  const auto id = ctx.entity_manager().next_id();
   // might move this constant (0.75) to somewhere
   const float tree_radius = step_size * 0.75f / 2.0f;
   const auto tree_pos = grid_to_world_cell(col_index, row_index).midpoint();
-  ctx.registry().render_infos[id] = {
-      {glm::vec4(-tree_radius, -tree_radius, 0.5f, 1.0f),
-       glm::vec4(tree_radius, -tree_radius, 0.5f, 1.0f),
-       glm::vec4(tree_radius, tree_radius, 0.5f, 1.0f),
-       glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)},
-      color,
-      glm::translate(glm::mat4(1), glm::vec3(tree_pos[0], tree_pos[1], 0))};
+  const auto id = ctx.registry().add_render_info(
+      ctx,
+      {{glm::vec4(-tree_radius, -tree_radius, 0.5f, 1.0f),
+        glm::vec4(tree_radius, -tree_radius, 0.5f, 1.0f),
+        glm::vec4(tree_radius, tree_radius, 0.5f, 1.0f),
+        glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)},
+       color,
+       glm::translate(glm::mat4(1), glm::vec3(tree_pos[0], tree_pos[1], 0))});
 
   const std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos =
       {{{-1, 0}, components::ActionKind::MOVE_RIGHT},
@@ -86,19 +86,18 @@ void create_road_line(ecs::Context<Registry> &ctx, const std::size_t row_index,
 void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,
                 const components::Color &color) {
-  const auto id = ctx.entity_manager().next_id();
   // might move this constant (0.75) to somewhere
   const float car_radius_x = step_size * 1.5f / 2.0f;
   const float car_radius_y = step_size * 0.7f / 2.0f;
   const float actual_pos_y = -1.0 + step_size * row_index + step_size * 0.5f;
-  ctx.registry().render_infos[id] = {
-      {glm::vec4(-car_radius_x, -car_radius_y, 0.5f, 1.0f),
-       glm::vec4(car_radius_x, -car_radius_y, 0.5f, 1.0f),
-       glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
-       glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)},
-      color,
-      glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f))};
-
+  const auto id = ctx.registry().add_render_info(
+      ctx,
+      {{glm::vec4(-car_radius_x, -car_radius_y, 0.5f, 1.0f),
+        glm::vec4(car_radius_x, -car_radius_y, 0.5f, 1.0f),
+        glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
+        glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)},
+       color,
+       glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f))});
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
 }
 
@@ -164,19 +163,18 @@ void create_map(ecs::Context<Registry> &ctx) {
 }
 
 void create_character(ecs::Context<Registry> &ctx) {
-  const auto id = ctx.entity_manager().next_id();
   const auto character_radius = 0.1f;
   const components::Color color = {1.0f, 1.0f, 1.0f};
   const auto character_pos = grid_to_world_cell(4, 0).midpoint();
+  const auto id = ctx.registry().add_render_info(
+      ctx, {{glm::vec4(-character_radius, -character_radius, 0.5f, 1.0f),
+             glm::vec4(character_radius, -character_radius, 0.5f, 1.0f),
+             glm::vec4(character_radius, character_radius, 0.5f, 1.0f),
+             glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)},
+            color,
+            glm::translate(glm::mat4(1), glm::vec3(character_pos[0],
+                                                   character_pos[1], 0.0f))});
   ctx.registry().characters[id] = {};
-  ctx.registry().render_infos[id] = {
-      {glm::vec4(-character_radius, -character_radius, 0.5f, 1.0f),
-       glm::vec4(character_radius, -character_radius, 0.5f, 1.0f),
-       glm::vec4(character_radius, character_radius, 0.5f, 1.0f),
-       glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)},
-      color,
-      glm::translate(glm::mat4(1),
-                     glm::vec3(character_pos[0], character_pos[1], 0.0f))};
   ctx.registry().character_id = id;
 }
 
