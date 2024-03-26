@@ -20,7 +20,9 @@ const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                         ROAD_LINE_COLOR = {255.0 / 255, 255.0 / 255,
                                            255.0 / 255},
                         CAR_COLOR = {66.0 / 255, 147.0 / 255, 252.0 / 255},
-                        WHEEL_COLOR = {0, 0, 0}, CHARACTER_COLOR = {1, 1, 1};
+                        WHEEL_COLOR = {0, 0, 0},
+                        WHEEL_MARKING_COLOR = {1, 1, 1},
+                        CHARACTER_COLOR = {1, 1, 1};
 
 void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
                   const components::Color &color);
@@ -35,7 +37,8 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,
                 const components::Color &color);
 
-void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id);
+void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
+                  const glm::vec3 &position);
 
 void create_map(ecs::Context<Registry> &ctx);
 

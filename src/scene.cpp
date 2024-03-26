@@ -101,25 +101,29 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
       {std::make_unique<components::VertexVector>(std::move(vertices)), color,
        glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f))});
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
-  create_wheel(ctx, id);
+  create_wheel(ctx, id, glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
+  create_wheel(ctx, id, glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
 }
 
-void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id) {
-  const components::Color color = {0, 0, 0};
-  const auto front_wheel_id = ctx.registry().add_render_info(
+void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
+                  const glm::vec3 &position) {
+  const auto id = ctx.registry().add_render_info(
       ctx, {std::make_unique<components::CircleVertex>(glm::vec4(0, 0, 0.1f, 0),
                                                        WHEEL_RADIUS),
-            color,
-            glm::translate(glm::mat4(1),
-                           glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0))});
-  ctx.entity_manager().link_parent_child(car_id, front_wheel_id);
-  const auto rear_wheel_id = ctx.registry().add_render_info(
-      ctx, {std::make_unique<components::CircleVertex>(glm::vec4(0, 0, 0.1f, 0),
-                                                       WHEEL_RADIUS),
-            color,
-            glm::translate(glm::mat4(1),
-                           glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0))});
-  ctx.entity_manager().link_parent_child(car_id, rear_wheel_id);
+            WHEEL_COLOR, glm::translate(glm::mat4(1), position)});
+  ctx.entity_manager().link_parent_child(car_id, id);
+
+  std::vector<glm::vec4> vertices = {
+      glm::vec4(WHEEL_RADIUS * 0.8f, -WHEEL_RADIUS * 0.1, 0.15f, 0),
+      glm::vec4(WHEEL_RADIUS * 0.8f, WHEEL_RADIUS * 0.1, 0.15f, 0),
+      glm::vec4(-WHEEL_RADIUS * 0.8f, WHEEL_RADIUS * 0.1, 0.15f, 0),
+      glm::vec4(-WHEEL_RADIUS * 0.8f, -WHEEL_RADIUS * 0.1, 0.15f, 0),
+  };
+  const auto mark_id = ctx.registry().add_render_info(
+      ctx, {std::make_unique<components::VertexVector>(
+                std::vector<glm::vec4>(vertices)),
+            WHEEL_MARKING_COLOR, glm::mat4(1)});
+  ctx.entity_manager().link_parent_child(id, mark_id);
 }
 
 void create_map(ecs::Context<Registry> &ctx) {
