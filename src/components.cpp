@@ -2,17 +2,29 @@
 
 #include "bounding_box.hpp"
 
+#include <glm/glm.hpp>
+
 #include <glm/ext/matrix_transform.hpp>
 
 #include <algorithm>
 #include <iterator>
+#include <utility>
 #include <vector>
 
 using namespace components;
 
+VertexContainer::~VertexContainer() {}
+
+VertexVector::VertexVector(std::vector<glm::vec4> &&vertices)
+    : _vertices(std::move(vertices)) {}
+
+const std::vector<glm::vec4> &VertexVector::vertices() const {
+  return _vertices;
+}
+
 BoundingBox RenderInfo::bounding_box() const {
   std::vector<glm::vec4> transformed;
-  const auto &vertices = this->vertices;
+  const auto &vertices = this->vertex_container->vertices();
   std::transform(vertices.cbegin(), vertices.cend(),
                  std::back_inserter(transformed),
                  [this](const glm::vec4 &vertex) { return mat * vertex; });

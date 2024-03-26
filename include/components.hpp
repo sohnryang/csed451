@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include <memory>
 #include <queue>
 #include <vector>
 
@@ -14,8 +15,28 @@ struct Color {
   float b;
 };
 
+class VertexContainer {
+public:
+  virtual const std::vector<glm::vec4> &vertices() const = 0;
+  virtual ~VertexContainer();
+};
+
+class VertexVector : public VertexContainer {
+private:
+  std::vector<glm::vec4> _vertices;
+
+public:
+  VertexVector() = default;
+  VertexVector(const VertexVector &) = delete;
+  VertexVector(VertexVector &&) = default;
+  VertexVector &operator=(VertexVector &&) = default;
+  VertexVector(std::vector<glm::vec4> &&vertices);
+
+  const std::vector<glm::vec4> &vertices() const;
+};
+
 struct RenderInfo {
-  std::vector<glm::vec4> vertices;
+  std::unique_ptr<VertexContainer> vertex_container;
   Color color;
   glm::mat4 mat;
 

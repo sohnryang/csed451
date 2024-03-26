@@ -23,11 +23,13 @@
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,
                           ecs::entities::EntityId id) {
-  return ctx.registry().render_infos.count(id);
+  return ctx.registry().render_infos.count(id) &&
+         ctx.entity_manager().entity_graph()[id].parent == id;
 }
 
 void Render::pre_update(ecs::Context<Registry> &ctx) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glLoadIdentity();
 }
 
 void Render::post_update(ecs::Context<Registry> &ctx) {
@@ -54,20 +56,44 @@ void Render::post_update(ecs::Context<Registry> &ctx) {
 
 void Render::update_single(ecs::Context<Registry> &ctx,
                            ecs::entities::EntityId id) {
-  const auto &registry = ctx.registry();
-  const auto &render_info = registry.render_infos.at(id);
-  const auto &color = render_info.color;
-  glColor3f(color.r, color.g, color.b);
-
+  const auto &render_info = ctx.registry().render_infos.at(id);
   glPushMatrix();
   glLoadMatrixf(glm::value_ptr(render_info.mat));
+  render_single(render_info);
+  render_children(ctx, id);
+  glPopMatrix();
+}
 
+void Render::render_single(const components::RenderInfo &render_info) {
+  const auto &color = render_info.color;
+  glColor3f(color.r, color.g, color.b);
   glBegin(GL_POLYGON);
-  const auto &vertices = render_info.vertices;
+  const auto &vertices = render_info.vertex_container->vertices();
   for (const auto &v : vertices)
     glVertex3f(v[0], v[1], v[2]);
   glEnd();
-  glPopMatrix();
+}
+
+void Render::render_children(ecs::Context<Registry> &ctx,
+                             ecs::entities::EntityId id) {
+  const auto &render_infos = ctx.registry().render_infos;
+
+  float matrix_raw[16];
+  glGetFloatv(GL_MODELVIEW_MATRIX, matrix_raw);
+  const auto base_mat = glm::make_mat4(matrix_raw);
+
+  for (const auto child_id : ctx.entity_manager().entity_graph()[id].children) {
+    if (!render_infos.count(child_id))
+      continue;
+
+    glPushMatrix();
+    const auto &render_info = render_infos.at(child_id);
+    const auto child_mat = base_mat * render_info.mat;
+    glLoadMatrixf(glm::value_ptr(child_mat));
+    render_single(render_info);
+    render_children(ctx, child_id);
+    glPopMatrix();
+  }
 }
 
 Render::Render() {
@@ -160,7 +186,8 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto character_id = ctx.registry().character_id;
   const auto &render_infos = ctx.registry().render_infos;
   const auto &character_render_info = render_infos.at(character_id);
-  const auto &character_vertices = character_render_info.vertices;
+  const auto &character_vertices =
+      character_render_info.vertex_container->vertices();
   const auto character_bb = character_render_info.bounding_box();
 
   if (action_restrictions.count(id)) {
@@ -175,7 +202,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
       ctx.registry().state = GameState::WIN;
   } else {
     const auto &car_render_info = render_infos.at(id);
-    const auto &car_vertices = car_render_info.vertices;
+    const auto &car_vertices = car_render_info.vertex_container->vertices();
     const auto car_bb = car_render_info.bounding_box();
     if (character_bb.intersect_with(car_bb))
       ctx.registry().state = GameState::LOSE;

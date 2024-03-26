@@ -3,6 +3,7 @@
 #include "ecs/systems.hpp"
 
 #include <cstddef>
+#include <memory>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -25,13 +26,14 @@ void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
                   const components::Color &color) {
   const auto bottom_left = grid_to_world(0, row_index),
              top_right = grid_to_world(8, row_index + 1);
+  std::vector<glm::vec4> vertices = {
+      glm::vec4(bottom_left[0], bottom_left[1], 0.0, 1.0),
+      glm::vec4(top_right[0], bottom_left[1], 0.0, 1.0),
+      glm::vec4(top_right[0], top_right[1], 0.0, 1.0),
+      glm::vec4(bottom_left[0], top_right[1], 0.0, 1.0)};
   ctx.registry().add_render_info(
-      ctx, {{glm::vec4(bottom_left[0], bottom_left[1], 0.0, 1.0),
-             glm::vec4(top_right[0], bottom_left[1], 0.0, 1.0),
-             glm::vec4(top_right[0], top_right[1], 0.0, 1.0),
-             glm::vec4(bottom_left[0], top_right[1], 0.0, 1.0)},
-            color,
-            glm::mat4(1)});
+      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
+            color, glm::mat4(1)});
 }
 
 void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
@@ -39,13 +41,14 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
   // might move this constant (0.75) to somewhere
   const float tree_radius = STEP_SIZE * 0.75f / 2.0f;
   const auto tree_pos = grid_to_world_cell(col_index, row_index).midpoint();
+  std::vector<glm::vec4> vertices = {
+      glm::vec4(-tree_radius, -tree_radius, 0.5f, 1.0f),
+      glm::vec4(tree_radius, -tree_radius, 0.5f, 1.0f),
+      glm::vec4(tree_radius, tree_radius, 0.5f, 1.0f),
+      glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)};
   const auto id = ctx.registry().add_render_info(
       ctx,
-      {{glm::vec4(-tree_radius, -tree_radius, 0.5f, 1.0f),
-        glm::vec4(tree_radius, -tree_radius, 0.5f, 1.0f),
-        glm::vec4(tree_radius, tree_radius, 0.5f, 1.0f),
-        glm::vec4(-tree_radius, tree_radius, 0.5f, 1.0f)},
-       color,
+      {std::make_unique<components::VertexVector>(std::move(vertices)), color,
        glm::translate(glm::mat4(1), glm::vec3(tree_pos[0], tree_pos[1], 0))});
 
   const std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos =
@@ -73,13 +76,14 @@ void create_road_line(ecs::Context<Registry> &ctx, const std::size_t row_index,
   const float pos_y = grid_ticks_to_float(row_index + 1) - line_width / 2.0;
   // TODO: randomize initial pos_x value?
   for (float pos_x = -1.06; pos_x < 1.0; pos_x += STEP_SIZE * 0.87) {
+    std::vector<glm::vec4> vertices = {
+        glm::vec4(pos_x, pos_y, 0.1, 1.0),
+        glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y, 0.1, 1.0),
+        glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y + line_width, 0.1, 1.0),
+        glm::vec4(pos_x, pos_y + line_width, 0.1, 1.0)};
     ctx.registry().add_render_info(
-        ctx, {{glm::vec4(pos_x, pos_y, 0.1, 1.0),
-               glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y, 0.1, 1.0),
-               glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y + line_width, 0.1, 1.0),
-               glm::vec4(pos_x, pos_y + line_width, 0.1, 1.0)},
-              color,
-              glm::mat4(1)});
+        ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
+              color, glm::mat4(1)});
   }
 }
 
@@ -90,13 +94,14 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
   const float car_radius_x = STEP_SIZE * 1.5f / 2.0f;
   const float car_radius_y = STEP_SIZE * 0.7f / 2.0f;
   const float actual_pos_y = grid_ticks_to_float(row_index) + STEP_SIZE * 0.5f;
+  std::vector<glm::vec4> vertices = {
+      glm::vec4(-car_radius_x, -car_radius_y, 0.5f, 1.0f),
+      glm::vec4(car_radius_x, -car_radius_y, 0.5f, 1.0f),
+      glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
+      glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)};
   const auto id = ctx.registry().add_render_info(
       ctx,
-      {{glm::vec4(-car_radius_x, -car_radius_y, 0.5f, 1.0f),
-        glm::vec4(car_radius_x, -car_radius_y, 0.5f, 1.0f),
-        glm::vec4(car_radius_x, car_radius_y, 0.5f, 1.0f),
-        glm::vec4(-car_radius_x, car_radius_y, 0.5f, 1.0f)},
-       color,
+      {std::make_unique<components::VertexVector>(std::move(vertices)), color,
        glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f))});
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
 }
@@ -166,14 +171,16 @@ void create_character(ecs::Context<Registry> &ctx) {
   const auto character_radius = 0.1f;
   const components::Color color = {1.0f, 1.0f, 1.0f};
   const auto character_pos = grid_to_world_cell(4, 0).midpoint();
+  std::vector<glm::vec4> vertices = {
+      glm::vec4(-character_radius, -character_radius, 0.5f, 1.0f),
+      glm::vec4(character_radius, -character_radius, 0.5f, 1.0f),
+      glm::vec4(character_radius, character_radius, 0.5f, 1.0f),
+      glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)};
   const auto id = ctx.registry().add_render_info(
-      ctx, {{glm::vec4(-character_radius, -character_radius, 0.5f, 1.0f),
-             glm::vec4(character_radius, -character_radius, 0.5f, 1.0f),
-             glm::vec4(character_radius, character_radius, 0.5f, 1.0f),
-             glm::vec4(-character_radius, character_radius, 0.5f, 1.0f)},
-            color,
-            glm::translate(glm::mat4(1), glm::vec3(character_pos[0],
-                                                   character_pos[1], 0.0f))});
+      ctx,
+      {std::make_unique<components::VertexVector>(std::move(vertices)), color,
+       glm::translate(glm::mat4(1),
+                      glm::vec3(character_pos[0], character_pos[1], 0.0f))});
   ctx.registry().characters[id] = {};
   ctx.registry().character_id = id;
 }
