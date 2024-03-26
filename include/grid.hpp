@@ -5,8 +5,8 @@
 
 #include "bounding_box.hpp"
 
-const std::size_t grid_size = 8;
-const float step_size = 2.0f / grid_size;
+const std::size_t GRID_SIZE = 8;
+const float STEP_SIZE = 2.0f / GRID_SIZE;
 
 glm::vec2 grid_to_world(int x, int y);
 

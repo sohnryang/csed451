@@ -37,7 +37,7 @@ void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
 void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
                  std::size_t col_index, const components::Color &color) {
   // might move this constant (0.75) to somewhere
-  const float tree_radius = step_size * 0.75f / 2.0f;
+  const float tree_radius = STEP_SIZE * 0.75f / 2.0f;
   const auto tree_pos = grid_to_world_cell(col_index, row_index).midpoint();
   const auto id = ctx.registry().add_render_info(
       ctx,
@@ -56,7 +56,7 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
   for (const auto &p : adjacent_pos) {
     const auto delta = p.first;
     const auto action = p.second;
-    const auto rect_center = step_size * delta + tree_pos;
+    const auto rect_center = STEP_SIZE * delta + tree_pos;
     const auto diagonal = glm::vec2(tree_radius, -tree_radius);
     const auto top_left = rect_center - diagonal;
     const auto bottom_right = rect_center + diagonal;
@@ -69,14 +69,14 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
 
 void create_road_line(ecs::Context<Registry> &ctx, const std::size_t row_index,
                       const components::Color &color) {
-  const float line_width = step_size * 0.05f;
-  const float pos_y = -1.0f + step_size * (row_index + 1) - line_width / 2.0;
+  const float line_width = STEP_SIZE * 0.05f;
+  const float pos_y = -1.0f + STEP_SIZE * (row_index + 1) - line_width / 2.0;
   // TODO: randomize initial pos_x value?
-  for (float pos_x = -1.06; pos_x < 1.0; pos_x += step_size * 0.87) {
+  for (float pos_x = -1.06; pos_x < 1.0; pos_x += STEP_SIZE * 0.87) {
     ctx.registry().add_render_info(
         ctx, {{glm::vec4(pos_x, pos_y, 0.1, 1.0),
-               glm::vec4(pos_x + step_size * 0.6, pos_y, 0.1, 1.0),
-               glm::vec4(pos_x + step_size * 0.6, pos_y + line_width, 0.1, 1.0),
+               glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y, 0.1, 1.0),
+               glm::vec4(pos_x + STEP_SIZE * 0.6, pos_y + line_width, 0.1, 1.0),
                glm::vec4(pos_x, pos_y + line_width, 0.1, 1.0)},
               color,
               glm::mat4(1)});
@@ -87,9 +87,9 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,
                 const components::Color &color) {
   // might move this constant (0.75) to somewhere
-  const float car_radius_x = step_size * 1.5f / 2.0f;
-  const float car_radius_y = step_size * 0.7f / 2.0f;
-  const float actual_pos_y = -1.0 + step_size * row_index + step_size * 0.5f;
+  const float car_radius_x = STEP_SIZE * 1.5f / 2.0f;
+  const float car_radius_y = STEP_SIZE * 0.7f / 2.0f;
+  const float actual_pos_y = -1.0 + STEP_SIZE * row_index + STEP_SIZE * 0.5f;
   const auto id = ctx.registry().add_render_info(
       ctx,
       {{glm::vec4(-car_radius_x, -car_radius_y, 0.5f, 1.0f),
@@ -144,15 +144,15 @@ void create_map(ecs::Context<Registry> &ctx) {
 
   const std::vector<std::pair<BoundingBox, components::ActionKind>>
       adjacent_pos = {{{
-                           {1.0f - step_size, 1.0f},
+                           {1.0f - STEP_SIZE, 1.0f},
                            {1.0f, -1.0f},
                        },
                        components::ActionKind::MOVE_RIGHT},
-                      {{{-1.0f, 1.0f}, {-1.0f + step_size, -1.0f}},
+                      {{{-1.0f, 1.0f}, {-1.0f + STEP_SIZE, -1.0f}},
                        components::ActionKind::MOVE_LEFT},
-                      {{{-1.0f, 1.0f}, {1.0f, 1.0f - step_size}},
+                      {{{-1.0f, 1.0f}, {1.0f, 1.0f - STEP_SIZE}},
                        components::ActionKind::MOVE_UP},
-                      {{{-1.0f, -1.0f + step_size}, {1.0f, -1.0f}},
+                      {{{-1.0f, -1.0f + STEP_SIZE}, {1.0f, -1.0f}},
                        components::ActionKind::MOVE_DOWN}};
   for (const auto &p : adjacent_pos) {
     const auto restriction_id = ctx.entity_manager().next_id();
@@ -181,5 +181,5 @@ void create_character(ecs::Context<Registry> &ctx) {
 void create_win_zone(ecs::Context<Registry> &ctx) {
   const auto id = ctx.entity_manager().next_id();
   ctx.registry().win_zones[id] = {
-      {glm::vec2(-1, 1), glm::vec2(1, 1 - step_size)}};
+      {glm::vec2(-1, 1), glm::vec2(1, 1 - STEP_SIZE)}};
 }
