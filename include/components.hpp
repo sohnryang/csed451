@@ -32,7 +32,7 @@ public:
   VertexVector &operator=(VertexVector &&) = default;
   VertexVector(std::vector<glm::vec4> &&vertices);
 
-  const std::vector<glm::vec4> &vertices() const;
+  const std::vector<glm::vec4> &vertices() const override;
 };
 
 struct RenderInfo {
