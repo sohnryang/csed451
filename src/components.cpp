@@ -18,9 +18,7 @@ VertexContainer::~VertexContainer() {}
 VertexVector::VertexVector(std::vector<glm::vec4> &&vertices)
     : _vertices(std::move(vertices)) {}
 
-const std::vector<glm::vec4> &VertexVector::vertices() const {
-  return _vertices;
-}
+const std::vector<glm::vec4> &VertexVector::vertices() { return _vertices; }
 
 BoundingBox RenderInfo::bounding_box() const {
   std::vector<glm::vec4> transformed;

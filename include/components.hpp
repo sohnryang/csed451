@@ -17,7 +17,7 @@ struct Color {
 
 class VertexContainer {
 public:
-  virtual const std::vector<glm::vec4> &vertices() const = 0;
+  virtual const std::vector<glm::vec4> &vertices() = 0;
   virtual ~VertexContainer();
 };
 
@@ -32,7 +32,7 @@ public:
   VertexVector &operator=(VertexVector &&) = default;
   VertexVector(std::vector<glm::vec4> &&vertices);
 
-  const std::vector<glm::vec4> &vertices() const override;
+  const std::vector<glm::vec4> &vertices() override;
 };
 
 struct RenderInfo {
