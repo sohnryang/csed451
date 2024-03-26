@@ -101,6 +101,28 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
       {std::make_unique<components::VertexVector>(std::move(vertices)), color,
        glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f))});
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
+  create_wheel(ctx, id);
+}
+
+void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id) {
+  const components::Color color = {0, 0, 0};
+  const auto front_wheel_id = ctx.registry().add_render_info(
+      ctx, {std::make_unique<components::CircleVertex>(glm::vec4(0, 0, 0.1f, 0),
+                                                       WHEEL_RADIUS),
+            color,
+            glm::translate(glm::mat4(1),
+                           glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0))});
+  ctx.entity_manager().entity_graph()[car_id].children.push_back(
+      front_wheel_id);
+  ctx.entity_manager().entity_graph()[front_wheel_id].parent = car_id;
+  const auto rear_wheel_id = ctx.registry().add_render_info(
+      ctx, {std::make_unique<components::CircleVertex>(glm::vec4(0, 0, 0.1f, 0),
+                                                       WHEEL_RADIUS),
+            color,
+            glm::translate(glm::mat4(1),
+                           glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0))});
+  ctx.entity_manager().entity_graph()[car_id].children.push_back(rear_wheel_id);
+  ctx.entity_manager().entity_graph()[rear_wheel_id].parent = car_id;
 }
 
 void create_map(ecs::Context<Registry> &ctx) {

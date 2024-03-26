@@ -35,6 +35,8 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,
                 const components::Color &color);
 
+void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id);
+
 void create_map(ecs::Context<Registry> &ctx);
 
 void create_character(ecs::Context<Registry> &ctx);
