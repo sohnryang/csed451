@@ -112,17 +112,14 @@ void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id) {
             color,
             glm::translate(glm::mat4(1),
                            glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0))});
-  ctx.entity_manager().entity_graph()[car_id].children.push_back(
-      front_wheel_id);
-  ctx.entity_manager().entity_graph()[front_wheel_id].parent = car_id;
+  ctx.entity_manager().link_parent_child(car_id, front_wheel_id);
   const auto rear_wheel_id = ctx.registry().add_render_info(
       ctx, {std::make_unique<components::CircleVertex>(glm::vec4(0, 0, 0.1f, 0),
                                                        WHEEL_RADIUS),
             color,
             glm::translate(glm::mat4(1),
                            glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0))});
-  ctx.entity_manager().entity_graph()[car_id].children.push_back(rear_wheel_id);
-  ctx.entity_manager().entity_graph()[rear_wheel_id].parent = car_id;
+  ctx.entity_manager().link_parent_child(car_id, rear_wheel_id);
 }
 
 void create_map(ecs::Context<Registry> &ctx) {

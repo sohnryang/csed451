@@ -44,3 +44,8 @@ void EntityManager::remove_id(EntityId id) {
 std::unordered_map<EntityId, EntityGraphNode> &EntityManager::entity_graph() {
   return _entity_graph;
 }
+
+void EntityManager::link_parent_child(EntityId parent, EntityId child) {
+  _entity_graph[parent].children.push_back(child);
+  _entity_graph[child].parent = parent;
+}

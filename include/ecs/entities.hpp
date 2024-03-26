@@ -31,6 +31,7 @@ public:
   EntityId end_id() const;
   void remove_id(EntityId id);
   std::unordered_map<EntityId, EntityGraphNode> &entity_graph();
+  void link_parent_child(EntityId parent, EntityId child);
 };
 } // namespace entities
 } // namespace ecs
