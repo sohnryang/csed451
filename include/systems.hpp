@@ -76,7 +76,5 @@ private:
   void update_single(ecs::Context<Registry> &ctx,
                      ecs::entities::EntityId id) override;
 
-public:
-  Car();
 };
 } // namespace systems

@@ -240,6 +240,4 @@ void Car::update_single(ecs::Context<Registry> &ctx,
         glm::rotate(wheel_render_info.mat, angle, glm ::vec3(0, 0, 1));
   }
 }
-
-Car::Car() {}
 } // namespace systems
