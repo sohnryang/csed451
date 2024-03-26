@@ -15,6 +15,7 @@ struct Color {
   float b;
 };
 
+// TODO: use iterator instead of this stop-gap solution
 class VertexContainer {
 public:
   virtual const std::vector<glm::vec4> &vertices() = 0;
