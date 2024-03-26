@@ -7,6 +7,7 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -19,6 +20,21 @@ VertexVector::VertexVector(std::vector<glm::vec4> &&vertices)
     : _vertices(std::move(vertices)) {}
 
 const std::vector<glm::vec4> &VertexVector::vertices() { return _vertices; }
+
+CircleVertex::CircleVertex(glm::vec4 center, float radius, int point_count)
+    : _center(center), _radius(radius), _point_count(point_count),
+      _vertices(point_count) {}
+
+const std::vector<glm::vec4> &CircleVertex::vertices() {
+  const float PI = std::acos(-1);
+  for (int i = 0; i < _point_count; i++) {
+    float angle = 2 * PI / _point_count * i;
+    const auto point =
+        _radius * glm::vec4(std::cos(angle), std::sin(angle), 0, 0) + _center;
+    _vertices[i] = point;
+  }
+  return _vertices;
+}
 
 BoundingBox RenderInfo::bounding_box() const {
   std::vector<glm::vec4> transformed;

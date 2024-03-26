@@ -35,6 +35,23 @@ public:
   const std::vector<glm::vec4> &vertices() override;
 };
 
+class CircleVertex : public VertexContainer {
+private:
+  glm::vec4 _center;
+  float _radius;
+  int _point_count;
+  std::vector<glm::vec4> _vertices;
+
+public:
+  CircleVertex() = default;
+  CircleVertex(const CircleVertex &) = delete;
+  CircleVertex(CircleVertex &&) = default;
+  CircleVertex &operator=(CircleVertex &&) = default;
+  CircleVertex(glm::vec4 center, float radius, int point_count = 64);
+
+  const std::vector<glm::vec4> &vertices() override;
+};
+
 struct RenderInfo {
   std::unique_ptr<VertexContainer> vertex_container;
   Color color;
