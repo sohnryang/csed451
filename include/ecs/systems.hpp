@@ -50,8 +50,8 @@ public:
 template <class T>
 Context<T>::Context(T &&registry,
                     std::vector<std::shared_ptr<systems::System<T>>> &&systems)
-    : _entity_manager(), _registry(registry), _systems(std::move(systems)),
-      _loop_started(false), _last_updated() {}
+    : _entity_manager(), _registry(std::move(registry)),
+      _systems(std::move(systems)), _loop_started(false), _last_updated() {}
 
 template <class T> entities::EntityManager &Context<T>::entity_manager() {
   return _entity_manager;
