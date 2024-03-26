@@ -70,7 +70,7 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
 void create_road_line(ecs::Context<Registry> &ctx, const std::size_t row_index,
                       const components::Color &color) {
   const float line_width = STEP_SIZE * 0.05f;
-  const float pos_y = -1.0f + STEP_SIZE * (row_index + 1) - line_width / 2.0;
+  const float pos_y = grid_ticks_to_float(row_index + 1) - line_width / 2.0;
   // TODO: randomize initial pos_x value?
   for (float pos_x = -1.06; pos_x < 1.0; pos_x += STEP_SIZE * 0.87) {
     ctx.registry().add_render_info(
@@ -89,7 +89,7 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
   // might move this constant (0.75) to somewhere
   const float car_radius_x = STEP_SIZE * 1.5f / 2.0f;
   const float car_radius_y = STEP_SIZE * 0.7f / 2.0f;
-  const float actual_pos_y = -1.0 + STEP_SIZE * row_index + STEP_SIZE * 0.5f;
+  const float actual_pos_y = grid_ticks_to_float(row_index) + STEP_SIZE * 0.5f;
   const auto id = ctx.registry().add_render_info(
       ctx,
       {{glm::vec4(-car_radius_x, -car_radius_y, 0.5f, 1.0f),
