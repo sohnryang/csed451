@@ -19,6 +19,7 @@
 
 #include "components.hpp"
 #include "registry.hpp"
+#include "scene.hpp"
 
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,
@@ -219,7 +220,8 @@ bool Car::should_apply(ecs::Context<Registry> &ctx,
 
 void Car::update_single(ecs::Context<Registry> &ctx,
                         ecs::entities::EntityId id) {
-  auto &render_info = ctx.registry().render_infos[id];
+  auto &render_infos = ctx.registry().render_infos;
+  auto &render_info = render_infos[id];
   auto &car = ctx.registry().cars[id];
   const auto car_bb = render_info.bounding_box();
   const auto xmin = car_bb.top_left[0], xmax = car_bb.bottom_right[0];
@@ -227,7 +229,16 @@ void Car::update_single(ecs::Context<Registry> &ctx,
     render_info.mat = glm::translate(render_info.mat, glm::vec3(3.0f, 0, 0));
   else if (car.vel[0] > 0.0f && xmin > 1.0f)
     render_info.mat = glm::translate(render_info.mat, glm::vec3(-3.0f, 0, 0));
-  render_info.mat = glm::translate(render_info.mat, ctx.delta_time() * car.vel);
+  const auto disp = ctx.delta_time() * car.vel;
+  render_info.mat = glm::translate(render_info.mat, disp);
+
+  const auto &wheel_ids = ctx.entity_manager().entity_graph()[id].children;
+  const auto angle = disp[0] / WHEEL_RADIUS;
+  for (const auto wheel_id : wheel_ids) {
+    auto &wheel_render_info = render_infos[wheel_id];
+    wheel_render_info.mat =
+        glm::rotate(wheel_render_info.mat, angle, glm ::vec3(0, 0, 1));
+  }
 }
 
 Car::Car() {}
