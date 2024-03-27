@@ -51,6 +51,7 @@ int main(int argc, char **argv) {
   input_handler = std::make_shared<systems::InputHandler>();
 
   std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
+  systems.emplace_back(new systems::Animation);
   systems.emplace_back(new systems::Render);
   systems.push_back(input_handler);
   systems.emplace_back(new systems::Character);

@@ -59,8 +59,12 @@ void Render::post_update(ecs::Context<Registry> &ctx) {
 void Render::update_single(ecs::Context<Registry> &ctx,
                            ecs::entities::EntityId id) {
   const auto &render_info = ctx.registry().render_infos.at(id);
+  const auto &animations = ctx.registry().animations;
   glPushMatrix();
-  glLoadMatrixf(glm::value_ptr(render_info.mat));
+  if (animations.count(id))
+    glLoadMatrixf(glm::value_ptr(render_info.mat * animations.at(id).mat));
+  else
+    glLoadMatrixf(glm::value_ptr(render_info.mat));
   render_single(render_info);
   render_children(ctx, id);
   glPopMatrix();
@@ -79,6 +83,7 @@ void Render::render_single(const components::RenderInfo &render_info) {
 void Render::render_children(ecs::Context<Registry> &ctx,
                              ecs::entities::EntityId id) {
   const auto &render_infos = ctx.registry().render_infos;
+  const auto &animations = ctx.registry().animations;
 
   float matrix_raw[16];
   glGetFloatv(GL_MODELVIEW_MATRIX, matrix_raw);
@@ -91,7 +96,10 @@ void Render::render_children(ecs::Context<Registry> &ctx,
     glPushMatrix();
     const auto &render_info = render_infos.at(child_id);
     const auto child_mat = base_mat * render_info.mat;
-    glLoadMatrixf(glm::value_ptr(child_mat));
+    if (animations.count(child_id))
+      glLoadMatrixf(glm::value_ptr(child_mat * animations.at(child_id).mat));
+    else
+      glLoadMatrixf(glm::value_ptr(child_mat));
     render_single(render_info);
     render_children(ctx, child_id);
     glPopMatrix();
@@ -154,9 +162,34 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
   const auto character_id = ctx.registry().character_id;
   auto &character = ctx.registry().characters[character_id];
   auto &render_info = ctx.registry().render_infos[character_id];
+  auto &animation = ctx.registry().animations[character_id];
   const float step_size = 2.0f / 8;
-  if (character.actions.empty())
+  if (character.actions.empty() ||
+      animation.state == components::AnimationState::RUNNING)
     return;
+  else if (animation.state == components::AnimationState::FINISHED) {
+    switch (character.current_action) {
+    case components::ActionKind::MOVE_UP:
+      render_info.mat *=
+          glm::translate(glm::mat4(1), glm::vec3(0, step_size, 0));
+      break;
+    case components::ActionKind::MOVE_DOWN:
+      render_info.mat *=
+          glm::translate(glm::mat4(1), glm::vec3(0, -step_size, 0));
+      break;
+    case components::ActionKind::MOVE_LEFT:
+      render_info.mat *=
+          glm::translate(glm::mat4(1), glm::vec3(-step_size, 0, 0));
+      break;
+    case components::ActionKind::MOVE_RIGHT:
+      render_info.mat *=
+          glm::translate(glm::mat4(1), glm::vec3(step_size, 0, 0));
+      break;
+    }
+    animation.state = components::AnimationState::BEFORE_START;
+    animation.mat = glm::mat4(1);
+    animation.info.kind = components::AnimationKind::DISABLED;
+  }
 
   const auto action = character.actions.front();
   character.actions.pop();
@@ -165,20 +198,31 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
 
   switch (action) {
   case components::ActionKind::MOVE_UP:
-    render_info.mat *= glm::translate(glm::mat4(1), glm::vec3(0, step_size, 0));
+    animation.info = {
+        components::AnimationKind::ONCE,
+        {{0.0f, glm::mat4(1)},
+         {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, step_size, 0))}}};
     break;
   case components::ActionKind::MOVE_DOWN:
-    render_info.mat *=
-        glm::translate(glm::mat4(1), glm::vec3(0, -step_size, 0));
+    animation.info = {
+        components::AnimationKind::ONCE,
+        {{0.0f, glm::mat4(1)},
+         {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, -step_size, 0))}}};
     break;
   case components::ActionKind::MOVE_LEFT:
-    render_info.mat *=
-        glm::translate(glm::mat4(1), glm::vec3(-step_size, 0, 0));
+    animation.info = {
+        components::AnimationKind::ONCE,
+        {{0.0f, glm::mat4(1)},
+         {0.2f, glm::translate(glm::mat4(1), glm::vec3(-step_size, 0, 0))}}};
     break;
   case components::ActionKind::MOVE_RIGHT:
-    render_info.mat *= glm::translate(glm::mat4(1), glm::vec3(step_size, 0, 0));
+    animation.info = {
+        components::AnimationKind::ONCE,
+        {{0.0f, glm::mat4(1)},
+         {0.2f, glm::translate(glm::mat4(1), glm::vec3(step_size, 0, 0))}}};
     break;
   }
+  character.current_action = action;
 }
 
 void Character::update_single(ecs::Context<Registry> &ctx,
@@ -190,7 +234,9 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto &character_render_info = render_infos.at(character_id);
   const auto &character_vertices =
       character_render_info.vertex_container->vertices();
-  const auto character_bb = character_render_info.bounding_box();
+  const auto &animation = ctx.registry().animations[character_id];
+  const auto character_bb =
+      character_render_info.bounding_box_with_trasform(animation.mat);
 
   if (action_restrictions.count(id)) {
     const auto action_restriction = action_restrictions.at(id);

@@ -66,6 +66,7 @@ struct RenderInfo {
 enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
 
 struct Character {
+  ActionKind current_action;
   std::queue<ActionKind> actions;
 };
 
