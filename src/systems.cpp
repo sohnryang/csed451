@@ -3,6 +3,7 @@
 #include "ecs/entities.hpp"
 #include "ecs/systems.hpp"
 
+#include <cmath>
 #include <glm/glm.hpp>
 
 #include <glm/ext/matrix_transform.hpp>
@@ -309,6 +310,14 @@ void Animation::update_single(ecs::Context<Registry> &ctx,
     break;
   case components::AnimationState::RUNNING: {
     animation.time_elapsed += ctx.delta_time();
+    if (info.kind == components::AnimationKind::LOOP) {
+      const auto duration = info.keyframes.crbegin()->first,
+                 modulo = std::fmod(animation.time_elapsed, 2 * duration);
+      if (modulo > duration)
+        animation.time_elapsed = 2 * duration - modulo;
+      else
+        animation.time_elapsed = modulo;
+    }
     const auto time_hi = info.keyframes.upper_bound(animation.time_elapsed);
     if (time_hi == info.keyframes.cbegin() ||
         time_hi == info.keyframes.cend()) {
