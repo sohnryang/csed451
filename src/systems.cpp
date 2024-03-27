@@ -19,6 +19,7 @@
 #include <string>
 
 #include "components.hpp"
+#include "grid.hpp"
 #include "registry.hpp"
 #include "scene.hpp"
 
@@ -163,7 +164,6 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
   auto &character = ctx.registry().characters[character_id];
   auto &render_info = ctx.registry().render_infos[character_id];
   auto &animation = ctx.registry().animations[character_id];
-  const float step_size = 2.0f / 8;
   if (character.actions.empty() ||
       animation.state == components::AnimationState::RUNNING)
     return;
@@ -171,19 +171,19 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     switch (character.current_action) {
     case components::ActionKind::MOVE_UP:
       render_info.mat *=
-          glm::translate(glm::mat4(1), glm::vec3(0, step_size, 0));
+          glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE, 0));
       break;
     case components::ActionKind::MOVE_DOWN:
       render_info.mat *=
-          glm::translate(glm::mat4(1), glm::vec3(0, -step_size, 0));
+          glm::translate(glm::mat4(1), glm::vec3(0, -STEP_SIZE, 0));
       break;
     case components::ActionKind::MOVE_LEFT:
       render_info.mat *=
-          glm::translate(glm::mat4(1), glm::vec3(-step_size, 0, 0));
+          glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0));
       break;
     case components::ActionKind::MOVE_RIGHT:
       render_info.mat *=
-          glm::translate(glm::mat4(1), glm::vec3(step_size, 0, 0));
+          glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0));
       break;
     }
     animation.state = components::AnimationState::BEFORE_START;
@@ -201,25 +201,25 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     animation.info = {
         components::AnimationKind::ONCE,
         {{0.0f, glm::mat4(1)},
-         {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, step_size, 0))}}};
+         {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE, 0))}}};
     break;
   case components::ActionKind::MOVE_DOWN:
     animation.info = {
         components::AnimationKind::ONCE,
         {{0.0f, glm::mat4(1)},
-         {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, -step_size, 0))}}};
+         {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, -STEP_SIZE, 0))}}};
     break;
   case components::ActionKind::MOVE_LEFT:
     animation.info = {
         components::AnimationKind::ONCE,
         {{0.0f, glm::mat4(1)},
-         {0.2f, glm::translate(glm::mat4(1), glm::vec3(-step_size, 0, 0))}}};
+         {0.2f, glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0))}}};
     break;
   case components::ActionKind::MOVE_RIGHT:
     animation.info = {
         components::AnimationKind::ONCE,
         {{0.0f, glm::mat4(1)},
-         {0.2f, glm::translate(glm::mat4(1), glm::vec3(step_size, 0, 0))}}};
+         {0.2f, glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0))}}};
     break;
   }
   character.current_action = action;
