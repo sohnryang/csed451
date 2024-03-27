@@ -14,5 +14,7 @@ struct BoundingBox {
   BoundingBox &operator=(BoundingBox &&) = default;
 
   bool intersect_with(const BoundingBox &other) const;
+  bool contains(const BoundingBox &other) const;
+  bool contained_in(const BoundingBox &other) const;
   glm::vec2 midpoint() const;
 };
