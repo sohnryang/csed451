@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include <map>
 #include <memory>
 #include <queue>
 #include <vector>
@@ -79,5 +80,21 @@ struct WinZone {
 
 struct Car {
   glm::vec3 vel;
+};
+
+enum class AnimationKind { DISABLED, ONCE, LOOP };
+
+struct AnimationInfo {
+  AnimationKind kind;
+  std::map<float, glm::mat4> keyframes;
+};
+
+enum class AnimationState { BEFORE_START, RUNNING, FINISHED };
+
+struct Animation {
+  AnimationState state;
+  AnimationInfo info;
+  glm::mat4 mat;
+  float time_elapsed;
 };
 } // namespace components

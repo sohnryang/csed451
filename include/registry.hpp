@@ -18,6 +18,7 @@ struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::Car> cars;
   GameState state = GameState::IN_PROGRESS;
   std::unordered_map<ecs::entities::EntityId, components::WinZone> win_zones;
+  std::unordered_map<ecs::entities::EntityId, components::Animation> animations;
   ecs::entities::EntityId character_id;
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
