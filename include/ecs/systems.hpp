@@ -4,6 +4,7 @@
 
 #include <chrono>
 #include <memory>
+#include <random>
 #include <vector>
 
 namespace ecs {
@@ -30,6 +31,8 @@ private:
   std::vector<std::shared_ptr<systems::System<T>>> _systems;
   bool _loop_started;
   std::chrono::time_point<std::chrono::system_clock> _last_updated;
+  std::random_device _random_device;
+  std::mt19937 _random_gen;
 
 public:
   Context(T &&registry,
@@ -43,6 +46,7 @@ public:
   const std::chrono::time_point<std::chrono::system_clock> &
   last_updated() const;
   float delta_time() const;
+  std::mt19937 &random_gen();
 
   void update();
 };
@@ -51,7 +55,9 @@ template <class T>
 Context<T>::Context(T &&registry,
                     std::vector<std::shared_ptr<systems::System<T>>> &&systems)
     : _entity_manager(), _registry(std::move(registry)),
-      _systems(std::move(systems)), _loop_started(false), _last_updated() {}
+      _systems(std::move(systems)), _loop_started(false), _last_updated(), _random_device() {
+  _random_gen = std::mt19937(_random_device());
+}
 
 template <class T> entities::EntityManager &Context<T>::entity_manager() {
   return _entity_manager;
@@ -75,6 +81,11 @@ template <class T> float Context<T>::delta_time() const {
   const auto duration = now - _last_updated;
   return std::chrono::duration_cast<std::chrono::duration<float>>(duration)
       .count();
+}
+
+template <class T>
+std::mt19937 &Context<T>::random_gen() {
+  return _random_gen;
 }
 
 template <class T> void Context<T>::update() {
