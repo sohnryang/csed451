@@ -59,6 +59,7 @@ struct RenderInfo {
   glm::mat4 mat;
 
   BoundingBox bounding_box() const;
+  BoundingBox bounding_box_with_trasform(const glm::mat4 &transform) const;
 };
 
 enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT };
