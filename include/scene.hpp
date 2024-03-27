@@ -25,15 +25,22 @@ const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                         WHEEL_MARKING_COLOR = {1, 1, 1},
                         CHARACTER_COLOR = {1, 1, 1};
 
-const std::vector<glm::vec4> CAR_VERTICES = {
-    glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
-    glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
-    glm::vec4(CAR_RADIUS_X, 0.0f, 0.5f, 1.0f),
-    glm::vec4(CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
-    glm::vec4(CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
-    glm::vec4(-CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
-    glm::vec4(-CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f), // This coord works abnormal, idk why
-    glm::vec4(-CAR_RADIUS_X, 0.0f, 0.5f, 1.0f)};
+const std::vector<glm::vec4>
+    CAR_VERTICES = {glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+                    glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+                    glm::vec4(CAR_RADIUS_X, 0.0f, 0.5f, 1.0f),
+                    glm::vec4(CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
+                    glm::vec4(CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
+                    glm::vec4(-CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
+                    // This coord works abnormal, idk why
+                    glm::vec4(-CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f), 
+                    glm::vec4(-CAR_RADIUS_X, 0.0f, 0.5f, 1.0f)},
+    TRUCK_VERTICES = {glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+                      glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+                      glm::vec4(CAR_RADIUS_X, CAR_RADIUS_Y, 0.5f, 1.0f),
+                      glm::vec4(CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
+                      glm::vec4(CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
+                      glm::vec4(-CAR_RADIUS_X, 0.0f, 0.5f, 1.0f)};
     
 
 void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
