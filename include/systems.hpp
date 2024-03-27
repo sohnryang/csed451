@@ -75,6 +75,17 @@ private:
 
   void update_single(ecs::Context<Registry> &ctx,
                      ecs::entities::EntityId id) override;
+};
 
+class Animation : public ecs::systems::System<Registry> {
+private:
+  glm::mat4 interpolate_transforms(float ratio, const glm::mat4 &first,
+                                   const glm::mat4 &second);
+
+  bool should_apply(ecs::Context<Registry> &ctx,
+                    ecs::entities::EntityId id) override;
+
+  void update_single(ecs::Context<Registry> &ctx,
+                     ecs::entities::EntityId id) override;
 };
 } // namespace systems

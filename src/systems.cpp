@@ -15,6 +15,7 @@
 #endif
 
 #include <cstddef>
+#include <iterator>
 #include <string>
 
 #include "components.hpp"
@@ -238,6 +239,51 @@ void Car::update_single(ecs::Context<Registry> &ctx,
     auto &wheel_render_info = render_infos[wheel_id];
     wheel_render_info.mat =
         glm::rotate(wheel_render_info.mat, angle, glm ::vec3(0, 0, 1));
+  }
+}
+
+glm::mat4 Animation::interpolate_transforms(float ratio, const glm::mat4 &first,
+                                            const glm::mat4 &second) {
+  // TODO: use better interpolation algorithms
+  return first + ratio * (second - first);
+}
+
+bool Animation::should_apply(ecs::Context<Registry> &ctx,
+                             ecs::entities::EntityId id) {
+  return ctx.registry().state == GameState::IN_PROGRESS &&
+         ctx.registry().animations.count(id);
+}
+
+void Animation::update_single(ecs::Context<Registry> &ctx,
+                              ecs::entities::EntityId id) {
+  auto &animation = ctx.registry().animations[id];
+  const auto &info = animation.info;
+  if (info.kind == components::AnimationKind::DISABLED)
+    return;
+
+  switch (animation.state) {
+  case components::AnimationState::BEFORE_START:
+    animation.state = components::AnimationState::RUNNING;
+    animation.time_elapsed = 0;
+    break;
+  case components::AnimationState::RUNNING: {
+    animation.time_elapsed += ctx.delta_time();
+    const auto time_hi = info.keyframes.upper_bound(animation.time_elapsed);
+    if (time_hi == info.keyframes.cbegin() ||
+        time_hi == info.keyframes.cend()) {
+      animation.state = components::AnimationState::FINISHED;
+      break;
+    }
+    const auto time_lo = std::prev(time_hi);
+
+    const auto ratio = (animation.time_elapsed - time_lo->first) /
+                       (time_hi->first - time_lo->first);
+    animation.mat =
+        interpolate_transforms(ratio, time_lo->second, time_hi->second);
+    break;
+  }
+  case components::AnimationState::FINISHED:
+    break;
   }
 }
 } // namespace systems
