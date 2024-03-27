@@ -193,6 +193,10 @@ void create_character(ecs::Context<Registry> &ctx) {
             glm::translate(glm::mat4(1), glm::vec3(character_pos[0],
                                                    character_pos[1], 0.0f))});
   ctx.registry().characters[id] = {};
+  ctx.registry().animations[id] = {components::AnimationState::BEFORE_START,
+                                   {components::AnimationKind::DISABLED, {}},
+                                   glm::mat4(1),
+                                   0};
   ctx.registry().character_id = id;
 }
 
