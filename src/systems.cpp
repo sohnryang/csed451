@@ -199,7 +199,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     }
   } else if (win_zones.count(id)) {
     const auto &win_zone = win_zones.at(id);
-    if (character_bb.intersect_with(win_zone.bounding_box))
+    if (character_bb.contained_in(win_zone.bounding_box))
       ctx.registry().state = GameState::WIN;
   } else {
     const auto &car_render_info = render_infos.at(id);
