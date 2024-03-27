@@ -11,6 +11,7 @@
 const float TREE_RADIUS = STEP_SIZE * 0.75f / 2.0f,
             ROAD_LINE_WIDTH = STEP_SIZE * 0.05f,
             CAR_RADIUS_X = STEP_SIZE * 1.5f / 2.0f,
+            CAR_RADIUS_X_SHORT = STEP_SIZE * 0.7f / 2.0f,
             CAR_RADIUS_Y = STEP_SIZE * 0.7f / 2.0f,
             WHEEL_RADIUS = STEP_SIZE * 0.125f, CHARACTER_RADIUS = 0.1f;
 
@@ -24,6 +25,17 @@ const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                         WHEEL_MARKING_COLOR = {1, 1, 1},
                         CHARACTER_COLOR = {1, 1, 1};
 
+const std::vector<glm::vec4> CAR_VERTICES = {
+    glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+    glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+    glm::vec4(CAR_RADIUS_X, 0.0f, 0.5f, 1.0f),
+    glm::vec4(CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
+    glm::vec4(CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
+    glm::vec4(-CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
+    glm::vec4(-CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f), // This coord works abnormal, idk why
+    glm::vec4(-CAR_RADIUS_X, 0.0f, 0.5f, 1.0f)};
+    
+
 void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
                   const components::Color &color);
 
@@ -32,6 +44,10 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
 
 void create_road_line(ecs::Context<Registry> &ctx, const std::size_t row_index,
                       const components::Color &color);
+
+void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
+                const std::size_t row_index, const float vel,
+                const components::Color &color);
 
 void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,

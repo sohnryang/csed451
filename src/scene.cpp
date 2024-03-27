@@ -89,13 +89,8 @@ void create_road_line(ecs::Context<Registry> &ctx, const std::size_t row_index,
 void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,
                 const components::Color &color) {
-  // might move this constant (0.75) to somewhere
   const float actual_pos_y = grid_ticks_to_float(row_index) + STEP_SIZE * 0.5f;
-  std::vector<glm::vec4> vertices = {
-      glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
-      glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
-      glm::vec4(CAR_RADIUS_X, CAR_RADIUS_Y, 0.5f, 1.0f),
-      glm::vec4(-CAR_RADIUS_X, CAR_RADIUS_Y, 0.5f, 1.0f)};
+  auto vertices = CAR_VERTICES;
   const auto id = ctx.registry().add_render_info(
       ctx,
       {std::make_unique<components::VertexVector>(std::move(vertices)), color,
