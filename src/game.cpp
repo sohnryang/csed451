@@ -28,16 +28,16 @@ void idle() { glutPostRedisplay(); }
 void keyboard_handle(int key, int x, int y) {
   switch (key) {
   case GLUT_KEY_UP:
-    input_handler->push_input(systems::InputKind::UP);
+    ctx_ptr->registry().input_queue.push(InputKind::UP);
     break;
   case GLUT_KEY_DOWN:
-    input_handler->push_input(systems::InputKind::DOWN);
+    ctx_ptr->registry().input_queue.push(InputKind::DOWN);
     break;
   case GLUT_KEY_LEFT:
-    input_handler->push_input(systems::InputKind::LEFT);
+    ctx_ptr->registry().input_queue.push(InputKind::LEFT);
     break;
   case GLUT_KEY_RIGHT:
-    input_handler->push_input(systems::InputKind::RIGHT);
+    ctx_ptr->registry().input_queue.push(InputKind::RIGHT);
     break;
   }
 }

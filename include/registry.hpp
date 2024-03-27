@@ -3,11 +3,15 @@
 #include "ecs/entities.hpp"
 #include "ecs/systems.hpp"
 
+#include <queue>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "components.hpp"
 
 enum class GameState { IN_PROGRESS, LOSE, WIN };
+
+enum class InputKind { UP, DOWN, LEFT, RIGHT };
 
 struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::RenderInfo>
@@ -19,7 +23,10 @@ struct Registry {
   GameState state = GameState::IN_PROGRESS;
   std::unordered_map<ecs::entities::EntityId, components::WinZone> win_zones;
   std::unordered_map<ecs::entities::EntityId, components::Animation> animations;
+
   ecs::entities::EntityId character_id;
+  std::queue<InputKind> input_queue;
+  std::unordered_set<components::ActionKind> blocked_actions;
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);

@@ -123,9 +123,10 @@ bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
 void InputHandler::update_single(ecs::Context<Registry> &ctx,
                                  ecs::entities::EntityId id) {
   auto &character = ctx.registry().characters[id];
-  while (!_input_queue.empty()) {
-    const auto input = _input_queue.front();
-    _input_queue.pop();
+  auto &input_queue = ctx.registry().input_queue;
+  while (!input_queue.empty()) {
+    const auto input = input_queue.front();
+    input_queue.pop();
 
     switch (input) {
     case InputKind::UP:
@@ -144,10 +145,6 @@ void InputHandler::update_single(ecs::Context<Registry> &ctx,
   }
 }
 
-InputHandler::InputHandler() : _input_queue() {}
-
-void InputHandler::push_input(InputKind input) { _input_queue.push(input); }
-
 bool Character::should_apply(ecs::Context<Registry> &ctx,
                              ecs::entities::EntityId id) {
   return ctx.registry().state == GameState::IN_PROGRESS &&
@@ -156,7 +153,7 @@ bool Character::should_apply(ecs::Context<Registry> &ctx,
 }
 
 void Character::pre_update(ecs::Context<Registry> &ctx) {
-  blocked_actions.clear();
+  ctx.registry().blocked_actions.clear();
 }
 
 void Character::post_update(ecs::Context<Registry> &ctx) {
@@ -193,7 +190,7 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
 
   const auto action = character.actions.front();
   character.actions.pop();
-  if (blocked_actions.count(action))
+  if (ctx.registry().blocked_actions.count(action))
     return;
 
   switch (action) {
@@ -242,7 +239,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     const auto action_restriction = action_restrictions.at(id);
     if (character_bb.intersect_with(action_restriction.bounding_box)) {
       for (const auto &r : action_restriction.restrictions)
-        blocked_actions.insert(r);
+        ctx.registry().blocked_actions.insert(r);
     }
   } else if (win_zones.count(id)) {
     const auto &win_zone = win_zones.at(id);
@@ -256,8 +253,6 @@ void Character::update_single(ecs::Context<Registry> &ctx,
       ctx.registry().state = GameState::LOSE;
   }
 }
-
-Character::Character() : blocked_actions() {}
 
 bool Car::should_apply(ecs::Context<Registry> &ctx,
                        ecs::entities::EntityId id) {
