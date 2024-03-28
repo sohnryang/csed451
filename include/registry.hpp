@@ -24,6 +24,8 @@ struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::WinZone> win_zones;
   std::unordered_map<ecs::entities::EntityId, components::Animation> animations;
   std::unordered_map<ecs::entities::EntityId, components::ShoeItem> shoe_items;
+  std::unordered_set<ecs::entities::EntityId> wheels;
+  std::unordered_set<ecs::entities::EntityId> truck_plates;
 
   ecs::entities::EntityId character_id;
   std::queue<InputKind> input_queue;

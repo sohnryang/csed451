@@ -92,10 +92,32 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const components::Color &color) {
   const float actual_pos_y = grid_ticks_to_float(row_index) + STEP_SIZE * 0.5f;
   auto vertices = CAR_VERTICES;
+  auto translate_mat =
+      glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f));
+  if (vel <= 0.0f)
+    translate_mat =
+        glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
   const auto id = ctx.registry().add_render_info(
-      ctx,
-      {std::make_unique<components::VertexVector>(std::move(vertices)), color,
-       glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f))});
+      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
+            color, translate_mat});
+  ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
+  create_wheel(ctx, id, glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
+  create_wheel(ctx, id, glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
+}
+
+void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
+                  const std::size_t row_index, const float vel,
+                  const components::Color &color) {
+  const float actual_pos_y = grid_ticks_to_float(row_index) + STEP_SIZE * 0.5f;
+  auto vertices = TRUCK_VERTICES;
+  auto translate_mat =
+      glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f));
+  if (vel <= 0.0f)
+    translate_mat =
+        glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
+  const auto id = ctx.registry().add_render_info(
+      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
+            color, translate_mat});
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
   create_wheel(ctx, id, glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
   create_wheel(ctx, id, glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
@@ -108,6 +130,7 @@ void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
                                                        WHEEL_RADIUS),
             WHEEL_COLOR, glm::translate(glm::mat4(1), position)});
   ctx.entity_manager().link_parent_child(car_id, id);
+  ctx.registry().wheels.insert(id);
 
   std::vector<glm::vec4> vertices = {
       glm::vec4(WHEEL_RADIUS * 0.8f, -WHEEL_RADIUS * 0.1, 0.15f, 0),
@@ -157,14 +180,14 @@ void create_map(ecs::Context<Registry> &ctx) {
 
   create_car(ctx, -0.7f, 1, 0.2f, CAR_COLOR);
   create_car(ctx, 0.1f, 1, 0.2f, CAR_COLOR);
-  create_car(ctx, -0.3f, 2, -0.3f, CAR_COLOR);
-  create_car(ctx, 0.1f, 2, -0.3f, CAR_COLOR);
+  create_truck(ctx, -0.3f, 2, -0.3f, TRUCK_COLOR);
+  create_car(ctx, 0.4f, 2, -0.3f, CAR_COLOR);
   create_car(ctx, -0.4f, 4, 0.25f, CAR_COLOR);
   create_car(ctx, 0.6f, 4, 0.25f, CAR_COLOR);
-  create_car(ctx, -1.0f, 5, 0.35f, CAR_COLOR);
+  create_truck(ctx, -1.0f, 5, 0.35f, TRUCK_COLOR);
   create_car(ctx, 0.2f, 5, 0.35f, CAR_COLOR);
   create_car(ctx, 0.7f, 5, 0.35f, CAR_COLOR);
-  create_car(ctx, -0.8f, 6, -0.15f, CAR_COLOR);
+  create_truck(ctx, -0.8f, 6, -0.15f, TRUCK_COLOR);
   create_car(ctx, -0.1f, 6, -0.15f, CAR_COLOR);
   create_car(ctx, 0.7f, 6, -0.15f, CAR_COLOR);
 

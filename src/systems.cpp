@@ -308,14 +308,16 @@ void Car::update_single(ecs::Context<Registry> &ctx,
   const auto car_bb = render_info.bounding_box();
   const auto xmin = car_bb.top_left[0], xmax = car_bb.bottom_right[0];
   if (car.vel[0] < 0.0f && xmax < -1.0f)
-    render_info.mat = glm::translate(render_info.mat, glm::vec3(3.0f, 0, 0));
+    render_info.mat =
+        glm::translate(glm::mat4(1), glm::vec3(3.0f, 0, 0)) * render_info.mat;
   else if (car.vel[0] > 0.0f && xmin > 1.0f)
-    render_info.mat = glm::translate(render_info.mat, glm::vec3(-3.0f, 0, 0));
+    render_info.mat =
+        glm::translate(glm::mat4(1), glm::vec3(-3.0f, 0, 0)) * render_info.mat;
   const auto disp = ctx.delta_time() * car.vel;
-  render_info.mat = glm::translate(render_info.mat, disp);
+  render_info.mat = glm::translate(glm::mat4(1), disp) * render_info.mat;
 
   const auto &wheel_ids = ctx.entity_manager().entity_graph()[id].children;
-  const auto angle = -disp[0] / WHEEL_RADIUS;
+  const auto angle = -abs(disp[0]) / WHEEL_RADIUS;
   for (const auto wheel_id : wheel_ids) {
     auto &wheel_render_info = render_infos[wheel_id];
     wheel_render_info.mat =

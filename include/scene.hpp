@@ -30,6 +30,7 @@ const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                         ROAD_LINE_COLOR = {255.0 / 255, 255.0 / 255,
                                            255.0 / 255},
                         CAR_COLOR = {66.0 / 255, 147.0 / 255, 252.0 / 255},
+                        TRUCK_COLOR = {36.0 / 255, 46.0 / 255, 237.0 / 255},
                         WHEEL_COLOR = {0, 0, 0},
                         WHEEL_MARKING_COLOR = {1, 1, 1},
                         CHARACTER_COLOR = {200.0f / 255, 1.0f / 255,
@@ -37,21 +38,20 @@ const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                         SHOE_COLOR = {0, 170.0f / 255, 1};
 
 const std::vector<glm::vec4>
-    CAR_VERTICES = {glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+    CAR_VERTICES = {glm::vec4(-CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
+                    glm::vec4(-CAR_RADIUS_X, 0.0f, 0.5f, 1.0f),
+                    glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
                     glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
                     glm::vec4(CAR_RADIUS_X, 0.0f, 0.5f, 1.0f),
                     glm::vec4(CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
                     glm::vec4(CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
-                    glm::vec4(-CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
-                    // This coord works abnormal, idk why
-                    glm::vec4(-CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
-                    glm::vec4(-CAR_RADIUS_X, 0.0f, 0.5f, 1.0f)},
-    TRUCK_VERTICES = {glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
+                    glm::vec4(-CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f)},
+    TRUCK_VERTICES = {glm::vec4(CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
+                      glm::vec4(-CAR_RADIUS_X, 0.0f, 0.5f, 1.0f),
+                      glm::vec4(-CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
                       glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
                       glm::vec4(CAR_RADIUS_X, CAR_RADIUS_Y, 0.5f, 1.0f),
-                      glm::vec4(CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f),
-                      glm::vec4(CAR_RADIUS_X_SHORT, 0.0f, 0.5f, 1.0f),
-                      glm::vec4(-CAR_RADIUS_X, 0.0f, 0.5f, 1.0f)},
+                      glm::vec4(CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f)},
     SHOE_VERTICES = {glm::vec4(0.0f, 0.0f, 0.5f, 1.0f),
                      glm::vec4(0.0f, SHOE_RADIUS, 0.5f, 1.0f),
                      glm::vec4(-SHOE_RADIUS, SHOE_RADIUS, 0.5f, 1.0f),
@@ -68,13 +68,13 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
 void create_road_line(ecs::Context<Registry> &ctx, const std::size_t row_index,
                       const components::Color &color);
 
-void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
-                  const std::size_t row_index, const float vel,
-                  const components::Color &color);
-
 void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,
                 const components::Color &color);
+
+void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
+                  const std::size_t row_index, const float vel,
+                  const components::Color &color);
 
 void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
                   const glm::vec3 &position);
