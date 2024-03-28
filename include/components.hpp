@@ -69,6 +69,7 @@ struct Character {
   static constexpr float DEFAULT_ANIMATION_DURATION = 0.2f;
   ActionKind current_action;
   std::queue<ActionKind> actions;
+  float speed_multipler = 1.0f;
 };
 
 struct ActionRestriction {
