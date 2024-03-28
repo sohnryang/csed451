@@ -214,6 +214,8 @@ void create_character(ecs::Context<Registry> &ctx) {
              glm::vec3(STEP_SIZE * 0.1f, -TORSO_RADIUS_Y - LEG_RADIUS_Y, 0));
   create_leg(ctx, id,
              glm::vec3(-STEP_SIZE * 0.1f, -TORSO_RADIUS_Y - LEG_RADIUS_Y, 0));
+  create_wing(ctx, id, glm::vec3(STEP_SIZE * 0.25f, 0, 0), true);
+  create_wing(ctx, id, glm::vec3(-STEP_SIZE * 0.25f, 0, 0), false);
 }
 
 void create_head(ecs::Context<Registry> &ctx,
@@ -249,6 +251,22 @@ void create_leg(ecs::Context<Registry> &ctx,
        {{0.0f, glm::mat4(1)},
         {components::Character::DEFAULT_ANIMATION_DURATION,
          glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE * 0.1, 0))}}});
+  ctx.entity_manager().link_parent_child(character_id, id);
+}
+
+void create_wing(ecs::Context<Registry> &ctx,
+                 ecs::entities::EntityId character_id,
+                 const glm::vec3 &position, bool reflect) {
+  std::vector<glm::vec4> vertices = {
+      glm::vec4(-WING_RADIUS_X, -WING_RADIUS_Y, 0.5f, 1.0f),
+      glm::vec4(WING_RADIUS_X, -WING_RADIUS_Y, 0.5f, 1.0f),
+      glm::vec4(WING_RADIUS_X, WING_RADIUS_Y, 0.5f, 1.0f),
+      glm::vec4(-WING_RADIUS_X, WING_RADIUS_Y, 0.5f, 1.0f)};
+  const auto id = ctx.registry().add_render_info(
+      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
+            CHARACTER_COLOR,
+            glm::rotate(glm::translate(glm::mat4(1), position),
+                        reflect ? -PI / 4 : PI / 4, glm::vec3(0, 0, 1))});
   ctx.entity_manager().link_parent_child(character_id, id);
 }
 

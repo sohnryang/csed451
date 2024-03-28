@@ -15,11 +15,13 @@ const float PI = std::acos(-1), TREE_RADIUS = STEP_SIZE * 0.75f / 2.0f,
             CAR_RADIUS_X = STEP_SIZE * 1.5f / 2.0f,
             CAR_RADIUS_X_SHORT = STEP_SIZE * 0.7f / 2.0f,
             CAR_RADIUS_Y = STEP_SIZE * 0.7f / 2.0f,
-            WHEEL_RADIUS = STEP_SIZE * 0.125f, CHARACTER_RADIUS = 0.1f,
+            WHEEL_RADIUS = STEP_SIZE * 0.125f,
+            CHARACTER_RADIUS = STEP_SIZE * 0.5f,
             TORSO_RADIUS_X = STEP_SIZE * 0.2f,
             TORSO_RADIUS_Y = STEP_SIZE * 0.3f, LEG_RADIUS_X = STEP_SIZE * 0.05f,
             HEAD_RADIUS_X = TORSO_RADIUS_X / std::sqrt(2) * 0.75f,
             HEAD_RADIUS_Y = STEP_SIZE * 0.2f, LEG_RADIUS_Y = STEP_SIZE * 0.1f,
+            WING_RADIUS_X = STEP_SIZE * 0.25f, WING_RADIUS_Y = STEP_SIZE * 0.1f,
             SHOE_RADIUS = STEP_SIZE * 0.375f;
 
 const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
@@ -92,8 +94,8 @@ void create_leg(ecs::Context<Registry> &ctx,
                 ecs::entities::EntityId character_id,
                 const glm::vec3 &position);
 
-void create_wings(ecs::Context<Registry> &ctx,
-                  ecs::entities::EntityId character_id,
-                  const glm::vec3 &position, bool reflect);
+void create_wing(ecs::Context<Registry> &ctx,
+                 ecs::entities::EntityId character_id,
+                 const glm::vec3 &position, bool reflect);
 
 void create_win_zone(ecs::Context<Registry> &ctx);
