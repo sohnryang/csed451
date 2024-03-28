@@ -65,7 +65,7 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
     const auto restriction_id = ctx.entity_manager().next_id();
 
     ctx.registry().action_restrictions[restriction_id] = {
-        {top_left, bottom_right}, {action}};
+        {top_left, bottom_right}, {action}, false};
   }
 }
 
@@ -171,7 +171,7 @@ void create_map(ecs::Context<Registry> &ctx) {
     const auto restriction_id = ctx.entity_manager().next_id();
     const auto &bb = p.first;
     const auto &action = p.second;
-    ctx.registry().action_restrictions[restriction_id] = {bb, {action}};
+    ctx.registry().action_restrictions[restriction_id] = {bb, {action}, true};
   }
 }
 

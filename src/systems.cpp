@@ -238,6 +238,8 @@ void Character::update_single(ecs::Context<Registry> &ctx,
 
   if (action_restrictions.count(id)) {
     const auto action_restriction = action_restrictions.at(id);
+    if (ctx.registry().pass_through && !action_restriction.ignore_passthrough)
+      return;
     if (character_bb.intersect_with(action_restriction.bounding_box)) {
       for (const auto &r : action_restriction.restrictions)
         ctx.registry().blocked_actions.insert(r);
@@ -246,7 +248,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     const auto &win_zone = win_zones.at(id);
     if (character_bb.contained_in(win_zone.bounding_box))
       ctx.registry().state = GameState::WIN;
-  } else {
+  } else if (!ctx.registry().pass_through) {
     const auto &car_render_info = render_infos.at(id);
     const auto &car_vertices = car_render_info.vertex_container->vertices();
     const auto car_bb = car_render_info.bounding_box();

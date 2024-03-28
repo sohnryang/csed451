@@ -27,6 +27,7 @@ struct Registry {
   ecs::entities::EntityId character_id;
   std::queue<InputKind> input_queue;
   std::unordered_set<components::ActionKind> blocked_actions;
+  bool pass_through;
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);

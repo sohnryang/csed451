@@ -73,6 +73,7 @@ struct Character {
 struct ActionRestriction {
   BoundingBox bounding_box;
   std::vector<ActionKind> restrictions;
+  bool ignore_passthrough;
 };
 
 struct WinZone {

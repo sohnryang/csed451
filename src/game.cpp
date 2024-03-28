@@ -42,6 +42,11 @@ void keyboard_handle(int key, int x, int y) {
   }
 }
 
+void keyboard_handle_non_special(unsigned char key, int x, int y) {
+  if (key == 'p')
+    ctx_ptr->registry().pass_through = !ctx_ptr->registry().pass_through;
+}
+
 int main(int argc, char **argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -65,6 +70,7 @@ int main(int argc, char **argv) {
 
   glutDisplayFunc(display);
   glutIdleFunc(idle);
+  glutKeyboardFunc(keyboard_handle_non_special);
   glutSpecialFunc(keyboard_handle);
   glutMainLoop();
 }
