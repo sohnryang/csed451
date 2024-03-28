@@ -342,15 +342,16 @@ void Animation::update_single(ecs::Context<Registry> &ctx,
     break;
   case components::AnimationState::RUNNING: {
     animation.time_elapsed += ctx.delta_time();
+    auto normalized_time = animation.time_elapsed;
     if (info.kind == components::AnimationKind::LOOP) {
       const auto duration = info.keyframes.crbegin()->first,
                  modulo = std::fmod(animation.time_elapsed, 2 * duration);
       if (modulo > duration)
-        animation.time_elapsed = 2 * duration - modulo;
+        normalized_time = 2 * duration - modulo;
       else
-        animation.time_elapsed = modulo;
+        normalized_time = modulo;
     }
-    const auto time_hi = info.keyframes.upper_bound(animation.time_elapsed);
+    const auto time_hi = info.keyframes.upper_bound(normalized_time);
     if (time_hi == info.keyframes.cbegin() ||
         time_hi == info.keyframes.cend()) {
       animation.state = components::AnimationState::FINISHED;
@@ -358,8 +359,8 @@ void Animation::update_single(ecs::Context<Registry> &ctx,
     }
     const auto time_lo = std::prev(time_hi);
 
-    const auto ratio = (animation.time_elapsed - time_lo->first) /
-                       (time_hi->first - time_lo->first);
+    const auto ratio =
+        (normalized_time - time_lo->first) / (time_hi->first - time_lo->first);
     animation.mat =
         interpolate_transforms(ratio, time_lo->second, time_hi->second);
     break;
