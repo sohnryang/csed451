@@ -121,6 +121,18 @@ void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
   ctx.entity_manager().link_parent_child(id, mark_id);
 }
 
+void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
+                      std::size_t col_index) {
+  const auto position = grid_to_world_cell(col_index, row_index).midpoint();
+  auto vertices = SHOE_VERTICES;
+  const auto shoe_id = ctx.registry().add_render_info(
+      ctx,
+      {std::make_unique<components::VertexVector>(std::move(vertices)),
+       SHOE_COLOR,
+       glm::translate(glm::mat4(1), glm::vec3(position[0], position[1], 0))});
+  ctx.registry().shoe_items[shoe_id] = {};
+}
+
 void create_map(ecs::Context<Registry> &ctx) {
   fill_map_row(ctx, 0, GRASS_COLOR);
   fill_map_row(ctx, 1, ROAD_COLOR);
@@ -154,6 +166,8 @@ void create_map(ecs::Context<Registry> &ctx) {
   create_car(ctx, -0.8f, 6, -0.15f, CAR_COLOR);
   create_car(ctx, -0.1f, 6, -0.15f, CAR_COLOR);
   create_car(ctx, 0.7f, 6, -0.15f, CAR_COLOR);
+
+  create_shoe_item(ctx, 3, 2);
 
   const std::vector<std::pair<BoundingBox, components::ActionKind>>
       adjacent_pos = {{{
