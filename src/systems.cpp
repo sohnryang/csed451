@@ -150,7 +150,8 @@ bool Character::should_apply(ecs::Context<Registry> &ctx,
                              ecs::entities::EntityId id) {
   return ctx.registry().state == GameState::IN_PROGRESS &&
          (ctx.registry().action_restrictions.count(id) ||
-          ctx.registry().win_zones.count(id) || ctx.registry().cars.count(id));
+          ctx.registry().win_zones.count(id) || ctx.registry().cars.count(id) ||
+          ctx.registry().shoe_items.count(id));
 }
 
 void Character::pre_update(ecs::Context<Registry> &ctx) {
@@ -182,6 +183,8 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     case components::ActionKind::MOVE_RIGHT:
       render_info.mat *=
           glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0));
+      break;
+    default:
       break;
     }
     Animation::disable(ctx, character_id);
@@ -224,6 +227,9 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
                      {duration, glm::translate(glm::mat4(1),
                                                glm::vec3(STEP_SIZE, 0, 0))}}});
     break;
+  case components::ActionKind::WEAR_SHOE:
+    character.speed_multipler *= components::ShoeItem::MULTIPLIER;
+    break;
   }
   character.current_action = action;
 }
@@ -233,13 +239,14 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto &action_restrictions = ctx.registry().action_restrictions;
   const auto &win_zones = ctx.registry().win_zones;
   const auto character_id = ctx.registry().character_id;
-  const auto &render_infos = ctx.registry().render_infos;
+  auto &render_infos = ctx.registry().render_infos;
   const auto &character_render_info = render_infos.at(character_id);
   const auto &character_vertices =
       character_render_info.vertex_container->vertices();
   const auto &animation = ctx.registry().animations[character_id];
   const auto character_bb =
       character_render_info.bounding_box_with_trasform(animation.mat);
+  auto &shoe_items = ctx.registry().shoe_items;
 
   if (action_restrictions.count(id)) {
     const auto action_restriction = action_restrictions.at(id);
@@ -253,6 +260,15 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     const auto &win_zone = win_zones.at(id);
     if (character_bb.contained_in(win_zone.bounding_box))
       ctx.registry().state = GameState::WIN;
+  } else if (shoe_items.count(id)) {
+    const auto shoe_item_bb = render_infos.at(id).bounding_box();
+    if (!shoe_item_bb.intersect_with(character_bb))
+      return;
+    render_infos.erase(id);
+    shoe_items.erase(id);
+    ctx.entity_manager().remove_id(id);
+    auto &character = ctx.registry().characters[character_id];
+    character.actions.push(components::ActionKind::WEAR_SHOE);
   } else if (!ctx.registry().pass_through) {
     const auto &car_render_info = render_infos.at(id);
     const auto &car_vertices = car_render_info.vertex_container->vertices();
