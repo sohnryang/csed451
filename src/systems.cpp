@@ -199,28 +199,32 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
         ctx, character_id,
         {components::AnimationKind::ONCE,
          {{0.0f, glm::mat4(1)},
-          {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE, 0))}}});
+          {components::Character::DEFAULT_ANIMATION_DURATION,
+           glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE, 0))}}});
     break;
   case components::ActionKind::MOVE_DOWN:
     Animation::set(
         ctx, character_id,
         {components::AnimationKind::ONCE,
          {{0.0f, glm::mat4(1)},
-          {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, -STEP_SIZE, 0))}}});
+          {components::Character::DEFAULT_ANIMATION_DURATION,
+           glm::translate(glm::mat4(1), glm::vec3(0, -STEP_SIZE, 0))}}});
     break;
   case components::ActionKind::MOVE_LEFT:
     Animation::set(
         ctx, character_id,
         {components::AnimationKind::ONCE,
          {{0.0f, glm::mat4(1)},
-          {0.2f, glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0))}}});
+          {components::Character::DEFAULT_ANIMATION_DURATION,
+           glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0))}}});
     break;
   case components::ActionKind::MOVE_RIGHT:
     Animation::set(
         ctx, character_id,
         {components::AnimationKind::ONCE,
          {{0.0f, glm::mat4(1)},
-          {0.2f, glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0))}}});
+          {components::Character::DEFAULT_ANIMATION_DURATION,
+           glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0))}}});
     break;
   }
   character.current_action = action;
