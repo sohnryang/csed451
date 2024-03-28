@@ -101,4 +101,8 @@ struct Animation {
   glm::mat4 mat;
   float time_elapsed;
 };
+
+struct ShoeItem {
+  static constexpr float MULTIPLIER = 2.0f;
+};
 } // namespace components

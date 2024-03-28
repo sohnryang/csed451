@@ -23,6 +23,7 @@ struct Registry {
   GameState state = GameState::IN_PROGRESS;
   std::unordered_map<ecs::entities::EntityId, components::WinZone> win_zones;
   std::unordered_map<ecs::entities::EntityId, components::Animation> animations;
+  std::unordered_map<ecs::entities::EntityId, components::ShoeItem> shoe_items;
 
   ecs::entities::EntityId character_id;
   std::queue<InputKind> input_queue;
