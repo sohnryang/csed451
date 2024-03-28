@@ -24,7 +24,8 @@ const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                         CAR_COLOR = {66.0 / 255, 147.0 / 255, 252.0 / 255},
                         WHEEL_COLOR = {0, 0, 0},
                         WHEEL_MARKING_COLOR = {1, 1, 1},
-                        CHARACTER_COLOR = {1, 1, 1},
+                        CHARACTER_COLOR = {200.0f / 255, 1.0f / 255,
+                                           80.0f / 255},
                         SHOE_COLOR = {0, 170.0f / 255, 1};
 
 const std::vector<glm::vec4>
