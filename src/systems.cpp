@@ -1,5 +1,6 @@
 #include "systems.hpp"
 
+#include "bounding_box.hpp"
 #include "ecs/entities.hpp"
 #include "ecs/systems.hpp"
 
@@ -244,8 +245,13 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto &character_vertices =
       character_render_info.vertex_container->vertices();
   const auto &animation = ctx.registry().animations[character_id];
+  const auto character_center =
+      character_render_info.mat * animation.mat * glm::vec4(0, 0, 0, 1);
   const auto character_bb =
-      character_render_info.bounding_box_with_trasform(animation.mat);
+      BoundingBox{glm::vec2(character_center[0] - CHARACTER_RADIUS,
+                            character_center[1] + CHARACTER_RADIUS),
+                  glm::vec2(character_center[0] + CHARACTER_RADIUS,
+                            character_center[1] - CHARACTER_RADIUS)};
   auto &shoe_items = ctx.registry().shoe_items;
 
   if (action_restrictions.count(id)) {
