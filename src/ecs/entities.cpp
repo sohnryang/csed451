@@ -32,11 +32,13 @@ void EntityManager::remove_id(EntityId id) {
   if (!_entity_graph.count(id))
     throw std::out_of_range("ID not found");
 
-  const auto &node = _entity_graph[id];
-  auto &parent_children = _entity_graph[node.parent].children;
-  const auto it =
-      std::find(parent_children.cbegin(), parent_children.cend(), id);
-  parent_children.erase(it);
+  {
+    const auto &node = _entity_graph[id];
+    auto &parent_children = _entity_graph[node.parent].children;
+    auto it = std::find(parent_children.begin(), parent_children.end(), id);
+    if (it != parent_children.end())
+      parent_children.erase(it);
+  }
   _entity_graph.erase(id);
   _vacant_ids.push(id);
 }
