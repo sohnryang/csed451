@@ -3,7 +3,6 @@
 #include "ecs/entities.hpp"
 #include "ecs/systems.hpp"
 
-#include <cmath>
 #include <glm/glm.hpp>
 
 #include <glm/ext/matrix_transform.hpp>
@@ -15,6 +14,7 @@
 #include <gl/glut.h>
 #endif
 
+#include <cmath>
 #include <cstddef>
 #include <iterator>
 #include <string>

@@ -1,11 +1,11 @@
 #include "registry.hpp"
 
 #include "ecs/entities.hpp"
+#include "ecs/systems.hpp"
 
 #include <utility>
 
 #include "components.hpp"
-#include "ecs/systems.hpp"
 
 ecs::entities::EntityId
 Registry::add_render_info(ecs::Context<Registry> &ctx,
