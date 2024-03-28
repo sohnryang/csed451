@@ -70,5 +70,13 @@ private:
 
   void update_single(ecs::Context<Registry> &ctx,
                      ecs::entities::EntityId id) override;
+
+public:
+  static void set(ecs::Context<Registry> &ctx, ecs::entities::EntityId id,
+                  components::AnimationInfo &&animation_info);
+
+  static void reset(ecs::Context<Registry> &ctx, ecs::entities::EntityId id);
+
+  static void disable(ecs::Context<Registry> &ctx, ecs::entities::EntityId id);
 };
 } // namespace systems

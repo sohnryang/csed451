@@ -184,9 +184,8 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
           glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0));
       break;
     }
-    animation.state = components::AnimationState::BEFORE_START;
-    animation.mat = glm::mat4(1);
-    animation.info.kind = components::AnimationKind::DISABLED;
+    Animation::disable(ctx, character_id);
+    Animation::reset(ctx, character_id);
   }
 
   const auto action = character.actions.front();
@@ -196,28 +195,32 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
 
   switch (action) {
   case components::ActionKind::MOVE_UP:
-    animation.info = {
-        components::AnimationKind::ONCE,
-        {{0.0f, glm::mat4(1)},
-         {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE, 0))}}};
+    Animation::set(
+        ctx, character_id,
+        {components::AnimationKind::ONCE,
+         {{0.0f, glm::mat4(1)},
+          {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE, 0))}}});
     break;
   case components::ActionKind::MOVE_DOWN:
-    animation.info = {
-        components::AnimationKind::ONCE,
-        {{0.0f, glm::mat4(1)},
-         {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, -STEP_SIZE, 0))}}};
+    Animation::set(
+        ctx, character_id,
+        {components::AnimationKind::ONCE,
+         {{0.0f, glm::mat4(1)},
+          {0.2f, glm::translate(glm::mat4(1), glm::vec3(0, -STEP_SIZE, 0))}}});
     break;
   case components::ActionKind::MOVE_LEFT:
-    animation.info = {
-        components::AnimationKind::ONCE,
-        {{0.0f, glm::mat4(1)},
-         {0.2f, glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0))}}};
+    Animation::set(
+        ctx, character_id,
+        {components::AnimationKind::ONCE,
+         {{0.0f, glm::mat4(1)},
+          {0.2f, glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0))}}});
     break;
   case components::ActionKind::MOVE_RIGHT:
-    animation.info = {
-        components::AnimationKind::ONCE,
-        {{0.0f, glm::mat4(1)},
-         {0.2f, glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0))}}};
+    Animation::set(
+        ctx, character_id,
+        {components::AnimationKind::ONCE,
+         {{0.0f, glm::mat4(1)},
+          {0.2f, glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0))}}});
     break;
   }
   character.current_action = action;
@@ -302,13 +305,16 @@ void Animation::update_single(ecs::Context<Registry> &ctx,
                               ecs::entities::EntityId id) {
   auto &animation = ctx.registry().animations[id];
   const auto &info = animation.info;
-  if (info.kind == components::AnimationKind::DISABLED)
+  if (info.kind == components::AnimationKind::DISABLED) {
+    animation.mat = glm::mat4(1);
     return;
+  }
 
   switch (animation.state) {
   case components::AnimationState::BEFORE_START:
     animation.state = components::AnimationState::RUNNING;
     animation.time_elapsed = 0;
+    animation.mat = glm::mat4(1);
     break;
   case components::AnimationState::RUNNING: {
     animation.time_elapsed += ctx.delta_time();
@@ -337,5 +343,23 @@ void Animation::update_single(ecs::Context<Registry> &ctx,
   case components::AnimationState::FINISHED:
     break;
   }
+}
+
+void Animation::set(ecs::Context<Registry> &ctx, ecs::entities::EntityId id,
+                    components::AnimationInfo &&animation_info) {
+  auto &animation = ctx.registry().animations[id];
+  animation.info = animation_info;
+  reset(ctx, id);
+}
+
+void Animation::reset(ecs::Context<Registry> &ctx, ecs::entities::EntityId id) {
+  auto &animation = ctx.registry().animations[id];
+  animation.state = components::AnimationState::BEFORE_START;
+}
+
+void Animation::disable(ecs::Context<Registry> &ctx,
+                        ecs::entities::EntityId id) {
+  auto &animation = ctx.registry().animations[id];
+  animation.info.kind = components::AnimationKind::DISABLED;
 }
 } // namespace systems
