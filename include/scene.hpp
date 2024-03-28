@@ -3,13 +3,14 @@
 #include "ecs/entities.hpp"
 #include "ecs/systems.hpp"
 
+#include <cmath>
 #include <cstddef>
 
 #include "components.hpp"
 #include "grid.hpp"
 #include "registry.hpp"
 
-const float TREE_RADIUS = STEP_SIZE * 0.75f / 2.0f,
+const float PI = std::acos(-1), TREE_RADIUS = STEP_SIZE * 0.75f / 2.0f,
             ROAD_LINE_WIDTH = STEP_SIZE * 0.05f,
             CAR_RADIUS_X = STEP_SIZE * 1.5f / 2.0f,
             CAR_RADIUS_X_SHORT = STEP_SIZE * 0.7f / 2.0f,
