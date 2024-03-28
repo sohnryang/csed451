@@ -13,6 +13,7 @@
 #include "components.hpp"
 #include "grid.hpp"
 #include "registry.hpp"
+#include "systems.hpp"
 
 // TODO: map generation
 // divide the map with NxN grid. let every entity placement, movement and
@@ -208,9 +209,15 @@ void create_character(ecs::Context<Registry> &ctx) {
                                    0};
   ctx.registry().character_id = id;
 
-  create_leg(ctx, id, glm::vec3(STEP_SIZE * 0.1f, -STEP_SIZE * 0.1f, 0));
-  create_leg(ctx, id, glm::vec3(-STEP_SIZE * 0.1f, -STEP_SIZE * 0.1f, 0));
+  create_leg(ctx, id,
+             glm::vec3(STEP_SIZE * 0.1f, -TORSO_RADIUS_Y - LEG_RADIUS_Y, 0));
+  create_leg(ctx, id,
+             glm::vec3(-STEP_SIZE * 0.1f, -TORSO_RADIUS_Y - LEG_RADIUS_Y, 0));
 }
+
+void create_head(ecs::Context<Registry> &ctx,
+                 ecs::entities::EntityId character_id,
+                 const glm::vec3 &position) {}
 
 void create_leg(ecs::Context<Registry> &ctx,
                 ecs::entities::EntityId character_id,
@@ -223,6 +230,12 @@ void create_leg(ecs::Context<Registry> &ctx,
   const auto id = ctx.registry().add_render_info(
       ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
             CHARACTER_COLOR, glm::translate(glm::mat4(1), position)});
+  systems::Animation::set(
+      ctx, id,
+      {components::AnimationKind::LOOP,
+       {{0.0f, glm::mat4(1)},
+        {components::Character::DEFAULT_ANIMATION_DURATION,
+         glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE * 0.1, 0))}}});
   ctx.entity_manager().link_parent_child(character_id, id);
 }
 

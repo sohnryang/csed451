@@ -17,7 +17,7 @@ const float TREE_RADIUS = STEP_SIZE * 0.75f / 2.0f,
             WHEEL_RADIUS = STEP_SIZE * 0.125f, CHARACTER_RADIUS = 0.1f,
             TORSO_RADIUS_X = STEP_SIZE * 0.2f,
             TORSO_RADIUS_Y = STEP_SIZE * 0.3f, LEG_RADIUS_X = STEP_SIZE * 0.05f,
-            LEG_RADIUS_Y = 0.1f, SHOE_RADIUS = STEP_SIZE * 0.375f;
+            LEG_RADIUS_Y = STEP_SIZE * 0.1f, SHOE_RADIUS = STEP_SIZE * 0.375f;
 
 const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                         ROAD_COLOR = {172.0 / 255, 172.0 / 255, 172.0 / 255},
