@@ -14,3 +14,11 @@ Registry::add_render_info(ecs::Context<Registry> &ctx,
   render_infos[id] = std::move(render_info);
   return id;
 }
+
+TileType Registry::random_tile_type(ecs::Context<Registry> &ctx) {
+  return static_cast<TileType>(random_tile_length_dist(ctx.random_gen()));
+}
+
+int Registry::random_tile_length(ecs::Context<Registry>& ctx) {
+  return random_tile_length_dist(ctx.random_gen());
+}

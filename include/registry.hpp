@@ -4,6 +4,7 @@
 #include "ecs/systems.hpp"
 
 #include <queue>
+#include <random>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -12,6 +13,8 @@
 enum class GameState { IN_PROGRESS, LOSE, WIN };
 
 enum class InputKind { UP, DOWN, LEFT, RIGHT };
+
+enum class TileType { ROAD, GRASS };
 
 struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::RenderInfo>
@@ -32,6 +35,15 @@ struct Registry {
   std::unordered_set<components::ActionKind> blocked_actions;
   bool pass_through;
 
+  size_t map_bottom = 0;
+  size_t map_top_generated = 0;
+  std::uniform_int_distribution<int> random_tile_type_dist =
+      std::uniform_int_distribution<int>(0, 1);
+  std::uniform_int_distribution<int> random_tile_length_dist =
+      std::uniform_int_distribution<int>(1, 3);
+
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);
+  TileType random_tile_type(ecs::Context<Registry> &ctx);
+  int random_tile_length(ecs::Context<Registry> &ctx);
 };
