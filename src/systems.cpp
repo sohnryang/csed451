@@ -230,6 +230,16 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     break;
   case components::ActionKind::WEAR_SHOE:
     character.speed_multipler *= components::ShoeItem::MULTIPLIER;
+    for (const auto child_id :
+         ctx.entity_manager().entity_graph()[character_id].children) {
+      if (!ctx.registry().animations.count(child_id))
+        continue;
+      auto &child_animation = ctx.registry().animations[child_id];
+      std::map<float, glm::mat4> compressed;
+      for (const auto &p : child_animation.info.keyframes)
+        compressed[p.first / components::ShoeItem::MULTIPLIER] = p.second;
+      Animation::set(ctx, child_id, {child_animation.info.kind, compressed});
+    }
     break;
   }
   character.current_action = action;
