@@ -121,6 +121,7 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
   create_wheel(ctx, id, glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
   create_wheel(ctx, id, glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
+  create_plate(ctx, id, glm::vec3(CAR_RADIUS_X_SHORT, 0, 0));
 }
 
 void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
@@ -143,6 +144,22 @@ void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
                 std::vector<glm::vec4>(vertices)),
             WHEEL_MARKING_COLOR, glm::mat4(1)});
   ctx.entity_manager().link_parent_child(id, mark_id);
+}
+
+void create_plate(ecs::Context<Registry> &ctx, std::size_t car_id,
+                  const glm::vec3 &position) {
+  auto vertices = TRUCK_PLATE_VERTICES;
+  const auto id = ctx.registry().add_render_info(
+      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
+            TRUCK_PLATE_COLOR, glm::translate(glm::mat4(1), position)});
+  systems::Animation::set(
+      ctx, id,
+      {components::AnimationKind::LOOP,
+       {{0.0f, glm::mat4(1)},
+        {components::Car::TRUCK_PLATE_DURATION,
+         glm::rotate(glm::mat4(1), glm::radians(-20.0f), glm::vec3(0, 0, 1))}}});
+  ctx.entity_manager().link_parent_child(car_id, id);
+  ctx.registry().truck_plates.insert(id);
 }
 
 void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,

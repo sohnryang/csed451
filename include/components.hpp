@@ -83,6 +83,7 @@ struct WinZone {
 };
 
 struct Car {
+  static constexpr float TRUCK_PLATE_DURATION = 0.7f;
   glm::vec3 vel;
 };
 

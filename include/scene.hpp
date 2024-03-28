@@ -15,6 +15,7 @@ const float PI = std::acos(-1), TREE_RADIUS = STEP_SIZE * 0.75f / 2.0f,
             CAR_RADIUS_X = STEP_SIZE * 1.5f / 2.0f,
             CAR_RADIUS_X_SHORT = STEP_SIZE * 0.7f / 2.0f,
             CAR_RADIUS_Y = STEP_SIZE * 0.7f / 2.0f,
+            TRUCK_PLATE_THICKNESS = STEP_SIZE * 0.2f / 2.0f,
             WHEEL_RADIUS = STEP_SIZE * 0.125f,
             CHARACTER_RADIUS = STEP_SIZE * 0.5f,
             TORSO_RADIUS_X = STEP_SIZE * 0.2f,
@@ -31,6 +32,7 @@ const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                                            255.0 / 255},
                         CAR_COLOR = {66.0 / 255, 147.0 / 255, 252.0 / 255},
                         TRUCK_COLOR = {36.0 / 255, 46.0 / 255, 237.0 / 255},
+                        TRUCK_PLATE_COLOR = {12.0 / 255, 23.0 / 255, 120.0 / 255},
                         WHEEL_COLOR = {0, 0, 0},
                         WHEEL_MARKING_COLOR = {1, 1, 1},
                         CHARACTER_COLOR = {200.0f / 255, 1.0f / 255,
@@ -52,6 +54,12 @@ const std::vector<glm::vec4>
                       glm::vec4(CAR_RADIUS_X, -CAR_RADIUS_Y, 0.5f, 1.0f),
                       glm::vec4(CAR_RADIUS_X, CAR_RADIUS_Y, 0.5f, 1.0f),
                       glm::vec4(CAR_RADIUS_X_SHORT, CAR_RADIUS_Y, 0.5f, 1.0f)},
+    TRUCK_PLATE_VERTICES = {glm::vec4(0.0f, 0.0f, 0.5f, 1.0f),
+                            glm::vec4(-CAR_RADIUS_X - CAR_RADIUS_X_SHORT, 0.0f,
+                                      0.5f, 1.0f),
+                            glm::vec4(-CAR_RADIUS_X - CAR_RADIUS_X_SHORT,
+                                      TRUCK_PLATE_THICKNESS, 0.5f, 1.0f),
+                            glm::vec4(0.0f, TRUCK_PLATE_THICKNESS, 0.5f, 1.0f)},
     SHOE_VERTICES = {glm::vec4(0.0f, 0.0f, 0.5f, 1.0f),
                      glm::vec4(0.0f, SHOE_RADIUS, 0.5f, 1.0f),
                      glm::vec4(-SHOE_RADIUS, SHOE_RADIUS, 0.5f, 1.0f),
@@ -77,6 +85,9 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
                   const components::Color &color);
 
 void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
+                  const glm::vec3 &position);
+
+void create_plate(ecs::Context<Registry> &ctx, std::size_t car_id,
                   const glm::vec3 &position);
 
 void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,

@@ -316,12 +316,14 @@ void Car::update_single(ecs::Context<Registry> &ctx,
   const auto disp = ctx.delta_time() * car.vel;
   render_info.mat = glm::translate(glm::mat4(1), disp) * render_info.mat;
 
-  const auto &wheel_ids = ctx.entity_manager().entity_graph()[id].children;
+  const auto &children_ids = ctx.entity_manager().entity_graph()[id].children;
   const auto angle = -abs(disp[0]) / WHEEL_RADIUS;
-  for (const auto wheel_id : wheel_ids) {
-    auto &wheel_render_info = render_infos[wheel_id];
-    wheel_render_info.mat =
-        glm::rotate(wheel_render_info.mat, angle, glm ::vec3(0, 0, 1));
+  for (const auto child_id : children_ids) {
+    if (ctx.registry().wheels.count(child_id)) {
+      auto &wheel_render_info = render_infos[child_id];
+      wheel_render_info.mat =
+          glm::rotate(wheel_render_info.mat, angle, glm ::vec3(0, 0, 1));
+    }
   }
 }
 
