@@ -41,9 +41,12 @@ struct Registry {
       std::uniform_int_distribution<int>(0, 1);
   std::uniform_int_distribution<int> random_tile_length_dist =
       std::uniform_int_distribution<int>(1, 3);
+  std::uniform_int_distribution<int> random_column_dist =
+      std::uniform_int_distribution<int>(0, 7);
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);
   TileType random_tile_type(ecs::Context<Registry> &ctx);
   int random_tile_length(ecs::Context<Registry> &ctx);
+  int random_column(ecs::Context<Registry> &ctx);
 };
