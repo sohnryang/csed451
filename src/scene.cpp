@@ -175,6 +175,7 @@ void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
 }
 
 void create_map(ecs::Context<Registry> &ctx) {
+  
   fill_map_row(ctx, 0, GRASS_COLOR);
   fill_map_row(ctx, 1, ROAD_COLOR);
   fill_map_row(ctx, 2, ROAD_COLOR);
@@ -210,7 +211,7 @@ void create_map(ecs::Context<Registry> &ctx) {
 
   create_shoe_item(ctx, 3, 2);
 
-  const std::vector<std::pair<BoundingBox, components::ActionKind>>
+  /*const std::vector<std::pair<BoundingBox, components::ActionKind>>
       adjacent_pos = {{{
                            {1.0f - STEP_SIZE, 1.0f},
                            {1.0f, -1.0f},
@@ -227,11 +228,13 @@ void create_map(ecs::Context<Registry> &ctx) {
     const auto &bb = p.first;
     const auto &action = p.second;
     ctx.registry().action_restrictions[restriction_id] = {bb, {action}, true};
-  }
+  }*/
+  
+
 }
 
-void create_character(ecs::Context<Registry> &ctx) {
-  const auto character_pos = grid_to_world_cell(4, 0).midpoint();
+void create_character(ecs::Context<Registry> &ctx, std::size_t col_index) {
+  const auto character_pos = grid_to_world_cell(col_index, 0).midpoint();
   std::vector<glm::vec4> vertices = {
       glm::vec4(-TORSO_RADIUS_X, -TORSO_RADIUS_Y, 0.5f, 1.0f),
       glm::vec4(TORSO_RADIUS_X, -TORSO_RADIUS_Y, 0.5f, 1.0f),

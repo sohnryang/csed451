@@ -95,7 +95,7 @@ void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
 
 void create_map(ecs::Context<Registry> &ctx);
 
-void create_character(ecs::Context<Registry> &ctx);
+void create_character(ecs::Context<Registry> &ctx, std::size_t col_index);
 
 void create_head(ecs::Context<Registry> &ctx,
                  ecs::entities::EntityId character_id,
