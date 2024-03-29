@@ -164,10 +164,7 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
   auto &character = ctx.registry().characters[character_id];
   auto &render_info = ctx.registry().render_infos[character_id];
   auto &animation = ctx.registry().animations[character_id];
-  if (character.actions.empty() ||
-      animation.state == components::AnimationState::RUNNING)
-    return;
-  else if (animation.state == components::AnimationState::FINISHED) {
+  if (animation.state == components::AnimationState::FINISHED) {
     switch (character.current_action) {
     case components::ActionKind::MOVE_UP:
       render_info.mat *=
@@ -191,6 +188,9 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     Animation::disable(ctx, character_id);
     Animation::reset(ctx, character_id);
   }
+  if (character.actions.empty() ||
+      animation.state == components::AnimationState::RUNNING)
+    return;
 
   const auto action = character.actions.front();
   character.actions.pop();
@@ -242,7 +242,8 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     }
     break;
   }
-  character.current_action = action;
+  if (action != components::ActionKind::WEAR_SHOE)
+    character.current_action = action;
 }
 
 void Character::update_single(ecs::Context<Registry> &ctx,
