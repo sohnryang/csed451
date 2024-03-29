@@ -152,12 +152,12 @@ void create_plate(ecs::Context<Registry> &ctx, std::size_t car_id,
   const auto id = ctx.registry().add_render_info(
       ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
             TRUCK_PLATE_COLOR, glm::translate(glm::mat4(1), position)});
-  systems::Animation::set(
-      ctx, id,
-      {components::AnimationKind::LOOP,
-       {{0.0f, glm::mat4(1)},
-        {components::Car::TRUCK_PLATE_DURATION,
-         glm::rotate(glm::mat4(1), glm::radians(-20.0f), glm::vec3(0, 0, 1))}}});
+  systems::Animation::set(ctx, id,
+                          {components::AnimationKind::LOOP,
+                           {{0.0f, glm::mat4(1)},
+                            {float(components::Car::TRUCK_PLATE_DURATION),
+                             glm::rotate(glm::mat4(1), glm::radians(-20.0f),
+                                         glm::vec3(0, 0, 1))}}});
   ctx.entity_manager().link_parent_child(car_id, id);
   ctx.registry().truck_plates.insert(id);
 }
@@ -175,7 +175,7 @@ void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
 }
 
 void create_map(ecs::Context<Registry> &ctx) {
-  
+
   fill_map_row(ctx, 0, GRASS_COLOR);
   fill_map_row(ctx, 1, ROAD_COLOR);
   fill_map_row(ctx, 2, ROAD_COLOR);
@@ -226,8 +226,6 @@ void create_map(ecs::Context<Registry> &ctx) {
     const auto &action = p.second;
     ctx.registry().action_restrictions[restriction_id] = {bb, {action}, true};
   }
-  
-
 }
 
 void create_character(ecs::Context<Registry> &ctx, std::size_t col_index) {
