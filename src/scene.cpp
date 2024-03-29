@@ -211,24 +211,21 @@ void create_map(ecs::Context<Registry> &ctx) {
 
   create_shoe_item(ctx, 3, 2);
 
-  /*const std::vector<std::pair<BoundingBox, components::ActionKind>>
-      adjacent_pos = {{{
-                           {1.0f - STEP_SIZE, 1.0f},
-                           {1.0f, -1.0f},
-                       },
+  const std::vector<std::pair<BoundingBox, components::ActionKind>>
+      adjacent_pos = {{{{1.0f - STEP_SIZE * 0.75f, 1.0f}, {1.0f, -1.0f}},
                        components::ActionKind::MOVE_RIGHT},
-                      {{{-1.0f, 1.0f}, {-1.0f + STEP_SIZE, -1.0f}},
+                      {{{-1.0f, 1.0f}, {-1.0f + STEP_SIZE * 0.75f, -1.0f}},
                        components::ActionKind::MOVE_LEFT},
-                      {{{-1.0f, 1.0f}, {1.0f, 1.0f - STEP_SIZE}},
+                      {{{-1.0f, 1.0f}, {1.0f, 1.0f - STEP_SIZE * 0.75f}},
                        components::ActionKind::MOVE_UP},
-                      {{{-1.0f, -1.0f + STEP_SIZE}, {1.0f, -1.0f}},
+                      {{{-1.0f, -1.0f + STEP_SIZE * 0.75f}, {1.0f, -1.0f}},
                        components::ActionKind::MOVE_DOWN}};
   for (const auto &p : adjacent_pos) {
     const auto restriction_id = ctx.entity_manager().next_id();
     const auto &bb = p.first;
     const auto &action = p.second;
     ctx.registry().action_restrictions[restriction_id] = {bb, {action}, true};
-  }*/
+  }
   
 
 }
