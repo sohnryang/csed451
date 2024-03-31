@@ -4,6 +4,8 @@
 
 #include <cstddef>
 #include <memory>
+#include <queue>
+#include <utility>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -28,10 +30,10 @@ void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
   const auto bottom_left = grid_to_world(0, row_index),
              top_right = grid_to_world(8, row_index + 1);
   std::vector<glm::vec4> vertices = {
-      glm::vec4(bottom_left[0], bottom_left[1], 0.0, 1.0),
-      glm::vec4(top_right[0], bottom_left[1], 0.0, 1.0),
-      glm::vec4(top_right[0], top_right[1], 0.0, 1.0),
-      glm::vec4(bottom_left[0], top_right[1], 0.0, 1.0)};
+      glm::vec4(bottom_left[0], bottom_left[1], 0.4f, 1.0),
+      glm::vec4(top_right[0], bottom_left[1], 0.4f, 1.0),
+      glm::vec4(top_right[0], top_right[1], 0.4f, 1.0),
+      glm::vec4(bottom_left[0], top_right[1], 0.4f, 1.0)};
   ctx.registry().add_render_info(
       ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
             color, glm::mat4(1)});
@@ -174,9 +176,31 @@ void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
   ctx.registry().shoe_items[shoe_id] = {};
 }
 
+bool check_map_valid(std::vector<std::vector<bool>> check, int start_col) {
+  // Intended not to use ref for 2D vector, make a copy for here
+  constexpr int dx[] = {0, -1, 0, 1}, dy[] = {1, 0, -1, 0};
+  std::queue<std::pair<int, int>> q;
+  q.push({0, start_col});
+  check[0][start_col] = true;
+  while (!q.empty()) {
+    auto cur = q.front();
+    q.pop();
+    if (cur.first == 7)
+      return true;
+    for (int i = 0; i < 4; i++) {
+      int nx = cur.first + dx[i], ny = cur.second + dy[i];
+      if (0 <= nx && nx < 8 && 0 <= ny && ny < 8 && !check[nx][ny]) {
+        check[nx][ny] = true;
+        q.push({nx, ny});
+      }
+    }
+  }
+  return false;
+}
+
 void create_map(ecs::Context<Registry> &ctx) {
 
-  fill_map_row(ctx, 0, GRASS_COLOR);
+  /*fill_map_row(ctx, 0, GRASS_COLOR);
   fill_map_row(ctx, 1, ROAD_COLOR);
   fill_map_row(ctx, 2, ROAD_COLOR);
   fill_map_row(ctx, 3, GRASS_COLOR);
@@ -209,8 +233,77 @@ void create_map(ecs::Context<Registry> &ctx) {
   create_car(ctx, -0.1f, 6, -0.15f, CAR_COLOR);
   create_car(ctx, 0.7f, 6, -0.15f, CAR_COLOR);
 
-  create_shoe_item(ctx, 3, 2);
+  create_shoe_item(ctx, 3, 2);*/
 
+
+  // Set each row tile type
+  std::vector<TileType> map_data(8, TileType::GRASS);
+  while (true) {
+    int grass_count = 0, road_count = 0;
+    for (int i = 1; i <= 6; i++) {
+      map_data[i] = ctx.registry().random_tile_type(ctx);
+      if (map_data[i] == TileType::GRASS)
+        grass_count++;
+      else if (map_data[i] == TileType::ROAD)
+        road_count++;
+    }
+    if (grass_count >= 1 && road_count >= 4)
+      break;
+  }
+  for (int i = 0; i < 8; i++) {
+    if (map_data[i] == TileType::GRASS)
+      fill_map_row(ctx, i, GRASS_COLOR);
+    else if (map_data[i] == TileType::ROAD)
+      fill_map_row(ctx, i, ROAD_COLOR);
+  }
+
+  // Set tree position
+  std::vector<std::vector<bool>> tree_pos(8, std::vector<bool>(8, false));
+  int start_col = 0;
+  while (true) {
+    for (int i = 0; i < 8; i++)
+      std::fill(tree_pos[i].begin(), tree_pos[i].end(), false);
+    for (int i = 0; i < 8; i++) {
+      if (map_data[i] == TileType::ROAD)
+        continue;
+      int tree_count = ctx.registry().random_tree_number(ctx);
+      for (int j = 0; j < tree_count; j++) {
+        int col = ctx.registry().random_column(ctx, tree_pos[i]);
+        tree_pos[i][col] = true;
+      }
+      if (i == 0) {
+        int col = ctx.registry().random_column(ctx, tree_pos[i]);
+        start_col = col;
+      }
+    }
+    if (check_map_valid(tree_pos, start_col))
+      break;
+  }
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      if (tree_pos[i][j])
+        create_tree(ctx, i, j, TREE_COLOR);
+    }
+  }
+
+  // Set cars on the road
+  for (int i = 0; i < 8; i++) {
+    if (map_data[i] != TileType::ROAD)
+      continue;
+    auto vel = ctx.registry().random_speed(ctx);
+    // Generate car with 40% density
+    // 70% car, 30% truck
+    for (double j = 0.0; j <= 2.0; j += 0.4) {
+      if (ctx.registry().random_probability(ctx, CAR_SPAWN_DENSITY)) {
+        if (ctx.registry().random_probability(ctx, TRUCK_RATE))
+          create_truck(ctx, j, i, vel, TRUCK_COLOR);
+        else
+          create_car(ctx, j, i, vel, CAR_COLOR);
+      }
+    }
+  }
+
+  // Set map bound
   const std::vector<std::pair<BoundingBox, components::ActionKind>>
       adjacent_pos = {{{{1.0f - STEP_SIZE * 0.75f, 1.0f}, {1.0f, -1.0f}},
                        components::ActionKind::MOVE_RIGHT},
@@ -226,6 +319,24 @@ void create_map(ecs::Context<Registry> &ctx) {
     const auto &action = p.second;
     ctx.registry().action_restrictions[restriction_id] = {bb, {action}, true};
   }
+
+  // Set item
+  std::vector<int> row_idx(8);
+  tree_pos[0][start_col] = true;
+  for (int i = 0; i < 8; i++)
+    row_idx[i] = i;
+  std::shuffle(row_idx.begin(), row_idx.end(), ctx.random_gen());
+  for (int i = 0; i < 8; i++) {
+    int row = row_idx[i];
+    if (map_data[row] == TileType::ROAD)
+      continue;
+    int col = ctx.registry().random_column(ctx, tree_pos[row]);
+    create_shoe_item(ctx, row, col);
+    break;
+  }
+
+  // Set character
+  create_character(ctx, start_col);
 }
 
 void create_character(ecs::Context<Registry> &ctx, std::size_t col_index) {

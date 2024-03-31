@@ -65,7 +65,6 @@ int main(int argc, char **argv) {
       std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
 
   create_map(*ctx_ptr);
-  create_character(*ctx_ptr, 4);
   create_win_zone(*ctx_ptr);
 
   glutDisplayFunc(display);

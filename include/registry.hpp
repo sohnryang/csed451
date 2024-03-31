@@ -37,16 +37,27 @@ struct Registry {
 
   size_t map_bottom = 0;
   size_t map_top_generated = 0;
+  TileType last_generated = TileType::GRASS;
   std::uniform_int_distribution<int> random_tile_type_dist =
       std::uniform_int_distribution<int>(0, 1);
   std::uniform_int_distribution<int> random_tile_length_dist =
       std::uniform_int_distribution<int>(1, 3);
   std::uniform_int_distribution<int> random_column_dist =
       std::uniform_int_distribution<int>(0, 7);
+  std::uniform_int_distribution<int> random_tree_number_dist =
+      std::uniform_int_distribution<int>(1, 3);
+  std::uniform_real_distribution<double> random_speed_dist =
+      std::uniform_real_distribution<double>(-0.4, 0.4);
+  std::uniform_real_distribution<double> random_probability_dist =
+      std::uniform_real_distribution<double>(0.0, 1.0);
 
   ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
                                           components::RenderInfo &&render_info);
   TileType random_tile_type(ecs::Context<Registry> &ctx);
   int random_tile_length(ecs::Context<Registry> &ctx);
   int random_column(ecs::Context<Registry> &ctx);
+  int random_column(ecs::Context<Registry> &ctx, std::vector<bool> &ref);
+  int random_tree_number(ecs::Context<Registry> &ctx);
+  double random_speed(ecs::Context<Registry> &ctx);
+  bool random_probability(ecs::Context<Registry> &ctx, double p);
 };

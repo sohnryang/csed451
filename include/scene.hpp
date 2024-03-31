@@ -23,7 +23,8 @@ const float PI = std::acos(-1), TREE_RADIUS = STEP_SIZE * 0.75f / 2.0f,
             HEAD_RADIUS_X = TORSO_RADIUS_X / std::sqrt(2) * 0.75f,
             HEAD_RADIUS_Y = STEP_SIZE * 0.2f, LEG_RADIUS_Y = STEP_SIZE * 0.1f,
             WING_RADIUS_X = STEP_SIZE * 0.25f, WING_RADIUS_Y = STEP_SIZE * 0.1f,
-            SHOE_RADIUS = STEP_SIZE * 0.375f;
+            SHOE_RADIUS = STEP_SIZE * 0.375f, CAR_SPAWN_DENSITY = 0.4f,
+            TRUCK_RATE = 0.3f;
 
 const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                         ROAD_COLOR = {172.0 / 255, 172.0 / 255, 172.0 / 255},
