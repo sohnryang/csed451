@@ -253,8 +253,12 @@ void create_map(ecs::Context<Registry> &ctx) {
   for (int i = 0; i < 8; i++) {
     if (map_data[i] == TileType::GRASS)
       fill_map_row(ctx, i, GRASS_COLOR);
-    else if (map_data[i] == TileType::ROAD)
+    else if (map_data[i] == TileType::ROAD) {
       fill_map_row(ctx, i, ROAD_COLOR);
+      if (i > 0 && map_data[i - 1] == TileType::ROAD) {
+        create_road_line(ctx, i - 1, ROAD_LINE_COLOR);
+      }
+    }
   }
 
   // Set tree position
