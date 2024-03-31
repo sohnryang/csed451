@@ -325,13 +325,12 @@ void create_map(ecs::Context<Registry> &ctx) {
   }
 
   // Set item
-  std::vector<int> row_idx(8);
+  std::vector<int> row_idx(7);
   tree_pos[0][start_col] = true;
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 7; i++)
     row_idx[i] = i;
   std::shuffle(row_idx.begin(), row_idx.end(), ctx.random_gen());
-  for (int i = 0; i < 8; i++) {
-    int row = row_idx[i];
+  for (int row : row_idx) {
     if (map_data[row] == TileType::ROAD)
       continue;
     int col = ctx.registry().random_column(ctx, tree_pos[row]);
