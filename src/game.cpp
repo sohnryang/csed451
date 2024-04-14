@@ -18,7 +18,6 @@
 #include "systems.hpp"
 
 // TODO: use singleton
-std::shared_ptr<systems::InputHandler> input_handler;
 std::shared_ptr<ecs::Context<Registry>> ctx_ptr;
 
 void display() { ctx_ptr->update(); }
@@ -53,12 +52,10 @@ int main(int argc, char **argv) {
   glutInitWindowSize(512, 512);
   glutCreateWindow("Crossy Ponix");
 
-  input_handler = std::make_shared<systems::InputHandler>();
-
   std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
   systems.emplace_back(new systems::Animation);
   systems.emplace_back(new systems::Render);
-  systems.push_back(input_handler);
+  systems.emplace_back(new systems::InputHandler);
   systems.emplace_back(new systems::Character);
   systems.emplace_back(new systems::Car);
   ctx_ptr =
