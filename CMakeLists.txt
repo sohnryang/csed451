@@ -50,6 +50,11 @@ if(WIN32)
                  "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/glew32.dll" COPYONLY)
 endif()
 
+if(ASAN)
+  add_compile_options(-fsanitize=address)
+  add_link_options(-fsanitize=address)
+endif()
+
 function(add_gl_executable_single_file exec_name source_file)
   add_executable(${exec_name} ${source_file})
   target_link_libraries(${exec_name} OpenGL::GL GLUT::GLUT GLEW::glew)
