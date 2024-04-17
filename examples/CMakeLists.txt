@@ -5,3 +5,5 @@ add_gl_executable_single_file(lec02_rectangle_animation
 add_gl_executable_single_file(lec02_keyboard lec02_keyboard.cpp)
 add_gl_executable_single_file(ecs_polygons ecs_polygons.cpp)
 target_link_libraries(ecs_polygons ECS)
+add_gl_executable_single_file(teapot teapot.cpp)
+target_include_directories(teapot PRIVATE ${TINY_OBJ_LOADER_INCLUDE_DIR})

@@ -66,5 +66,11 @@ function(add_gl_executable_single_file exec_name source_file)
   endif()
 endfunction()
 
+set(TINY_OBJ_LOADER_INCLUDE_DIR
+    "${PROJECT_SOURCE_DIR}/third_party/tinyobjloader")
+set(ASSETS_DIR "${PROJECT_SOURCE_DIR}/assets")
+file(COPY "${ASSETS_DIR}/teapot.obj" "${ASSETS_DIR}/teapot.mtl"
+     DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
 add_subdirectory(src)
 add_subdirectory(examples)
