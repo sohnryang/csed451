@@ -1,14 +1,14 @@
 #pragma once
 
-#include "ecs/entities.hpp"
-#include "ecs/systems.hpp"
+#include <ecs/entities.hpp>
+#include <ecs/systems.hpp>
 
 #include <queue>
 #include <random>
 #include <unordered_map>
 #include <unordered_set>
 
-#include "components.hpp"
+#include <components.hpp>
 
 enum class GameState { IN_PROGRESS, LOSE, WIN };
 

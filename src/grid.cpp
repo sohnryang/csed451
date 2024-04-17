@@ -1,8 +1,8 @@
-#include "grid.hpp"
+#include <grid.hpp>
 
 #include <glm/glm.hpp>
 
-#include "bounding_box.hpp"
+#include <bounding_box.hpp>
 
 float grid_ticks_to_float(int x) { return (x - 4) * STEP_SIZE; }
 

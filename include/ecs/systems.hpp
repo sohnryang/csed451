@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ecs/entities.hpp"
+#include <ecs/entities.hpp>
 
 #include <chrono>
 #include <memory>
@@ -55,7 +55,8 @@ template <class T>
 Context<T>::Context(T &&registry,
                     std::vector<std::shared_ptr<systems::System<T>>> &&systems)
     : _entity_manager(), _registry(std::move(registry)),
-      _systems(std::move(systems)), _loop_started(false), _last_updated(), _random_device() {
+      _systems(std::move(systems)), _loop_started(false), _last_updated(),
+      _random_device() {
   _random_gen = std::mt19937(_random_device());
 }
 
@@ -83,8 +84,7 @@ template <class T> float Context<T>::delta_time() const {
       .count();
 }
 
-template <class T>
-std::mt19937 &Context<T>::random_gen() {
+template <class T> std::mt19937 &Context<T>::random_gen() {
   return _random_gen;
 }
 

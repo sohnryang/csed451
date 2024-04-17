@@ -1,12 +1,11 @@
-#include "registry.hpp"
+#include <registry.hpp>
 
-#include "ecs/entities.hpp"
-#include "ecs/systems.hpp"
+#include <ecs/entities.hpp>
+#include <ecs/systems.hpp>
 
-#include <algorithm>
 #include <utility>
 
-#include "components.hpp"
+#include <components.hpp>
 
 ecs::entities::EntityId
 Registry::add_render_info(ecs::Context<Registry> &ctx,
@@ -20,7 +19,7 @@ TileType Registry::random_tile_type(ecs::Context<Registry> &ctx) {
   return static_cast<TileType>(random_tile_type_dist(ctx.random_gen()));
 }
 
-int Registry::random_tile_length(ecs::Context<Registry>& ctx) {
+int Registry::random_tile_length(ecs::Context<Registry> &ctx) {
   return random_tile_length_dist(ctx.random_gen());
 }
 
@@ -28,7 +27,8 @@ int Registry::random_column(ecs::Context<Registry> &ctx) {
   return random_column_dist(ctx.random_gen());
 }
 
-int Registry::random_column(ecs::Context<Registry> &ctx, std::vector<bool> &ref) {
+int Registry::random_column(ecs::Context<Registry> &ctx,
+                            std::vector<bool> &ref) {
   while (true) {
     int ret = random_column_dist(ctx.random_gen());
     if (!ref[ret])
@@ -49,6 +49,6 @@ double Registry::random_speed(ecs::Context<Registry> &ctx) {
   }
 }
 
-bool Registry::random_probability(ecs::Context<Registry>& ctx, double p) {
+bool Registry::random_probability(ecs::Context<Registry> &ctx, double p) {
   return random_probability_dist(ctx.random_gen()) <= p;
 }

@@ -1,4 +1,4 @@
-#include "bounding_box.hpp"
+#include <bounding_box.hpp>
 
 #include <glm/glm.hpp>
 

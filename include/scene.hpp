@@ -1,14 +1,14 @@
 #pragma once
 
-#include "ecs/entities.hpp"
-#include "ecs/systems.hpp"
+#include <ecs/entities.hpp>
+#include <ecs/systems.hpp>
 
 #include <cmath>
 #include <cstddef>
 
-#include "components.hpp"
-#include "grid.hpp"
-#include "registry.hpp"
+#include <components.hpp>
+#include <grid.hpp>
+#include <registry.hpp>
 
 const float PI = std::acos(-1), TREE_RADIUS = STEP_SIZE * 0.75f / 2.0f,
             ROAD_LINE_WIDTH = STEP_SIZE * 0.05f,
@@ -33,7 +33,8 @@ const components::Color GRASS_COLOR = {68.0 / 255, 132.0 / 255, 46.0 / 255},
                                            255.0 / 255},
                         CAR_COLOR = {66.0 / 255, 147.0 / 255, 252.0 / 255},
                         TRUCK_COLOR = {36.0 / 255, 46.0 / 255, 237.0 / 255},
-                        TRUCK_PLATE_COLOR = {12.0 / 255, 23.0 / 255, 120.0 / 255},
+                        TRUCK_PLATE_COLOR = {12.0 / 255, 23.0 / 255,
+                                             120.0 / 255},
                         WHEEL_COLOR = {0, 0, 0},
                         WHEEL_MARKING_COLOR = {1, 1, 1},
                         CHARACTER_COLOR = {200.0f / 255, 1.0f / 255,

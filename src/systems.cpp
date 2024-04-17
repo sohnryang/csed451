@@ -1,8 +1,8 @@
-#include "systems.hpp"
+#include <systems.hpp>
 
-#include "bounding_box.hpp"
-#include "ecs/entities.hpp"
-#include "ecs/systems.hpp"
+#include <bounding_box.hpp>
+#include <ecs/entities.hpp>
+#include <ecs/systems.hpp>
 
 #include <glm/glm.hpp>
 
@@ -20,10 +20,10 @@
 #include <iterator>
 #include <string>
 
-#include "components.hpp"
-#include "grid.hpp"
-#include "registry.hpp"
-#include "scene.hpp"
+#include <components.hpp>
+#include <grid.hpp>
+#include <registry.hpp>
+#include <scene.hpp>
 
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,

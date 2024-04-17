@@ -7,7 +7,7 @@
 #include <queue>
 #include <vector>
 
-#include "bounding_box.hpp"
+#include <bounding_box.hpp>
 
 namespace components {
 struct Color {

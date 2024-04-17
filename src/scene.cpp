@@ -1,6 +1,6 @@
-#include "scene.hpp"
+#include <scene.hpp>
 
-#include "ecs/systems.hpp"
+#include <ecs/systems.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -12,10 +12,10 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
-#include "components.hpp"
-#include "grid.hpp"
-#include "registry.hpp"
-#include "systems.hpp"
+#include <components.hpp>
+#include <grid.hpp>
+#include <registry.hpp>
+#include <systems.hpp>
 
 // TODO: map generation
 // divide the map with NxN grid. let every entity placement, movement and
@@ -234,7 +234,6 @@ void create_map(ecs::Context<Registry> &ctx) {
   create_car(ctx, 0.7f, 6, -0.15f, CAR_COLOR);
 
   create_shoe_item(ctx, 3, 2);*/
-
 
   // Set each row tile type
   std::vector<TileType> map_data(8, TileType::GRASS);

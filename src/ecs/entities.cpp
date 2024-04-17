@@ -1,4 +1,4 @@
-#include "ecs/entities.hpp"
+#include <ecs/entities.hpp>
 
 #include <algorithm>
 #include <stdexcept>

@@ -1,4 +1,4 @@
-#include "ecs/systems.hpp"
+#include <ecs/systems.hpp>
 
 #include <memory>
 #include <vector>
@@ -13,9 +13,9 @@
 #include <gl/glut.h>
 #endif
 
-#include "registry.hpp"
-#include "scene.hpp"
-#include "systems.hpp"
+#include <registry.hpp>
+#include <scene.hpp>
+#include <systems.hpp>
 
 // TODO: use singleton
 std::shared_ptr<ecs::Context<Registry>> ctx_ptr;
