@@ -70,7 +70,7 @@ set(TINY_OBJ_LOADER_INCLUDE_DIR
     "${PROJECT_SOURCE_DIR}/third_party/tinyobjloader")
 set(ASSETS_DIR "${PROJECT_SOURCE_DIR}/assets")
 file(COPY "${ASSETS_DIR}/teapot.obj" "${ASSETS_DIR}/teapot.mtl"
-          "${ASSETS_DIR}/rooster.obj"
+          "${ASSETS_DIR}/rooster.obj" "${ASSETS_DIR}/tree.obj"
      DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 add_subdirectory(src)
