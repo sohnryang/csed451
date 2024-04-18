@@ -19,6 +19,7 @@ enum class TileType { ROAD, GRASS };
 struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::RenderInfo>
       render_infos;
+  std::unordered_map<ecs::entities::EntityId, components::Mesh> meshes;
   std::unordered_map<ecs::entities::EntityId, components::Character> characters;
   std::unordered_map<ecs::entities::EntityId, components::ActionRestriction>
       action_restrictions;
