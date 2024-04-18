@@ -33,12 +33,12 @@ void display() {
   auto &attrib = reader.GetAttrib();
   auto &shapes = reader.GetShapes();
   auto &materials = reader.GetMaterials();
+  glBegin(GL_TRIANGLES);
   for (std::size_t s = 0; s < shapes.size(); s++) {
     std::size_t index_offset = 0;
     for (std::size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
       const auto fv = shapes[s].mesh.num_face_vertices[f];
 
-      glBegin(GL_TRIANGLES);
       for (std::size_t v = 0; v < fv; v++) {
         tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
         tinyobj::real_t vx = attrib.vertices[3 * idx.vertex_index],
@@ -46,11 +46,11 @@ void display() {
                         vz = attrib.vertices[3 * idx.vertex_index + 2];
         glVertex3f(vx, vy, vz);
       }
-      glEnd();
 
       index_offset += fv;
     }
   }
+  glEnd();
   glPopMatrix();
 
   glutSwapBuffers();
