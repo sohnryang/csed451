@@ -37,6 +37,13 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
   glColor3f(1, 1, 1);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+  if (ctx.registry().hidden_line_removal) {
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+  } else {
+    glDisable(GL_CULL_FACE);
+  }
+
   const auto &camera_config = ctx.registry().camera_config;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
