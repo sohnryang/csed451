@@ -132,10 +132,10 @@ void InputHandler::update_single(ecs::Context<Registry> &ctx,
 
     switch (input) {
     case InputKind::UP:
-      character.actions.push(components::ActionKind::MOVE_UP);
+      character.actions.push(components::ActionKind::MOVE_FORWARD);
       break;
     case InputKind::DOWN:
-      character.actions.push(components::ActionKind::MOVE_DOWN);
+      character.actions.push(components::ActionKind::MOVE_BACK);
       break;
     case InputKind::LEFT:
       character.actions.push(components::ActionKind::MOVE_LEFT);
@@ -166,11 +166,11 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
   auto &animation = ctx.registry().animations[character_id];
   if (animation.state == components::AnimationState::FINISHED) {
     switch (character.current_action) {
-    case components::ActionKind::MOVE_UP:
+    case components::ActionKind::MOVE_FORWARD:
       render_info.mat *=
           glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE, 0));
       break;
-    case components::ActionKind::MOVE_DOWN:
+    case components::ActionKind::MOVE_BACK:
       render_info.mat *=
           glm::translate(glm::mat4(1), glm::vec3(0, -STEP_SIZE, 0));
       break;
@@ -200,14 +200,14 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
   const auto duration = components::Character::DEFAULT_ANIMATION_DURATION /
                         character.speed_multipler;
   switch (action) {
-  case components::ActionKind::MOVE_UP:
+  case components::ActionKind::MOVE_FORWARD:
     Animation::set(ctx, character_id,
                    {components::AnimationKind::ONCE,
                     {{0.0f, glm::mat4(1)},
                      {duration, glm::translate(glm::mat4(1),
                                                glm::vec3(0, STEP_SIZE, 0))}}});
     break;
-  case components::ActionKind::MOVE_DOWN:
+  case components::ActionKind::MOVE_BACK:
     Animation::set(ctx, character_id,
                    {components::AnimationKind::ONCE,
                     {{0.0f, glm::mat4(1)},

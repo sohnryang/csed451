@@ -305,9 +305,9 @@ void create_map(ecs::Context<Registry> &ctx) {
                       {{{-1.0f, 1.0f}, {-1.0f + STEP_SIZE * 0.75f, -1.0f}},
                        components::ActionKind::MOVE_LEFT},
                       {{{-1.0f, 1.0f}, {1.0f, 1.0f - STEP_SIZE * 0.75f}},
-                       components::ActionKind::MOVE_UP},
+                       components::ActionKind::MOVE_FORWARD},
                       {{{-1.0f, -1.0f + STEP_SIZE * 0.75f}, {1.0f, -1.0f}},
-                       components::ActionKind::MOVE_DOWN}};
+                       components::ActionKind::MOVE_BACK}};
   for (const auto &p : adjacent_pos) {
     const auto restriction_id = ctx.entity_manager().next_id();
     const auto &bb = p.first;

@@ -71,7 +71,13 @@ struct RenderInfo {
   BoundingBox bounding_box_with_trasform(const glm::mat4 &transform) const;
 };
 
-enum class ActionKind { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, WEAR_SHOE };
+enum class ActionKind {
+  MOVE_FORWARD,
+  MOVE_BACK,
+  MOVE_LEFT,
+  MOVE_RIGHT,
+  WEAR_SHOE
+};
 
 struct Character {
   static constexpr float DEFAULT_ANIMATION_DURATION = 0.2f;
