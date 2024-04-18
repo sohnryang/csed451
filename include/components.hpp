@@ -16,6 +16,14 @@ struct Color {
   float b;
 };
 
+struct Mesh {
+  std::vector<glm::vec3> vertices;
+  glm::mat4 mat;
+
+  BoundingBox3D bounding_box() const;
+  BoundingBox3D boudning_box_with_transform(const glm::mat4 &transform) const;
+};
+
 // TODO: use iterator instead of this stop-gap solution
 class VertexContainer {
 public:
