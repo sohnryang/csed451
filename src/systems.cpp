@@ -28,13 +28,28 @@
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,
                           ecs::entities::EntityId id) {
-  return ctx.registry().render_infos.count(id) &&
+  return ctx.registry().meshes.count(id) &&
          ctx.entity_manager().entity_graph()[id].parent == id;
 }
 
 void Render::pre_update(ecs::Context<Registry> &ctx) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glColor3f(1, 1, 1);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+  const auto &camera_config = ctx.registry().camera_config;
+  glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+  gluPerspective(camera_config.fovy, camera_config.aspect_ratio,
+                 camera_config.znear, camera_config.zfar);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  gluLookAt(camera_config.eye[0], camera_config.eye[1], camera_config.eye[2],
+            camera_config.center[0], camera_config.center[1],
+            camera_config.center[2], camera_config.up[0], camera_config.up[1],
+            camera_config.up[2]);
+  glPushMatrix();
 }
 
 void Render::post_update(ecs::Context<Registry> &ctx) {
@@ -56,36 +71,34 @@ void Render::post_update(ecs::Context<Registry> &ctx) {
     }
     glPopMatrix();
   }
+  glPopMatrix();
   glutSwapBuffers();
 }
 
 void Render::update_single(ecs::Context<Registry> &ctx,
                            ecs::entities::EntityId id) {
-  const auto &render_info = ctx.registry().render_infos.at(id);
+  const auto &mesh = ctx.registry().meshes.at(id);
   const auto &animations = ctx.registry().animations;
   glPushMatrix();
   if (animations.count(id))
-    glLoadMatrixf(glm::value_ptr(render_info.mat * animations.at(id).mat));
+    glMultMatrixf(glm::value_ptr(mesh.mat * animations.at(id).mat));
   else
-    glLoadMatrixf(glm::value_ptr(render_info.mat));
-  render_single(render_info);
+    glMultMatrixf(glm::value_ptr(mesh.mat));
+  render_single(mesh);
   render_children(ctx, id);
   glPopMatrix();
 }
 
-void Render::render_single(const components::RenderInfo &render_info) {
-  const auto &color = render_info.color;
-  glColor3f(color.r, color.g, color.b);
-  glBegin(GL_POLYGON);
-  const auto &vertices = render_info.vertex_container->vertices();
-  for (const auto &v : vertices)
+void Render::render_single(const components::Mesh &mesh) {
+  glBegin(GL_TRIANGLES);
+  for (const auto &v : mesh.vertices)
     glVertex3f(v[0], v[1], v[2]);
   glEnd();
 }
 
 void Render::render_children(ecs::Context<Registry> &ctx,
                              ecs::entities::EntityId id) {
-  const auto &render_infos = ctx.registry().render_infos;
+  const auto &meshes = ctx.registry().meshes;
   const auto &animations = ctx.registry().animations;
 
   float matrix_raw[16];
@@ -93,17 +106,17 @@ void Render::render_children(ecs::Context<Registry> &ctx,
   const auto base_mat = glm::make_mat4(matrix_raw);
 
   for (const auto child_id : ctx.entity_manager().entity_graph()[id].children) {
-    if (!render_infos.count(child_id))
+    if (!meshes.count(child_id))
       continue;
 
     glPushMatrix();
-    const auto &render_info = render_infos.at(child_id);
-    const auto child_mat = base_mat * render_info.mat;
+    const auto &mesh = meshes.at(child_id);
+    const auto child_mat = base_mat * mesh.mat;
     if (animations.count(child_id))
       glLoadMatrixf(glm::value_ptr(child_mat * animations.at(child_id).mat));
     else
       glLoadMatrixf(glm::value_ptr(child_mat));
-    render_single(render_info);
+    render_single(mesh);
     render_children(ctx, child_id);
     glPopMatrix();
   }
@@ -162,25 +175,21 @@ void Character::pre_update(ecs::Context<Registry> &ctx) {
 void Character::post_update(ecs::Context<Registry> &ctx) {
   const auto character_id = ctx.registry().character_id;
   auto &character = ctx.registry().characters[character_id];
-  auto &render_info = ctx.registry().render_infos[character_id];
+  auto &mesh = ctx.registry().meshes[character_id];
   auto &animation = ctx.registry().animations[character_id];
   if (animation.state == components::AnimationState::FINISHED) {
     switch (character.current_action) {
     case components::ActionKind::MOVE_FORWARD:
-      render_info.mat *=
-          glm::translate(glm::mat4(1), glm::vec3(0, STEP_SIZE, 0));
+      mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, STEP_SIZE));
       break;
     case components::ActionKind::MOVE_BACK:
-      render_info.mat *=
-          glm::translate(glm::mat4(1), glm::vec3(0, -STEP_SIZE, 0));
+      mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, -STEP_SIZE));
       break;
     case components::ActionKind::MOVE_LEFT:
-      render_info.mat *=
-          glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0));
+      mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0));
       break;
     case components::ActionKind::MOVE_RIGHT:
-      render_info.mat *=
-          glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0));
+      mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(STEP_SIZE, 0, 0));
       break;
     default:
       break;
@@ -205,14 +214,14 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
                    {components::AnimationKind::ONCE,
                     {{0.0f, glm::mat4(1)},
                      {duration, glm::translate(glm::mat4(1),
-                                               glm::vec3(0, STEP_SIZE, 0))}}});
+                                               glm::vec3(0, 0, STEP_SIZE))}}});
     break;
   case components::ActionKind::MOVE_BACK:
     Animation::set(ctx, character_id,
                    {components::AnimationKind::ONCE,
                     {{0.0f, glm::mat4(1)},
                      {duration, glm::translate(glm::mat4(1),
-                                               glm::vec3(0, -STEP_SIZE, 0))}}});
+                                               glm::vec3(0, 0, -STEP_SIZE))}}});
     break;
   case components::ActionKind::MOVE_LEFT:
     Animation::set(ctx, character_id,
@@ -251,18 +260,14 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto &action_restrictions = ctx.registry().action_restrictions;
   const auto &win_zones = ctx.registry().win_zones;
   const auto character_id = ctx.registry().character_id;
-  auto &render_infos = ctx.registry().render_infos;
-  const auto &character_render_info = render_infos.at(character_id);
-  const auto &character_vertices =
-      character_render_info.vertex_container->vertices();
+  auto &meshes = ctx.registry().meshes;
+  const auto &character_mesh = meshes.at(character_id);
+  const auto &character_vertices = character_mesh.vertices;
   const auto &animation = ctx.registry().animations[character_id];
   const auto character_center =
-      character_render_info.mat * animation.mat * glm::vec4(0, 0, 0, 1);
+      character_mesh.mat * animation.mat * glm::vec4(0, 0, 0, 1);
   const auto character_bb =
-      BoundingBox{glm::vec2(character_center[0] - CHARACTER_RADIUS,
-                            character_center[1] + CHARACTER_RADIUS),
-                  glm::vec2(character_center[0] + CHARACTER_RADIUS,
-                            character_center[1] - CHARACTER_RADIUS)};
+      character_mesh.boudning_box_with_transform(animation.mat);
   auto &shoe_items = ctx.registry().shoe_items;
 
   if (action_restrictions.count(id)) {
@@ -278,18 +283,18 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     if (character_bb.contained_in(win_zone.bounding_box))
       ctx.registry().state = GameState::WIN;
   } else if (shoe_items.count(id)) {
-    const auto shoe_item_bb = render_infos.at(id).bounding_box();
+    const auto shoe_item_bb = meshes.at(id).bounding_box();
     if (!shoe_item_bb.intersect_with(character_bb))
       return;
-    render_infos.erase(id);
+    meshes.erase(id);
     shoe_items.erase(id);
     ctx.entity_manager().remove_id(id);
     auto &character = ctx.registry().characters[character_id];
     character.actions.push(components::ActionKind::WEAR_SHOE);
   } else if (!ctx.registry().pass_through) {
-    const auto &car_render_info = render_infos.at(id);
-    const auto &car_vertices = car_render_info.vertex_container->vertices();
-    const auto car_bb = car_render_info.bounding_box();
+    const auto &car_mesh = meshes.at(id);
+    const auto &car_vertices = car_mesh.vertices;
+    const auto car_bb = car_mesh.bounding_box();
     if (character_bb.intersect_with(car_bb))
       ctx.registry().state = GameState::LOSE;
   }
@@ -303,29 +308,17 @@ bool Car::should_apply(ecs::Context<Registry> &ctx,
 
 void Car::update_single(ecs::Context<Registry> &ctx,
                         ecs::entities::EntityId id) {
-  auto &render_infos = ctx.registry().render_infos;
-  auto &render_info = render_infos[id];
+  auto &meshes = ctx.registry().meshes;
+  auto &mesh = meshes[id];
   auto &car = ctx.registry().cars[id];
-  const auto car_bb = render_info.bounding_box();
-  const auto xmin = car_bb.top_left[0], xmax = car_bb.bottom_right[0];
+  const auto car_bb = mesh.bounding_box();
+  const auto xmin = car_bb.min_point[0], xmax = car_bb.max_point[0];
   if (car.vel[0] < 0.0f && xmax < -1.0f)
-    render_info.mat =
-        glm::translate(glm::mat4(1), glm::vec3(3.0f, 0, 0)) * render_info.mat;
+    mesh.mat = glm::translate(glm::mat4(1), glm::vec3(3.0f, 0, 0)) * mesh.mat;
   else if (car.vel[0] > 0.0f && xmin > 1.0f)
-    render_info.mat =
-        glm::translate(glm::mat4(1), glm::vec3(-3.0f, 0, 0)) * render_info.mat;
+    mesh.mat = glm::translate(glm::mat4(1), glm::vec3(-3.0f, 0, 0)) * mesh.mat;
   const auto disp = ctx.delta_time() * car.vel;
-  render_info.mat = glm::translate(glm::mat4(1), disp) * render_info.mat;
-
-  const auto &children_ids = ctx.entity_manager().entity_graph()[id].children;
-  const auto angle = -abs(disp[0]) / WHEEL_RADIUS;
-  for (const auto child_id : children_ids) {
-    if (ctx.registry().wheels.count(child_id)) {
-      auto &wheel_render_info = render_infos[child_id];
-      wheel_render_info.mat =
-          glm::rotate(wheel_render_info.mat, angle, glm ::vec3(0, 0, 1));
-    }
-  }
+  mesh.mat = glm::translate(glm::mat4(1), disp) * mesh.mat;
 }
 
 glm::mat4 Animation::interpolate_transforms(float ratio, const glm::mat4 &first,

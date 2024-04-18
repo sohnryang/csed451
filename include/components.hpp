@@ -3,72 +3,18 @@
 #include <glm/glm.hpp>
 
 #include <map>
-#include <memory>
 #include <queue>
 #include <vector>
 
 #include <bounding_box.hpp>
 
 namespace components {
-struct Color {
-  float r;
-  float g;
-  float b;
-};
-
 struct Mesh {
   std::vector<glm::vec3> vertices;
   glm::mat4 mat;
 
   BoundingBox3D bounding_box() const;
   BoundingBox3D boudning_box_with_transform(const glm::mat4 &transform) const;
-};
-
-// TODO: use iterator instead of this stop-gap solution
-class VertexContainer {
-public:
-  virtual const std::vector<glm::vec4> &vertices() = 0;
-  virtual ~VertexContainer();
-};
-
-class VertexVector : public VertexContainer {
-private:
-  std::vector<glm::vec4> _vertices;
-
-public:
-  VertexVector() = default;
-  VertexVector(const VertexVector &) = delete;
-  VertexVector(VertexVector &&) = default;
-  VertexVector &operator=(VertexVector &&) = default;
-  VertexVector(std::vector<glm::vec4> &&vertices);
-
-  const std::vector<glm::vec4> &vertices() override;
-};
-
-class CircleVertex : public VertexContainer {
-private:
-  glm::vec4 _center;
-  float _radius;
-  int _point_count;
-  std::vector<glm::vec4> _vertices;
-
-public:
-  CircleVertex() = default;
-  CircleVertex(const CircleVertex &) = delete;
-  CircleVertex(CircleVertex &&) = default;
-  CircleVertex &operator=(CircleVertex &&) = default;
-  CircleVertex(glm::vec4 center, float radius, int point_count = 64);
-
-  const std::vector<glm::vec4> &vertices() override;
-};
-
-struct RenderInfo {
-  std::unique_ptr<VertexContainer> vertex_container;
-  Color color;
-  glm::mat4 mat;
-
-  BoundingBox bounding_box() const;
-  BoundingBox bounding_box_with_trasform(const glm::mat4 &transform) const;
 };
 
 enum class ActionKind {
@@ -87,13 +33,13 @@ struct Character {
 };
 
 struct ActionRestriction {
-  BoundingBox bounding_box;
+  BoundingBox3D bounding_box;
   std::vector<ActionKind> restrictions;
   bool ignore_passthrough;
 };
 
 struct WinZone {
-  BoundingBox bounding_box;
+  BoundingBox3D bounding_box;
 };
 
 struct Car {
@@ -119,5 +65,15 @@ struct Animation {
 
 struct ShoeItem {
   static constexpr float MULTIPLIER = 2.0f;
+};
+
+struct CameraConfig {
+  glm::vec3 eye;
+  glm::vec3 center;
+  glm::vec3 up;
+  float fovy;
+  float aspect_ratio;
+  float znear;
+  float zfar;
 };
 } // namespace components

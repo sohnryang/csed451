@@ -17,8 +17,6 @@ enum class InputKind { UP, DOWN, LEFT, RIGHT };
 enum class TileType { ROAD, GRASS };
 
 struct Registry {
-  std::unordered_map<ecs::entities::EntityId, components::RenderInfo>
-      render_infos;
   std::unordered_map<ecs::entities::EntityId, components::Mesh> meshes;
   std::unordered_map<ecs::entities::EntityId, components::Character> characters;
   std::unordered_map<ecs::entities::EntityId, components::ActionRestriction>
@@ -35,6 +33,12 @@ struct Registry {
   std::queue<InputKind> input_queue;
   std::unordered_set<components::ActionKind> blocked_actions;
   bool pass_through;
+  components::CameraConfig camera_config;
+  std::unordered_map<std::string, std::vector<glm::vec3>> model_vertices;
+  const std::vector<std::string> model_filenames = {
+      "rooster.obj",
+      "tree.obj",
+  };
 
   size_t map_bottom = 0;
   size_t map_top_generated = 0;
@@ -52,8 +56,8 @@ struct Registry {
   std::uniform_real_distribution<double> random_probability_dist =
       std::uniform_real_distribution<double>(0.0, 1.0);
 
-  ecs::entities::EntityId add_render_info(ecs::Context<Registry> &ctx,
-                                          components::RenderInfo &&render_info);
+  ecs::entities::EntityId add_mesh(ecs::Context<Registry> &ctx,
+                                   components::Mesh &&mesh);
   TileType random_tile_type(ecs::Context<Registry> &ctx);
   int random_tile_length(ecs::Context<Registry> &ctx);
   int random_column(ecs::Context<Registry> &ctx);

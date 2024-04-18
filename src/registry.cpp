@@ -7,11 +7,10 @@
 
 #include <components.hpp>
 
-ecs::entities::EntityId
-Registry::add_render_info(ecs::Context<Registry> &ctx,
-                          components::RenderInfo &&render_info) {
+ecs::entities::EntityId Registry::add_mesh(ecs::Context<Registry> &ctx,
+                                           components::Mesh &&mesh) {
   auto id = ctx.entity_manager().next_id();
-  render_infos[id] = std::move(render_info);
+  meshes[id] = std::move(mesh);
   return id;
 }
 

@@ -61,8 +61,9 @@ int main(int argc, char **argv) {
   ctx_ptr =
       std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
 
-  create_map(*ctx_ptr);
-  create_win_zone(*ctx_ptr);
+  load_models(*ctx_ptr);
+  setup_camera(*ctx_ptr);
+  create_character(*ctx_ptr);
 
   glutDisplayFunc(display);
   glutIdleFunc(idle);
