@@ -6,7 +6,7 @@
 #include <bounding_box.hpp>
 
 const std::size_t GRID_SIZE = 8;
-const float STEP_SIZE = 2.0f / GRID_SIZE;
+const float STEP_SIZE = 1.0f;
 
 float grid_ticks_to_float(int x);
 
