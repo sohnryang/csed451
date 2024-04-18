@@ -17,14 +17,6 @@
 #include <registry.hpp>
 #include <systems.hpp>
 
-// TODO: map generation
-// divide the map with NxN grid. let every entity placement, movement and
-// collision check can be done by those grid row 0 (start) and row N-1 (end) is
-// fixed to be a ground, the other are randomly chosen to be a ground or a road
-// on the ground row, place woods at randomly chosen 0 ~ N/2 columns
-// on the road row, randomly choose the direction and speed of the cars
-// draw dotted line between continuous road rows
-
 void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
                   const components::Color &color) {
   const auto bottom_left = grid_to_world(0, row_index),
