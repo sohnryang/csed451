@@ -180,10 +180,10 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
   if (animation.state == components::AnimationState::FINISHED) {
     switch (character.current_action) {
     case components::ActionKind::MOVE_FORWARD:
-      mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, STEP_SIZE));
+      mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, -STEP_SIZE));
       break;
     case components::ActionKind::MOVE_BACK:
-      mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, -STEP_SIZE));
+      mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, STEP_SIZE));
       break;
     case components::ActionKind::MOVE_LEFT:
       mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0));
@@ -214,14 +214,14 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
                    {components::AnimationKind::ONCE,
                     {{0.0f, glm::mat4(1)},
                      {duration, glm::translate(glm::mat4(1),
-                                               glm::vec3(0, 0, STEP_SIZE))}}});
+                                               glm::vec3(0, 0, -STEP_SIZE))}}});
     break;
   case components::ActionKind::MOVE_BACK:
     Animation::set(ctx, character_id,
                    {components::AnimationKind::ONCE,
                     {{0.0f, glm::mat4(1)},
                      {duration, glm::translate(glm::mat4(1),
-                                               glm::vec3(0, 0, -STEP_SIZE))}}});
+                                               glm::vec3(0, 0, STEP_SIZE))}}});
     break;
   case components::ActionKind::MOVE_LEFT:
     Animation::set(ctx, character_id,
