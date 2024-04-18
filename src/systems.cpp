@@ -49,6 +49,7 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
   glLoadIdentity();
   gluPerspective(camera_config.fovy, camera_config.aspect_ratio,
                  camera_config.znear, camera_config.zfar);
+  // glOrtho(-4, 4, -4, 4, camera_config.znear, camera_config.zfar);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();

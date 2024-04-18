@@ -11,6 +11,8 @@
 
 const float PI = std::acos(-1);
 const float ROAD_OFFSET = 0.2;
+const float CHARACTER_OFFSET = 0.5;
+const float TREE_OFFSET = 0.75;
 
 void load_models(ecs::Context<Registry> &ctx);
 

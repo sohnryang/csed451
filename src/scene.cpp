@@ -53,7 +53,7 @@ void load_models(ecs::Context<Registry> &ctx) {
 }
 
 void setup_camera(ecs::Context<Registry> &ctx) {
-  ctx.registry().camera_config = {glm::vec3(3, 3, 3),
+  ctx.registry().camera_config = {glm::vec3(10, 10, 10),
                                   glm::vec3(0, 0, 0),
                                   glm::vec3(0, 1, 0),
                                   40,
@@ -63,10 +63,12 @@ void setup_camera(ecs::Context<Registry> &ctx) {
 }
 
 void create_character(ecs::Context<Registry> &ctx, int col) {
+  printf("%d\n", col);
   const auto character_vertices = ctx.registry().model_vertices["rooster.obj"];
+  const auto character_pos = grid_to_world_cell(col, 0).midpoint()[0];
   const auto id = ctx.registry().add_mesh(
       ctx, {character_vertices,
-            glm::translate(glm::mat4(1), glm::vec3(0, 0, col))});
+            glm::translate(glm::mat4(1), glm::vec3(character_pos, CHARACTER_OFFSET, 0))});
   ctx.registry().character_id = id;
   ctx.registry().animations[id] = {components::AnimationState::BEFORE_START,
                                    {components::AnimationKind::DISABLED, {}},
@@ -75,8 +77,6 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
 }
 
 void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index, TileType tile_type) {
-  const auto bottom_left = grid_to_world(0, row_index),
-             top_right = grid_to_world(8, row_index + 1);
   const auto vertices = ctx.registry().model_vertices["floor.obj"];
   float delta_y = -1.0;
   if (tile_type == TileType::ROAD)
@@ -86,27 +86,22 @@ void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index, TileType t
             glm::translate(glm::mat4(1), glm::vec3(0, delta_y, (int)row_index * -2))});
 }
 
-/*
-
 void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
-                 std::size_t col_index, const components::Color &color) {
+                 std::size_t col_index) {
   // might move this constant (0.75) to somewhere
   const auto tree_pos = grid_to_world_cell(col_index, row_index).midpoint();
-  std::vector<glm::vec4> vertices = {
-      glm::vec4(-TREE_RADIUS, -TREE_RADIUS, 0.5f, 1.0f),
-      glm::vec4(TREE_RADIUS, -TREE_RADIUS, 0.5f, 1.0f),
-      glm::vec4(TREE_RADIUS, TREE_RADIUS, 0.5f, 1.0f),
-      glm::vec4(-TREE_RADIUS, TREE_RADIUS, 0.5f, 1.0f)};
-  const auto id = ctx.registry().add_render_info(
-      ctx,
-      {std::make_unique<components::VertexVector>(std::move(vertices)), color,
-       glm::translate(glm::mat4(1), glm::vec3(tree_pos[0], tree_pos[1], 0))});
+  const auto vertices = ctx.registry().model_vertices["tree.obj"];
+  const auto id = ctx.registry().add_mesh(
+      ctx, {vertices,
+            glm::translate(glm::mat4(1),
+                           glm::vec3(tree_pos[0], TREE_OFFSET, -tree_pos[1]))});
 
+  /*
   const std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos =
       {{{-1, 0}, components::ActionKind::MOVE_RIGHT},
        {{1, 0}, components::ActionKind::MOVE_LEFT},
-       {{0, -1}, components::ActionKind::MOVE_UP},
-       {{0, 1}, components::ActionKind::MOVE_DOWN}};
+       {{0, -1}, components::ActionKind::MOVE_FORWARD},
+       {{0, 1}, components::ActionKind::MOVE_BACK}};
   for (const auto &p : adjacent_pos) {
     const auto delta = p.first;
     const auto action = p.second;
@@ -119,7 +114,10 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
     ctx.registry().action_restrictions[restriction_id] = {
         {top_left, bottom_right}, {action}, false};
   }
+  */
 }
+
+/*
 
 void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel,
@@ -208,6 +206,8 @@ void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
   ctx.registry().shoe_items[shoe_id] = {};
 }
 
+*/
+
 bool check_map_valid(std::vector<std::vector<bool>> check, int start_col) {
   // Intended not to use ref for 2D vector, make a copy for here
   constexpr int dx[] = {0, -1, 0, 1}, dy[] = {1, 0, -1, 0};
@@ -229,8 +229,6 @@ bool check_map_valid(std::vector<std::vector<bool>> check, int start_col) {
   }
   return false;
 }
-
-*/
 
 void create_map(ecs::Context<Registry> &ctx) {
 
@@ -286,8 +284,6 @@ void create_map(ecs::Context<Registry> &ctx) {
   for (int i = 0; i < 8; i++)
     fill_map_row(ctx, i, map_data[i]);
 
-  /*
-
   // Set tree position
   std::vector<std::vector<bool>> tree_pos(8, std::vector<bool>(8, false));
   int start_col = 0;
@@ -313,9 +309,11 @@ void create_map(ecs::Context<Registry> &ctx) {
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
       if (tree_pos[i][j])
-        create_tree(ctx, i, j, TREE_COLOR);
+        create_tree(ctx, i, j);
     }
   }
+
+  /*
 
   // Set cars on the road
   for (int i = 0; i < 8; i++) {
@@ -368,6 +366,6 @@ void create_map(ecs::Context<Registry> &ctx) {
   */
 
   // Set character
-  create_character(ctx, 0);
+  create_character(ctx, start_col);
 }
 
