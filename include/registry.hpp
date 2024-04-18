@@ -38,6 +38,7 @@ struct Registry {
   const std::vector<std::string> model_filenames = {
       "rooster.obj",
       "tree.obj",
+      "floor.obj",
   };
 
   size_t map_bottom = 0;

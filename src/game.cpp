@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 
   load_models(*ctx_ptr);
   setup_camera(*ctx_ptr);
-  create_character(*ctx_ptr);
+  create_map(*ctx_ptr);
 
   glutDisplayFunc(display);
   glutIdleFunc(idle);

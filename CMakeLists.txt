@@ -77,6 +77,7 @@ file(
        "${ASSETS_DIR}/car.obj"
        "${ASSETS_DIR}/truck.obj"
        "${ASSETS_DIR}/sneakers.obj"
+       "${ASSETS_DIR}/floor.obj"
   DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 add_subdirectory(src)
