@@ -28,3 +28,33 @@ bool BoundingBox::contained_in(const BoundingBox &other) const {
 glm::vec2 BoundingBox::midpoint() const {
   return 0.5f * (top_left + bottom_right);
 }
+
+BoundingBox3D::BoundingBox3D(const glm::vec3 &min_point,
+                             const glm::vec3 &max_point)
+    : min_point(min_point), max_point(max_point) {}
+
+bool BoundingBox3D::intersect_with(const BoundingBox3D &other) const {
+  return min_point[0] <= other.max_point[0] &&
+         max_point[0] >= other.min_point[0] &&
+         min_point[1] <= other.max_point[1] &&
+         max_point[1] >= other.min_point[1] &&
+         min_point[2] <= other.max_point[2] &&
+         max_point[2] >= other.min_point[2];
+}
+
+bool BoundingBox3D::contains(const BoundingBox3D &other) const {
+  return min_point[0] <= other.min_point[0] &&
+         min_point[1] <= other.min_point[1] &&
+         min_point[2] <= other.min_point[2] &&
+         other.max_point[0] <= max_point[0] &&
+         other.max_point[1] <= max_point[1] &&
+         other.max_point[2] <= max_point[2];
+}
+
+bool BoundingBox3D::contained_in(const BoundingBox3D &other) const {
+  return other.contains(*this);
+}
+
+glm::vec3 BoundingBox3D::midpoint() const {
+  return 0.5f * (min_point + max_point);
+}

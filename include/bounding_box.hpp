@@ -18,3 +18,20 @@ struct BoundingBox {
   bool contained_in(const BoundingBox &other) const;
   glm::vec2 midpoint() const;
 };
+
+struct BoundingBox3D {
+  glm::vec3 min_point;
+  glm::vec3 max_point;
+
+  BoundingBox3D() = default;
+  BoundingBox3D(const BoundingBox3D &) = default;
+  BoundingBox3D(BoundingBox3D &&) = default;
+  BoundingBox3D(const glm::vec3 &min_point, const glm::vec3 &max_point);
+  BoundingBox3D &operator=(const BoundingBox3D &) = default;
+  BoundingBox3D &operator=(BoundingBox3D &&) = default;
+
+  bool intersect_with(const BoundingBox3D &other) const;
+  bool contains(const BoundingBox3D &other) const;
+  bool contained_in(const BoundingBox3D &other) const;
+  glm::vec3 midpoint() const;
+};
