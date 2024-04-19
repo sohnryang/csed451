@@ -178,11 +178,6 @@ bool Character::should_apply(ecs::Context<Registry> &ctx,
 
 void Character::pre_update(ecs::Context<Registry> &ctx) {
   ctx.registry().blocked_actions.clear();
-  const auto id = ctx.registry().character_id;
-  auto &character = ctx.registry().characters[id];
-  const auto &mesh = ctx.registry().meshes.at(id);
-  const auto &animation = ctx.registry().animations[id];
-  character.bounding_box = mesh.boudning_box_with_transform(animation.mat);
 }
 
 void Character::post_update(ecs::Context<Registry> &ctx) {
@@ -280,7 +275,8 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto character_center =
       character_mesh.mat * animation.mat * glm::vec4(0, 0, 0, 1);
   const auto character_bb =
-      ctx.registry().characters[character_id].bounding_box;
+      ctx.registry().characters[character_id].init_bounding_box.transform(
+          character_mesh.mat * animation.mat);
   auto &shoe_items = ctx.registry().shoe_items;
 
   if (action_restrictions.count(id)) {
