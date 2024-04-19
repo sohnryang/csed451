@@ -13,6 +13,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <bounding_box.hpp>
 #include <components.hpp>
 #include <grid.hpp>
 #include <registry.hpp>
@@ -85,7 +86,7 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
   };
   auto &character = ctx.registry().characters[id];
   auto &mesh = ctx.registry().meshes[id];
-  character.model_bb = mesh.bounding_box();
+  character.model_bb = BoundingBox3D::from_vertices(mesh.vertices);
 }
 
 void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
