@@ -49,6 +49,8 @@ void load_models(ecs::Context<Registry> &ctx) {
         index_offset += fv;
       }
     }
+
+    std::cout << "Loaded obj file: " << filename << std::endl;
   }
 }
 

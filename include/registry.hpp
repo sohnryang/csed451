@@ -36,8 +36,7 @@ struct Registry {
   components::CameraConfig camera_config;
   std::unordered_map<std::string, std::vector<glm::vec3>> model_vertices;
   const std::vector<std::string> model_filenames = {
-      "rooster.obj",
-      "tree.obj",
+      "rooster.obj", "tree.obj", "car.obj", "truck.obj", "sneakers.obj",
   };
 
   size_t map_bottom = 0;
