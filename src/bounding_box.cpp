@@ -29,6 +29,21 @@ glm::vec2 BoundingBox::midpoint() const {
   return 0.5f * (top_left + bottom_right);
 }
 
+BoundingBox3D
+BoundingBox3D::from_vertices(const std::vector<glm::vec3> &vertices) {
+  float xmin = vertices[0][0], xmax = xmin, ymin = vertices[0][1], ymax = ymin,
+        zmin = vertices[0][2], zmax = zmin;
+  for (const auto &v : vertices) {
+    xmin = std::min(xmin, v[0]);
+    ymin = std::min(ymin, v[1]);
+    zmin = std::min(zmin, v[2]);
+    xmax = std::max(xmax, v[0]);
+    ymax = std::max(ymax, v[1]);
+    zmax = std::max(zmax, v[2]);
+  }
+  return {{xmin, ymin, zmin}, {xmax, ymax, zmax}};
+}
+
 BoundingBox3D::BoundingBox3D(const glm::vec3 &min_point,
                              const glm::vec3 &max_point)
     : min_point(min_point), max_point(max_point) {}
