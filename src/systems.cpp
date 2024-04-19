@@ -44,6 +44,12 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
     glDisable(GL_CULL_FACE);
   }
 
+  glm::vec3 camera_delta =
+      glm::vec3(ctx.registry().meshes[ctx.registry().character_id].mat[3]) +
+      glm::vec3(ctx.registry().animations[ctx.registry().character_id].mat[3]) -
+      ctx.registry().camera_init;
+  // printf("%f %f %f\n", camera_delta[0], camera_delta[1], camera_delta[2]);
+
   const auto &camera_config = ctx.registry().camera_config;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -57,6 +63,7 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
             camera_config.center[0], camera_config.center[1],
             camera_config.center[2], camera_config.up[0], camera_config.up[1],
             camera_config.up[2]);
+  glTranslatef(-camera_delta[0], -camera_delta[1], -camera_delta[2]);
   glPushMatrix();
 }
 
