@@ -370,4 +370,3 @@ void create_map(ecs::Context<Registry> &ctx) {
   // Set character
   create_character(ctx, start_col);
 }
-
