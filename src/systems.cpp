@@ -325,12 +325,12 @@ void Car::update_single(ecs::Context<Registry> &ctx,
   auto &car = ctx.registry().cars[id];
   const auto car_bb = car.model_bb.transform(mesh.mat);
   const auto xmin = car_bb.min_point[0], xmax = car_bb.max_point[0];
-  if (car.vel[0] < 0.0f && xmax < -STEP_SIZE * GRID_SIZE / 2)
+  if (car.vel[0] < 0.0f && xmax < -STEP_SIZE * GRID_SIZE / 2 - STEP_SIZE)
     mesh.mat =
         glm::translate(glm::mat4(1),
                        glm::vec3(GRID_SIZE * STEP_SIZE + STEP_SIZE * 3, 0, 0)) *
         mesh.mat;
-  else if (car.vel[0] > 0.0f && xmin > STEP_SIZE * GRID_SIZE / 2)
+  else if (car.vel[0] > 0.0f && xmin > STEP_SIZE * GRID_SIZE / 2 + STEP_SIZE)
     mesh.mat = glm::translate(
                    glm::mat4(1),
                    glm::vec3(-3.0f * STEP_SIZE - GRID_SIZE * STEP_SIZE, 0, 0)) *
