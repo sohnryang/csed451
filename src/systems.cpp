@@ -73,18 +73,30 @@ void Render::post_update(ecs::Context<Registry> &ctx) {
     const std::string text =
         state == GameState::LOSE ? "GAME OVER" : "YOU WIN!!";
     glColor3f(1, 1, 0);
+    float old_line_width;
+    glGetFloatv(GL_LINE_WIDTH, &old_line_width);
     glLineWidth(5);
 
-    glPushMatrix();
     const auto char_width = 0.2f;
 
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
     for (std::size_t i = 0; i < text.length(); i++) {
-      glLoadIdentity();
+      glPushMatrix();
       glTranslatef(-0.95f + i * char_width, 0.0, 0.75);
       glScalef(1.0f / 400, 1.0f / 400, 1);
       glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[i]);
+      glPopMatrix();
     }
+    glMatrixMode(GL_PROJECTION);
     glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glLineWidth(old_line_width);
   }
   glPopMatrix();
   glutSwapBuffers();
