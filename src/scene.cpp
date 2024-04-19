@@ -136,7 +136,7 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
   const float actual_pos_z = -STEP_SIZE * row_index;
   std::cout << actual_pos_z << std::endl;
   auto translate_mat =
-      glm::translate(glm::mat4(1), glm::vec3(pos_x, 0, actual_pos_z));
+      glm::translate(glm::mat4(1), glm::vec3(pos_x, CAR_OFFSET, actual_pos_z));
   if (vel <= 0.0f)
     translate_mat =
         glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
@@ -151,8 +151,8 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
                   const std::size_t row_index, const float vel) {
   const float actual_pos_z = -STEP_SIZE * row_index;
   std::cout << actual_pos_z << std::endl;
-  auto translate_mat =
-      glm::translate(glm::mat4(1), glm::vec3(pos_x, 0, actual_pos_z));
+  auto translate_mat = glm::translate(
+      glm::mat4(1), glm::vec3(pos_x, TRUCK_OFFSET, actual_pos_z));
   if (vel <= 0.0f)
     translate_mat =
         glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
@@ -329,7 +329,7 @@ void create_map(ecs::Context<Registry> &ctx) {
     auto vel = ctx.registry().random_speed(ctx);
     // Generate car with 40% density
     // 70% car, 30% truck
-    for (double j = 0.0; j <= 2.0; j += 0.4) {
+    for (double j = 0.0; j <= 9; j += 3) {
       if (ctx.registry().random_probability(ctx, CAR_SPAWN_DENSITY)) {
         if (ctx.registry().random_probability(ctx, TRUCK_RATE))
           create_truck(ctx, j, i, vel);
