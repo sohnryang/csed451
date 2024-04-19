@@ -79,6 +79,13 @@ BoundingBox3D BoundingBox3D::transform(const glm::mat4 &transform) const {
                  glm::vec4(min_point[0], min_point[1], min_point[2], 1),
              max_point_4d =
                  glm::vec4(max_point[0], max_point[1], max_point[2], 1);
-  return {glm::vec3(transform * min_point_4d),
-          glm::vec4(transform * max_point_4d)};
+  const auto transformed1 = glm::vec3(transform * min_point_4d),
+             transformed2 = glm::vec3(transform * max_point_4d),
+             min_point = glm::vec3(std::min(transformed1[0], transformed2[0]),
+                                   std::min(transformed1[1], transformed2[1]),
+                                   std::min(transformed1[2], transformed2[2])),
+             max_point = glm::vec3(std::max(transformed1[0], transformed2[0]),
+                                   std::max(transformed1[1], transformed2[1]),
+                                   std::max(transformed1[2], transformed2[2]));
+  return {min_point, max_point};
 }
