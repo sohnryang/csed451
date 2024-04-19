@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include <vector>
+
 struct BoundingBox {
   glm::vec2 top_left;
   glm::vec2 bottom_right;
@@ -23,6 +25,7 @@ struct BoundingBox3D {
   glm::vec3 min_point;
   glm::vec3 max_point;
 
+  static BoundingBox3D from_vertices(const std::vector<glm::vec3> &vertices);
   BoundingBox3D() = default;
   BoundingBox3D(const BoundingBox3D &) = default;
   BoundingBox3D(BoundingBox3D &&) = default;
@@ -34,4 +37,5 @@ struct BoundingBox3D {
   bool contains(const BoundingBox3D &other) const;
   bool contained_in(const BoundingBox3D &other) const;
   glm::vec3 midpoint() const;
+  BoundingBox3D transform(const glm::mat4 &transform) const;
 };

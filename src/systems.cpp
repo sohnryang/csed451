@@ -185,11 +185,6 @@ bool Character::should_apply(ecs::Context<Registry> &ctx,
 
 void Character::pre_update(ecs::Context<Registry> &ctx) {
   ctx.registry().blocked_actions.clear();
-  const auto id = ctx.registry().character_id;
-  auto &character = ctx.registry().characters[id];
-  const auto &mesh = ctx.registry().meshes.at(id);
-  const auto &animation = ctx.registry().animations[id];
-  character.bounding_box = mesh.boudning_box_with_transform(animation.mat);
 }
 
 void Character::post_update(ecs::Context<Registry> &ctx) {
@@ -287,7 +282,8 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto character_center =
       character_mesh.mat * animation.mat * glm::vec4(0, 0, 0, 1);
   const auto character_bb =
-      ctx.registry().characters[character_id].bounding_box;
+      ctx.registry().characters[character_id].model_bb.transform(
+          character_mesh.mat * animation.mat);
   auto &shoe_items = ctx.registry().shoe_items;
 
   if (action_restrictions.count(id)) {
@@ -303,7 +299,9 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     if (character_bb.contained_in(win_zone.bounding_box))
       ctx.registry().state = GameState::WIN;
   } else if (shoe_items.count(id)) {
-    const auto shoe_item_bb = meshes.at(id).bounding_box();
+    const auto &shoe_item = shoe_items[id];
+    const auto &shoe_mesh = meshes.at(id);
+    const auto shoe_item_bb = shoe_item.model_bb.transform(shoe_mesh.mat);
     if (!shoe_item_bb.intersect_with(character_bb))
       return;
     meshes.erase(id);
@@ -312,9 +310,10 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     auto &character = ctx.registry().characters[character_id];
     character.actions.push(components::ActionKind::WEAR_SHOE);
   } else if (!ctx.registry().pass_through) {
+    const auto &car = ctx.registry().cars[id];
     const auto &car_mesh = meshes.at(id);
     const auto &car_vertices = car_mesh.vertices;
-    const auto car_bb = car_mesh.bounding_box();
+    const auto car_bb = car.model_bb.transform(car_mesh.mat);
     if (character_bb.intersect_with(car_bb))
       ctx.registry().state = GameState::LOSE;
   }
@@ -331,12 +330,18 @@ void Car::update_single(ecs::Context<Registry> &ctx,
   auto &meshes = ctx.registry().meshes;
   auto &mesh = meshes[id];
   auto &car = ctx.registry().cars[id];
-  const auto car_bb = mesh.bounding_box();
+  const auto car_bb = car.model_bb.transform(mesh.mat);
   const auto xmin = car_bb.min_point[0], xmax = car_bb.max_point[0];
-  if (car.vel[0] < 0.0f && xmax < -1.0f)
-    mesh.mat = glm::translate(glm::mat4(1), glm::vec3(3.0f, 0, 0)) * mesh.mat;
-  else if (car.vel[0] > 0.0f && xmin > 1.0f)
-    mesh.mat = glm::translate(glm::mat4(1), glm::vec3(-3.0f, 0, 0)) * mesh.mat;
+  if (car.vel[0] < 0.0f && xmax < -STEP_SIZE * GRID_SIZE / 2 - STEP_SIZE)
+    mesh.mat =
+        glm::translate(glm::mat4(1),
+                       glm::vec3(GRID_SIZE * STEP_SIZE + STEP_SIZE * 3, 0, 0)) *
+        mesh.mat;
+  else if (car.vel[0] > 0.0f && xmin > STEP_SIZE * GRID_SIZE / 2 + STEP_SIZE)
+    mesh.mat = glm::translate(
+                   glm::mat4(1),
+                   glm::vec3(-3.0f * STEP_SIZE - GRID_SIZE * STEP_SIZE, 0, 0)) *
+               mesh.mat;
   const auto disp = ctx.delta_time() * car.vel;
   mesh.mat = glm::translate(glm::mat4(1), disp) * mesh.mat;
 }

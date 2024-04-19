@@ -12,9 +12,6 @@ namespace components {
 struct Mesh {
   std::vector<glm::vec3> vertices;
   glm::mat4 mat;
-
-  BoundingBox3D bounding_box() const;
-  BoundingBox3D boudning_box_with_transform(const glm::mat4 &transform) const;
 };
 
 enum class ActionKind {
@@ -30,7 +27,7 @@ struct Character {
   ActionKind current_action;
   std::queue<ActionKind> actions;
   float speed_multipler = 1.0f;
-  BoundingBox3D bounding_box;
+  BoundingBox3D model_bb;
 };
 
 struct ActionRestriction {
@@ -46,6 +43,7 @@ struct WinZone {
 struct Car {
   static constexpr float TRUCK_PLATE_DURATION = 0.7f;
   glm::vec3 vel;
+  BoundingBox3D model_bb;
 };
 
 enum class AnimationKind { DISABLED, ONCE, LOOP };
@@ -66,6 +64,7 @@ struct Animation {
 
 struct ShoeItem {
   static constexpr float MULTIPLIER = 2.0f;
+  BoundingBox3D model_bb;
 };
 
 struct CameraConfig {
