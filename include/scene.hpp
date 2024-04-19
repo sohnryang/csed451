@@ -20,7 +20,7 @@ const float CAR_OFFSET = 0.1f;
 
 void load_models(ecs::Context<Registry> &ctx);
 
-void setup_camera(ecs::Context<Registry> &ctx);
+void setup_camera(ecs::Context<Registry> &ctx, int col);
 
 void create_character(ecs::Context<Registry> &ctx, int col);
 

@@ -50,7 +50,7 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
       ctx.registry().camera_init;
   // printf("%f %f %f\n", camera_delta[0], camera_delta[1], camera_delta[2]);
 
-  const auto &camera_config = ctx.registry().camera_config;
+  const auto &camera_config = ctx.registry().camera_config[ctx.registry().view_mode];
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(camera_config.fovy, camera_config.aspect_ratio,
@@ -63,7 +63,10 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
             camera_config.center[0], camera_config.center[1],
             camera_config.center[2], camera_config.up[0], camera_config.up[1],
             camera_config.up[2]);
-  glTranslatef(-camera_delta[0], -camera_delta[1], -camera_delta[2]);
+  if(ctx.registry().view_mode == 2)
+    glTranslatef(0, -camera_delta[1], -camera_delta[2]);
+  else
+    glTranslatef(-camera_delta[0], -camera_delta[1], -camera_delta[2]);
   glPushMatrix();
 }
 

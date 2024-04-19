@@ -47,6 +47,9 @@ void keyboard_handle_non_special(unsigned char key, int x, int y) {
   if (key == 'r')
     ctx_ptr->registry().hidden_line_removal =
         !ctx_ptr->registry().hidden_line_removal;
+  if (key == 'v')
+    ctx_ptr->registry().view_mode = (ctx_ptr->registry().view_mode + 1) %
+                                    ctx_ptr->registry().camera_config.size();
 }
 
 int main(int argc, char **argv) {
@@ -65,7 +68,6 @@ int main(int argc, char **argv) {
       std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
 
   load_models(*ctx_ptr);
-  setup_camera(*ctx_ptr);
   create_map(*ctx_ptr);
 
   glutDisplayFunc(display);
