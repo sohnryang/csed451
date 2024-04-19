@@ -56,9 +56,9 @@ void load_models(ecs::Context<Registry> &ctx) {
 }
 
 void setup_camera(ecs::Context<Registry> &ctx) {
-  ctx.registry().camera_config = {glm::vec3(10, 10, 10),
-                                  glm::vec3(0, 0, 0),
-                                  glm::vec3(0, 1, 0),
+  ctx.registry().camera_config = {glm::vec3(0, 40, -8),
+                                  glm::vec3(0, 0, -8),
+                                  glm::vec3(0, 0, -1),
                                   40,
                                   1,
                                   0.1,
