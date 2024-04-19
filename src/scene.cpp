@@ -165,46 +165,6 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
                              BoundingBox3D::from_vertices(mesh.vertices)};
 }
 
-/*
-void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
-                  const glm::vec3 &position) {
-  const auto id = ctx.registry().add_render_info(
-      ctx, {std::make_unique<components::CircleVertex>(glm::vec4(0, 0, 0.1f, 0),
-                                                       WHEEL_RADIUS),
-            WHEEL_COLOR, glm::translate(glm::mat4(1), position)});
-  ctx.entity_manager().link_parent_child(car_id, id);
-  ctx.registry().wheels.insert(id);
-
-  std::vector<glm::vec4> vertices = {
-      glm::vec4(WHEEL_RADIUS * 0.8f, -WHEEL_RADIUS * 0.1, 0.15f, 0),
-      glm::vec4(WHEEL_RADIUS * 0.8f, WHEEL_RADIUS * 0.1, 0.15f, 0),
-      glm::vec4(-WHEEL_RADIUS * 0.8f, WHEEL_RADIUS * 0.1, 0.15f, 0),
-      glm::vec4(-WHEEL_RADIUS * 0.8f, -WHEEL_RADIUS * 0.1, 0.15f, 0),
-  };
-  const auto mark_id = ctx.registry().add_render_info(
-      ctx, {std::make_unique<components::VertexVector>(
-                std::vector<glm::vec4>(vertices)),
-            WHEEL_MARKING_COLOR, glm::mat4(1)});
-  ctx.entity_manager().link_parent_child(id, mark_id);
-}
-
-void create_plate(ecs::Context<Registry> &ctx, std::size_t car_id,
-                  const glm::vec3 &position) {
-  auto vertices = TRUCK_PLATE_VERTICES;
-  const auto id = ctx.registry().add_render_info(
-      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
-            TRUCK_PLATE_COLOR, glm::translate(glm::mat4(1), position)});
-  systems::Animation::set(ctx, id,
-                          {components::AnimationKind::LOOP,
-                           {{0.0f, glm::mat4(1)},
-                            {float(components::Car::TRUCK_PLATE_DURATION),
-                             glm::rotate(glm::mat4(1), glm::radians(-20.0f),
-                                         glm::vec3(0, 0, 1))}}});
-  ctx.entity_manager().link_parent_child(car_id, id);
-  ctx.registry().truck_plates.insert(id);
-}
-*/
-
 void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
                       std::size_t col_index) {
   const auto position = glm::vec3(col_index * STEP_SIZE - 3.5f * STEP_SIZE, 1,
@@ -239,42 +199,6 @@ bool check_map_valid(std::vector<std::vector<bool>> check, int start_col) {
 }
 
 void create_map(ecs::Context<Registry> &ctx) {
-
-  /*fill_map_row(ctx, 0, GRASS_COLOR);
-  fill_map_row(ctx, 1, ROAD_COLOR);
-  fill_map_row(ctx, 2, ROAD_COLOR);
-  fill_map_row(ctx, 3, GRASS_COLOR);
-  fill_map_row(ctx, 4, ROAD_COLOR);
-  fill_map_row(ctx, 5, ROAD_COLOR);
-  fill_map_row(ctx, 6, ROAD_COLOR);
-  fill_map_row(ctx, 7, GRASS_COLOR);
-
-  create_tree(ctx, 3, 0, TREE_COLOR);
-  create_tree(ctx, 3, 3, TREE_COLOR);
-  create_tree(ctx, 3, 6, TREE_COLOR);
-  create_tree(ctx, 7, 2, TREE_COLOR);
-  create_tree(ctx, 7, 3, TREE_COLOR);
-  create_tree(ctx, 7, 5, TREE_COLOR);
-
-  create_road_line(ctx, 1, ROAD_LINE_COLOR);
-  create_road_line(ctx, 4, ROAD_LINE_COLOR);
-  create_road_line(ctx, 5, ROAD_LINE_COLOR);
-
-  create_car(ctx, -0.7f, 1, 0.2f, CAR_COLOR);
-  create_car(ctx, 0.1f, 1, 0.2f, CAR_COLOR);
-  create_truck(ctx, -0.3f, 2, -0.3f, TRUCK_COLOR);
-  create_car(ctx, 0.4f, 2, -0.3f, CAR_COLOR);
-  create_car(ctx, -0.4f, 4, 0.25f, CAR_COLOR);
-  create_car(ctx, 0.6f, 4, 0.25f, CAR_COLOR);
-  create_truck(ctx, -1.0f, 5, 0.35f, TRUCK_COLOR);
-  create_car(ctx, 0.2f, 5, 0.35f, CAR_COLOR);
-  create_car(ctx, 0.7f, 5, 0.35f, CAR_COLOR);
-  create_truck(ctx, -0.8f, 6, -0.15f, TRUCK_COLOR);
-  create_car(ctx, -0.1f, 6, -0.15f, CAR_COLOR);
-  create_car(ctx, 0.7f, 6, -0.15f, CAR_COLOR);
-
-  create_shoe_item(ctx, 3, 2);*/
-
   // Set each row tile type
   std::vector<TileType> map_data(8, TileType::GRASS);
   while (true) {
