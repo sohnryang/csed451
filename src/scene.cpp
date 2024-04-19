@@ -73,6 +73,7 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
                glm::translate(glm::mat4(1),
                               glm::vec3(character_pos, CHARACTER_OFFSET, 0)),
            });
+  ctx.registry().camera_init = glm::vec3(character_pos, CHARACTER_OFFSET, 0);
   ctx.registry().character_id = id;
   ctx.registry().animations[id] = {
       components::AnimationState::BEFORE_START,

@@ -35,6 +35,7 @@ struct Registry {
   bool pass_through = false;
   bool hidden_line_removal = false;
   components::CameraConfig camera_config;
+  glm::vec3 camera_init;
   std::unordered_map<std::string, std::vector<glm::vec3>> model_vertices;
   const std::vector<std::string> model_filenames = {
       "rooster.obj", "tree.obj",     "car.obj",
