@@ -295,6 +295,10 @@ void create_map(ecs::Context<Registry> &ctx) {
     break;
   }
 
+  const auto win_zone_id = ctx.entity_manager().next_id();
+  ctx.registry().win_zones[win_zone_id] = {
+      grid_to_world(GRID_SIZE - 1, 0, GRID_SIZE - 1, GRID_SIZE - 1)};
+
   // Set character
   create_character(ctx, start_col);
 }
