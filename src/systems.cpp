@@ -292,20 +292,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     if (character_bb.contained_in(win_zone.bounding_box))
       ctx.registry().state = GameState::WIN;
   } else if (shoe_items.count(id)) {
-    const auto shoe_item_bb = meshes.at(id).bounding_box();
-    if (!shoe_item_bb.intersect_with(character_bb))
-      return;
-    meshes.erase(id);
-    shoe_items.erase(id);
-    ctx.entity_manager().remove_id(id);
-    auto &character = ctx.registry().characters[character_id];
-    character.actions.push(components::ActionKind::WEAR_SHOE);
   } else if (!ctx.registry().pass_through) {
-    const auto &car_mesh = meshes.at(id);
-    const auto &car_vertices = car_mesh.vertices;
-    const auto car_bb = car_mesh.bounding_box();
-    if (character_bb.intersect_with(car_bb))
-      ctx.registry().state = GameState::LOSE;
   }
 }
 
@@ -316,19 +303,7 @@ bool Car::should_apply(ecs::Context<Registry> &ctx,
 }
 
 void Car::update_single(ecs::Context<Registry> &ctx,
-                        ecs::entities::EntityId id) {
-  auto &meshes = ctx.registry().meshes;
-  auto &mesh = meshes[id];
-  auto &car = ctx.registry().cars[id];
-  const auto car_bb = mesh.bounding_box();
-  const auto xmin = car_bb.min_point[0], xmax = car_bb.max_point[0];
-  if (car.vel[0] < 0.0f && xmax < -1.0f)
-    mesh.mat = glm::translate(glm::mat4(1), glm::vec3(3.0f, 0, 0)) * mesh.mat;
-  else if (car.vel[0] > 0.0f && xmin > 1.0f)
-    mesh.mat = glm::translate(glm::mat4(1), glm::vec3(-3.0f, 0, 0)) * mesh.mat;
-  const auto disp = ctx.delta_time() * car.vel;
-  mesh.mat = glm::translate(glm::mat4(1), disp) * mesh.mat;
-}
+                        ecs::entities::EntityId id) {}
 
 glm::mat4 Animation::interpolate_transforms(float ratio, const glm::mat4 &first,
                                             const glm::mat4 &second) {
