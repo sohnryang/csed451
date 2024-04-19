@@ -69,23 +69,33 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
   const auto character_vertices = ctx.registry().model_vertices["rooster.obj"];
   const auto character_pos = grid_to_world_cell(col, 0).midpoint()[0];
   const auto id = ctx.registry().add_mesh(
-      ctx, {character_vertices,
-            glm::translate(glm::mat4(1), glm::vec3(character_pos, CHARACTER_OFFSET, 0))});
+      ctx, {
+               character_vertices,
+               glm::translate(glm::mat4(1),
+                              glm::vec3(character_pos, CHARACTER_OFFSET, 0)),
+           });
   ctx.registry().character_id = id;
-  ctx.registry().animations[id] = {components::AnimationState::BEFORE_START,
-                                   {components::AnimationKind::DISABLED, {}},
-                                   glm::mat4(1),
-                                   0};
+  ctx.registry().animations[id] = {
+      components::AnimationState::BEFORE_START,
+      {
+          components::AnimationKind::DISABLED,
+          {},
+      },
+      glm::mat4(1),
+      0,
+  };
 }
 
-void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index, TileType tile_type) {
+void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
+                  TileType tile_type) {
   const auto vertices = ctx.registry().model_vertices["floor.obj"];
   float delta_y = -1.0;
   if (tile_type == TileType::ROAD)
     delta_y -= ROAD_OFFSET;
   ctx.registry().add_mesh(
-      ctx, {vertices,
-            glm::translate(glm::mat4(1), glm::vec3(0, delta_y, (int)row_index * -2))});
+      ctx,
+      {vertices, glm::translate(glm::mat4(1),
+                                glm::vec3(0, delta_y, (int)row_index * -2))});
 }
 
 void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
@@ -333,17 +343,22 @@ void create_map(ecs::Context<Registry> &ctx) {
       }
     }
   }
+  */
 
   // Set map bound
-  const std::vector<std::pair<BoundingBox, components::ActionKind>>
-      adjacent_pos = {{{{1.0f - STEP_SIZE * 0.75f, 1.0f}, {1.0f, -1.0f}},
-                       components::ActionKind::MOVE_RIGHT},
-                      {{{-1.0f, 1.0f}, {-1.0f + STEP_SIZE * 0.75f, -1.0f}},
-                       components::ActionKind::MOVE_LEFT},
-                      {{{-1.0f, 1.0f}, {1.0f, 1.0f - STEP_SIZE * 0.75f}},
-                       components::ActionKind::MOVE_FORWARD},
-                      {{{-1.0f, -1.0f + STEP_SIZE * 0.75f}, {1.0f, -1.0f}},
-                       components::ActionKind::MOVE_BACK}};
+  const std::vector<std::pair<BoundingBox3D, components::ActionKind>>
+      adjacent_pos = {
+          {{{3 * STEP_SIZE, 0, -8 * STEP_SIZE}, {4 * STEP_SIZE, 1, 0}},
+           components::ActionKind::MOVE_RIGHT},
+          {{{-4 * STEP_SIZE, 0, -8 * STEP_SIZE}, {-3 * STEP_SIZE, 1, 0}},
+           components::ActionKind::MOVE_LEFT},
+          {{{-4 * STEP_SIZE, 0, -0.5 * STEP_SIZE},
+            {4 * STEP_SIZE, 1, 0.5 * STEP_SIZE}},
+           components::ActionKind::MOVE_BACK},
+          {{{-4 * STEP_SIZE, 0, -7.5 * STEP_SIZE},
+            {4 * STEP_SIZE, 1, -6.5 * STEP_SIZE}},
+           components::ActionKind::MOVE_FORWARD},
+      };
   for (const auto &p : adjacent_pos) {
     const auto restriction_id = ctx.entity_manager().next_id();
     const auto &bb = p.first;
@@ -351,6 +366,7 @@ void create_map(ecs::Context<Registry> &ctx) {
     ctx.registry().action_restrictions[restriction_id] = {bb, {action}, true};
   }
 
+  /*
   // Set item
   std::vector<int> row_idx(7);
   tree_pos[0][start_col] = true;
