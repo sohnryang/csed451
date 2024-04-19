@@ -34,4 +34,5 @@ struct BoundingBox3D {
   bool contains(const BoundingBox3D &other) const;
   bool contained_in(const BoundingBox3D &other) const;
   glm::vec3 midpoint() const;
+  BoundingBox3D transform(const glm::mat4 &transform);
 };

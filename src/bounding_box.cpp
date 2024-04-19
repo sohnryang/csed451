@@ -58,3 +58,12 @@ bool BoundingBox3D::contained_in(const BoundingBox3D &other) const {
 glm::vec3 BoundingBox3D::midpoint() const {
   return 0.5f * (min_point + max_point);
 }
+
+BoundingBox3D BoundingBox3D::transform(const glm::mat4 &transform) {
+  const auto min_point_4d =
+                 glm::vec4(min_point[0], min_point[1], min_point[2], 1),
+             max_point_4d =
+                 glm::vec4(max_point[0], max_point[1], max_point[2], 1);
+  return {glm::vec3(transform * min_point_4d),
+          glm::vec4(transform * max_point_4d)};
+}
