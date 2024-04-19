@@ -275,7 +275,7 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto character_center =
       character_mesh.mat * animation.mat * glm::vec4(0, 0, 0, 1);
   const auto character_bb =
-      ctx.registry().characters[character_id].init_bounding_box.transform(
+      ctx.registry().characters[character_id].model_bb.transform(
           character_mesh.mat * animation.mat);
   auto &shoe_items = ctx.registry().shoe_items;
 

@@ -85,7 +85,7 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
   };
   auto &character = ctx.registry().characters[id];
   auto &mesh = ctx.registry().meshes[id];
-  character.init_bounding_box = mesh.bounding_box();
+  character.model_bb = mesh.bounding_box();
 }
 
 void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,

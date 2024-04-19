@@ -30,7 +30,7 @@ struct Character {
   ActionKind current_action;
   std::queue<ActionKind> actions;
   float speed_multipler = 1.0f;
-  BoundingBox3D init_bounding_box;
+  BoundingBox3D model_bb;
 };
 
 struct ActionRestriction {
