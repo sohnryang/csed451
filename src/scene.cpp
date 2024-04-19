@@ -65,9 +65,8 @@ void setup_camera(ecs::Context<Registry> &ctx) {
 }
 
 void create_character(ecs::Context<Registry> &ctx, int col) {
-  printf("%d\n", col);
   const auto character_vertices = ctx.registry().model_vertices["rooster.obj"];
-  const auto character_pos = grid_to_world_cell(col, 0).midpoint()[0];
+  const auto character_pos = grid_to_world(0, col, 0, col).midpoint()[0];
   const auto id = ctx.registry().add_mesh(
       ctx, {
                character_vertices,
@@ -95,38 +94,36 @@ void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
   ctx.registry().add_mesh(
       ctx,
       {vertices, glm::translate(glm::mat4(1),
-                                glm::vec3(0, delta_y, (int)row_index * -2))});
+                                glm::vec3(0, delta_y, (int)row_index * -STEP_SIZE))});
 }
 
 void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
                  std::size_t col_index) {
   // might move this constant (0.75) to somewhere
-  const auto tree_pos = grid_to_world_cell(col_index, row_index).midpoint();
+  const auto tree_pos = grid_to_world(row_index, col_index, row_index, col_index).midpoint();
   const auto vertices = ctx.registry().model_vertices["tree.obj"];
   const auto id = ctx.registry().add_mesh(
       ctx, {vertices,
             glm::translate(glm::mat4(1),
-                           glm::vec3(tree_pos[0], TREE_OFFSET, -tree_pos[1]))});
+                           glm::vec3(tree_pos[0], TREE_OFFSET, tree_pos[2]))});
 
-  /*
-  const std::vector<std::pair<glm::vec2, components::ActionKind>> adjacent_pos =
-      {{{-1, 0}, components::ActionKind::MOVE_RIGHT},
-       {{1, 0}, components::ActionKind::MOVE_LEFT},
-       {{0, -1}, components::ActionKind::MOVE_FORWARD},
-       {{0, 1}, components::ActionKind::MOVE_BACK}};
+  const std::vector<std::pair<BoundingBox3D, components::ActionKind>>
+      adjacent_pos = {
+          {grid_to_world(row_index, col_index - 1, row_index, col_index - 1),
+           components::ActionKind::MOVE_RIGHT},
+          {grid_to_world(row_index, col_index + 1, row_index, col_index + 1),
+           components::ActionKind::MOVE_LEFT},
+          {grid_to_world(row_index + 1, col_index, row_index + 1, col_index),
+           components::ActionKind::MOVE_BACK},
+          {grid_to_world(row_index - 1, col_index, row_index - 1, col_index),
+           components::ActionKind::MOVE_FORWARD},
+      };
   for (const auto &p : adjacent_pos) {
-    const auto delta = p.first;
-    const auto action = p.second;
-    const auto rect_center = STEP_SIZE * delta + tree_pos;
-    const auto diagonal = glm::vec2(TREE_RADIUS, -TREE_RADIUS);
-    const auto top_left = rect_center - diagonal;
-    const auto bottom_right = rect_center + diagonal;
     const auto restriction_id = ctx.entity_manager().next_id();
-
-    ctx.registry().action_restrictions[restriction_id] = {
-        {top_left, bottom_right}, {action}, false};
+    const auto &bb = p.first;
+    const auto &action = p.second;
+    ctx.registry().action_restrictions[restriction_id] = {bb, {action}, false};
   }
-  */
 }
 
 /*
@@ -348,15 +345,13 @@ void create_map(ecs::Context<Registry> &ctx) {
   // Set map bound
   const std::vector<std::pair<BoundingBox3D, components::ActionKind>>
       adjacent_pos = {
-          {{{3 * STEP_SIZE, 0, -8 * STEP_SIZE}, {4 * STEP_SIZE, 1, 0}},
+          {grid_to_world(0, GRID_SIZE - 1, GRID_SIZE - 1, GRID_SIZE - 1),
            components::ActionKind::MOVE_RIGHT},
-          {{{-4 * STEP_SIZE, 0, -8 * STEP_SIZE}, {-3 * STEP_SIZE, 1, 0}},
+          {grid_to_world(0, 0, GRID_SIZE - 1, 0),
            components::ActionKind::MOVE_LEFT},
-          {{{-4 * STEP_SIZE, 0, -0.5 * STEP_SIZE},
-            {4 * STEP_SIZE, 1, 0.5 * STEP_SIZE}},
+          {grid_to_world(0, 0, 0, GRID_SIZE - 1),
            components::ActionKind::MOVE_BACK},
-          {{{-4 * STEP_SIZE, 0, -7.5 * STEP_SIZE},
-            {4 * STEP_SIZE, 1, -6.5 * STEP_SIZE}},
+          {grid_to_world(GRID_SIZE - 1, 0, GRID_SIZE - 1, GRID_SIZE - 1),
            components::ActionKind::MOVE_FORWARD},
       };
   for (const auto &p : adjacent_pos) {

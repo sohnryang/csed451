@@ -4,9 +4,14 @@
 
 #include <bounding_box.hpp>
 
-BoundingBox grid_to_world_cell(int x, int y) {
-  const auto diagonal = glm::vec2(STEP_SIZE, -STEP_SIZE),
-             top_left = glm::vec2(-STEP_SIZE * GRID_SIZE / 2.0 + STEP_SIZE * x,
-                                  (0.5f + y) * STEP_SIZE);
-  return {top_left, top_left + diagonal};
+#include <algorithm>
+
+BoundingBox3D grid_to_world(int row1, int col1, int row2, int col2) {
+  glm::vec3 top_left = {(-0.5 * GRID_SIZE + col1) * STEP_SIZE, 0,
+                        (0.5 - row1) * STEP_SIZE},
+            bottom_right = {(-0.5 * GRID_SIZE + col2 + 1) * STEP_SIZE, 1,
+                            (0.5 - row2 - 1) * STEP_SIZE};
+  if (top_left[2] > bottom_right[2])
+    std::swap(top_left[2], bottom_right[2]);
+  return BoundingBox3D(top_left, bottom_right);
 }

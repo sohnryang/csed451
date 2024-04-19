@@ -8,8 +8,4 @@
 const std::size_t GRID_SIZE = 8;
 const float STEP_SIZE = 2.0f;
 
-float grid_ticks_to_float(int x);
-
-glm::vec2 grid_to_world(int x, int y);
-
-BoundingBox grid_to_world_cell(int x, int y);
+BoundingBox3D grid_to_world(int row1, int col1, int row2, int col2);
