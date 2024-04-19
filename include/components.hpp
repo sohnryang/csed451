@@ -43,6 +43,7 @@ struct WinZone {
 struct Car {
   static constexpr float TRUCK_PLATE_DURATION = 0.7f;
   glm::vec3 vel;
+  BoundingBox3D model_bb;
 };
 
 enum class AnimationKind { DISABLED, ONCE, LOOP };
@@ -63,6 +64,7 @@ struct Animation {
 
 struct ShoeItem {
   static constexpr float MULTIPLIER = 2.0f;
+  BoundingBox3D model_bb;
 };
 
 struct CameraConfig {

@@ -52,7 +52,7 @@ struct Registry {
   std::uniform_int_distribution<int> random_tree_number_dist =
       std::uniform_int_distribution<int>(1, 3);
   std::uniform_real_distribution<double> random_speed_dist =
-      std::uniform_real_distribution<double>(-0.4, 0.4);
+      std::uniform_real_distribution<double>(-1, 1);
   std::uniform_real_distribution<double> random_probability_dist =
       std::uniform_real_distribution<double>(0.0, 1.0);
 

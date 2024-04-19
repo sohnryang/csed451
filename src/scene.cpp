@@ -96,15 +96,16 @@ void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
   if (tile_type == TileType::ROAD)
     delta_y -= ROAD_OFFSET;
   ctx.registry().add_mesh(
-      ctx,
-      {vertices, glm::translate(glm::mat4(1),
-                                glm::vec3(0, delta_y, (int)row_index * -STEP_SIZE))});
+      ctx, {vertices, glm::translate(
+                          glm::mat4(1),
+                          glm::vec3(0, delta_y, (int)row_index * -STEP_SIZE))});
 }
 
 void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
                  std::size_t col_index) {
   // might move this constant (0.75) to somewhere
-  const auto tree_pos = grid_to_world(row_index, col_index, row_index, col_index).midpoint();
+  const auto tree_pos =
+      grid_to_world(row_index, col_index, row_index, col_index).midpoint();
   const auto vertices = ctx.registry().model_vertices["tree.obj"];
   const auto id = ctx.registry().add_mesh(
       ctx, {vertices,
@@ -130,45 +131,40 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
   }
 }
 
-/*
-
 void create_car(ecs::Context<Registry> &ctx, const float pos_x,
-                const std::size_t row_index, const float vel,
-                const components::Color &color) {
-  const float actual_pos_y = grid_ticks_to_float(row_index) + STEP_SIZE * 0.5f;
-  auto vertices = CAR_VERTICES;
+                const std::size_t row_index, const float vel) {
+  const float actual_pos_z = -STEP_SIZE * row_index;
+  std::cout << actual_pos_z << std::endl;
   auto translate_mat =
-      glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f));
+      glm::translate(glm::mat4(1), glm::vec3(pos_x, 0, actual_pos_z));
   if (vel <= 0.0f)
     translate_mat =
         glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
-  const auto id = ctx.registry().add_render_info(
-      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
-            color, translate_mat});
-  ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
-  create_wheel(ctx, id, glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
-  create_wheel(ctx, id, glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
+  const auto id = ctx.registry().add_mesh(
+      ctx, {ctx.registry().model_vertices["car.obj"], translate_mat});
+  const auto &mesh = ctx.registry().meshes[id];
+  ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0),
+                             BoundingBox3D::from_vertices(mesh.vertices)};
 }
 
 void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
-                  const std::size_t row_index, const float vel,
-                  const components::Color &color) {
-  const float actual_pos_y = grid_ticks_to_float(row_index) + STEP_SIZE * 0.5f;
-  auto vertices = TRUCK_VERTICES;
+                  const std::size_t row_index, const float vel) {
+  const float actual_pos_z = -STEP_SIZE * row_index;
+  std::cout << actual_pos_z << std::endl;
   auto translate_mat =
-      glm::translate(glm::mat4(1), glm::vec3(pos_x, actual_pos_y, 0.0f));
+      glm::translate(glm::mat4(1), glm::vec3(pos_x, 0, actual_pos_z));
   if (vel <= 0.0f)
     translate_mat =
         glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
-  const auto id = ctx.registry().add_render_info(
-      ctx, {std::make_unique<components::VertexVector>(std::move(vertices)),
-            color, translate_mat});
+  const auto id = ctx.registry().add_mesh(
+      ctx, {ctx.registry().model_vertices["truck.obj"], translate_mat});
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
-  create_wheel(ctx, id, glm::vec3(CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
-  create_wheel(ctx, id, glm::vec3(-CAR_RADIUS_X / 2, -CAR_RADIUS_Y, 0));
-  create_plate(ctx, id, glm::vec3(CAR_RADIUS_X_SHORT, 0, 0));
+  const auto &mesh = ctx.registry().meshes[id];
+  ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0),
+                             BoundingBox3D::from_vertices(mesh.vertices)};
 }
 
+/*
 void create_wheel(ecs::Context<Registry> &ctx, std::size_t car_id,
                   const glm::vec3 &position) {
   const auto id = ctx.registry().add_render_info(
@@ -326,8 +322,6 @@ void create_map(ecs::Context<Registry> &ctx) {
     }
   }
 
-  /*
-
   // Set cars on the road
   for (int i = 0; i < 8; i++) {
     if (map_data[i] != TileType::ROAD)
@@ -338,13 +332,12 @@ void create_map(ecs::Context<Registry> &ctx) {
     for (double j = 0.0; j <= 2.0; j += 0.4) {
       if (ctx.registry().random_probability(ctx, CAR_SPAWN_DENSITY)) {
         if (ctx.registry().random_probability(ctx, TRUCK_RATE))
-          create_truck(ctx, j, i, vel, TRUCK_COLOR);
+          create_truck(ctx, j, i, vel);
         else
-          create_car(ctx, j, i, vel, CAR_COLOR);
+          create_car(ctx, j, i, vel);
       }
     }
   }
-  */
 
   // Set map bound
   const std::vector<std::pair<BoundingBox3D, components::ActionKind>>
