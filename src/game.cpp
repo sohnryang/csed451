@@ -44,6 +44,9 @@ void keyboard_handle(int key, int x, int y) {
 void keyboard_handle_non_special(unsigned char key, int x, int y) {
   if (key == 'p')
     ctx_ptr->registry().pass_through = !ctx_ptr->registry().pass_through;
+  if (key == 'r')
+    ctx_ptr->registry().hidden_line_removal =
+        !ctx_ptr->registry().hidden_line_removal;
 }
 
 int main(int argc, char **argv) {
@@ -63,7 +66,7 @@ int main(int argc, char **argv) {
 
   load_models(*ctx_ptr);
   setup_camera(*ctx_ptr);
-  create_character(*ctx_ptr);
+  create_map(*ctx_ptr);
 
   glutDisplayFunc(display);
   glutIdleFunc(idle);

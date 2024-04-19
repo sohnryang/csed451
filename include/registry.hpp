@@ -32,12 +32,13 @@ struct Registry {
   ecs::entities::EntityId character_id;
   std::queue<InputKind> input_queue;
   std::unordered_set<components::ActionKind> blocked_actions;
-  bool pass_through;
+  bool pass_through = false;
+  bool hidden_line_removal = false;
   components::CameraConfig camera_config;
   std::unordered_map<std::string, std::vector<glm::vec3>> model_vertices;
   const std::vector<std::string> model_filenames = {
-      "rooster.obj", "tree.obj", "car.obj", "truck.obj", "sneakers.obj",
-  };
+      "rooster.obj", "tree.obj",     "car.obj",
+      "truck.obj",   "sneakers.obj", "floor.obj"};
 
   size_t map_bottom = 0;
   size_t map_top_generated = 0;
