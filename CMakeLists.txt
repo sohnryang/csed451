@@ -73,12 +73,19 @@ file(
   COPY "${ASSETS_DIR}/teapot.obj"
        "${ASSETS_DIR}/teapot.mtl"
        "${ASSETS_DIR}/rooster.obj"
+       "${ASSETS_DIR}/rooster.mtl"
        "${ASSETS_DIR}/tree.obj"
+       "${ASSETS_DIR}/tree.mtl"
        "${ASSETS_DIR}/car.obj"
+       "${ASSETS_DIR}/car.mtl"
        "${ASSETS_DIR}/truck.obj"
+       "${ASSETS_DIR}/truck.mtl"
        "${ASSETS_DIR}/sneakers.obj"
+       "${ASSETS_DIR}/sneakers.mtl"
        "${ASSETS_DIR}/floor.obj"
+       "${ASSETS_DIR}/floor.mtl"
        "${ASSETS_DIR}/floor2.obj"
+       "${ASSETS_DIR}/floor2.mtl"
   DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 add_subdirectory(src)

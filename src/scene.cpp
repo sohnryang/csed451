@@ -77,9 +77,9 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
       ctx, {
                character_vertices,
                glm::translate(glm::mat4(1),
-                              glm::vec3(character_pos, CHARACTER_OFFSET, 0)),
+                              glm::vec3(character_pos, 0, 0)),
            });
-  ctx.registry().camera_init = glm::vec3(character_pos, CHARACTER_OFFSET, 0);
+  ctx.registry().camera_init = glm::vec3(character_pos, 0, 0);
   ctx.registry().character_id = id;
   ctx.registry().animations[id] = {
       components::AnimationState::BEFORE_START,
@@ -116,7 +116,7 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
   const auto id = ctx.registry().add_mesh(
       ctx, {vertices,
             glm::translate(glm::mat4(1),
-                           glm::vec3(tree_pos[0], TREE_OFFSET, tree_pos[2]))});
+                           glm::vec3(tree_pos[0], 0, tree_pos[2]))});
 
   const std::vector<std::pair<BoundingBox3D, components::ActionKind>>
       adjacent_pos = {
@@ -142,7 +142,7 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
   const float actual_pos_z = -STEP_SIZE * row_index;
   std::cout << actual_pos_z << std::endl;
   auto translate_mat =
-      glm::translate(glm::mat4(1), glm::vec3(pos_x, CAR_OFFSET, actual_pos_z));
+      glm::translate(glm::mat4(1), glm::vec3(pos_x, -ROAD_OFFSET, actual_pos_z));
   if (vel <= 0.0f)
     translate_mat =
         glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
@@ -158,7 +158,7 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
   const float actual_pos_z = -STEP_SIZE * row_index;
   std::cout << actual_pos_z << std::endl;
   auto translate_mat = glm::translate(
-      glm::mat4(1), glm::vec3(pos_x, TRUCK_OFFSET, actual_pos_z));
+      glm::mat4(1), glm::vec3(pos_x, -ROAD_OFFSET, actual_pos_z));
   if (vel <= 0.0f)
     translate_mat =
         glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
@@ -172,7 +172,7 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
 
 void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
                       std::size_t col_index) {
-  const auto position = glm::vec3(col_index * STEP_SIZE - 3.5f * STEP_SIZE, 1,
+  const auto position = glm::vec3(col_index * STEP_SIZE - 3.5f * STEP_SIZE, SHOE_OFFSET,
                                   -STEP_SIZE * row_index);
   const auto &mesh_vertices = ctx.registry().model_vertices["sneakers.obj"];
   const auto shoe_id = ctx.registry().add_mesh(

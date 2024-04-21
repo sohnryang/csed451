@@ -11,12 +11,9 @@
 
 const float PI = std::acos(-1);
 const float ROAD_OFFSET = 0.2;
-const float CHARACTER_OFFSET = 0.5;
-const float TREE_OFFSET = 0.75;
+const float SHOE_OFFSET = 0.3;
 const float CAR_SPAWN_DENSITY = 0.4f;
 const float TRUCK_RATE = 0.3f;
-const float TRUCK_OFFSET = 0.1f;
-const float CAR_OFFSET = 0.1f;
 
 void load_models(ecs::Context<Registry> &ctx);
 
