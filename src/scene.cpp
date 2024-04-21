@@ -144,7 +144,6 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
 void create_car(ecs::Context<Registry> &ctx, const float pos_x,
                 const std::size_t row_index, const float vel) {
   const float actual_pos_z = -STEP_SIZE * row_index;
-  std::cout << actual_pos_z << std::endl;
   auto translate_mat =
       glm::translate(glm::mat4(1), glm::vec3(pos_x, -ROAD_OFFSET, actual_pos_z));
   if (vel <= 0.0f)
@@ -160,7 +159,6 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
 void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
                   const std::size_t row_index, const float vel) {
   const float actual_pos_z = -STEP_SIZE * row_index;
-  std::cout << actual_pos_z << std::endl;
   auto translate_mat = glm::translate(
       glm::mat4(1), glm::vec3(pos_x, -ROAD_OFFSET, actual_pos_z));
   if (vel <= 0.0f)
