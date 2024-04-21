@@ -50,7 +50,8 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
       ctx.registry().camera_init;
   // printf("%f %f %f\n", camera_delta[0], camera_delta[1], camera_delta[2]);
 
-  const auto &camera_config = ctx.registry().camera_config[ctx.registry().view_mode];
+  const auto &camera_config =
+      ctx.registry().camera_config[ctx.registry().view_mode];
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(camera_config.fovy, camera_config.aspect_ratio,
@@ -63,7 +64,7 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
             camera_config.center[0], camera_config.center[1],
             camera_config.center[2], camera_config.up[0], camera_config.up[1],
             camera_config.up[2]);
-  if(ctx.registry().view_mode == 2)
+  if (ctx.registry().view_mode == 2)
     glTranslatef(0, -camera_delta[1], -camera_delta[2]);
   else
     glTranslatef(-camera_delta[0], -camera_delta[1], -camera_delta[2]);
@@ -114,6 +115,16 @@ void Render::update_single(ecs::Context<Registry> &ctx,
     glMultMatrixf(glm::value_ptr(mesh.mat * animations.at(id).mat));
   else
     glMultMatrixf(glm::value_ptr(mesh.mat));
+  if (ctx.registry().hidden_line_removal) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glColor3f(0, 0, 0);
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1, 1);
+    render_single(mesh);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glColor3f(1, 1, 1);
+  }
+  glDisable(GL_POLYGON_OFFSET_FILL);
   render_single(mesh);
   render_children(ctx, id);
   glPopMatrix();
@@ -157,6 +168,7 @@ Render::Render() {
   glDepthFunc(GL_LESS);
   glDepthRange(0, 1);
   glClearDepth(1);
+  glEnable(GL_DEPTH_TEST);
 }
 
 bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
@@ -348,14 +360,12 @@ void Car::update_single(ecs::Context<Registry> &ctx,
   const auto car_bb = car.model_bb.transform(mesh.mat);
   const auto xmin = car_bb.min_point[0], xmax = car_bb.max_point[0];
   if (car.vel[0] < 0.0f && xmax < -STEP_SIZE * GRID_SIZE * 2.0)
-    mesh.mat =
-        glm::translate(glm::mat4(1),
-                       glm::vec3(4.0 * GRID_SIZE * STEP_SIZE, 0, 0)) *
-        mesh.mat;
+    mesh.mat = glm::translate(glm::mat4(1),
+                              glm::vec3(4.0 * GRID_SIZE * STEP_SIZE, 0, 0)) *
+               mesh.mat;
   else if (car.vel[0] > 0.0f && xmin > STEP_SIZE * GRID_SIZE * 2.0)
-    mesh.mat = glm::translate(
-                   glm::mat4(1),
-                   glm::vec3(-4.0 * GRID_SIZE * STEP_SIZE, 0, 0)) *
+    mesh.mat = glm::translate(glm::mat4(1),
+                              glm::vec3(-4.0 * GRID_SIZE * STEP_SIZE, 0, 0)) *
                mesh.mat;
   const auto disp = ctx.delta_time() * car.vel;
   mesh.mat = glm::translate(glm::mat4(1), disp) * mesh.mat;
