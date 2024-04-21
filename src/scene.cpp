@@ -64,10 +64,10 @@ void setup_camera(ecs::Context<Registry> &ctx, int col) {
       {glm::vec3(character_pos, 0.5, -1), glm::vec3(character_pos, 0, -100),
        glm::vec3(0, 1, 0), 60, 1, 0.1, 100}));
   glm::vec3 camera_pos = {5, 8, 8},
-            midpoint = {1 * STEP_SIZE, 0, 0};
+            midpoint = {2 * STEP_SIZE, 0, 0};
   ctx.registry().camera_config.push_back(components::CameraConfig(
       {midpoint + camera_pos, midpoint,
-       glm::vec3(0, 1, 0), 60, 1, 0.1, 100}));
+       glm::vec3(0, 1, 0), 55, 1, 0.1, 100}));
 }
 
 void create_character(ecs::Context<Registry> &ctx, int col) {
