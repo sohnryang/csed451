@@ -59,11 +59,11 @@ void setup_camera(ecs::Context<Registry> &ctx, int col) {
   const auto character_pos = grid_to_world(0, col, 0, col).midpoint()[0];
   ctx.registry().camera_config.push_back(
       components::CameraConfig({glm::vec3(character_pos, 2, 5), glm::vec3(character_pos, 0, -10),
-                                glm::vec3(0, 1, 0), 40, 1, 0.1, 100}));
+                                glm::vec3(0, 1, 0), 40, 1, 0.1, 50}));
   ctx.registry().camera_config.push_back(components::CameraConfig(
       {glm::vec3(character_pos, 0.5, -1), glm::vec3(character_pos, 0, -100),
-       glm::vec3(0, 1, 0), 60, 1, 0.1, 100}));
-  glm::vec3 camera_pos = {4, 8, 10},
+       glm::vec3(0, 1, 0), 60, 1, 0.1, 50}));
+  glm::vec3 camera_pos = {4, 10, 10},
             midpoint = {0, 0, -STEP_SIZE};
   ctx.registry().camera_config.push_back(components::CameraConfig(
       {midpoint + camera_pos, midpoint,
@@ -99,7 +99,7 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
   character.model_bb = BoundingBox3D::from_vertices(mesh.vertices);
 }
 
-void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
+void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
                   TileType tile_type) {
   const auto vertices = ctx.registry().model_vertices["floor2.obj"];
   float delta_y = 0.0;
@@ -220,8 +220,12 @@ void create_map(ecs::Context<Registry> &ctx) {
     if (grass_count >= 1 && road_count >= 4)
       break;
   }
+  for (int i = -4; i < 0; i++)
+    fill_map_row(ctx, i, TileType::GRASS);
   for (int i = 0; i < 8; i++)
     fill_map_row(ctx, i, map_data[i]);
+  for (int i = 8; i < 28; i++)
+    fill_map_row(ctx, i, TileType::GRASS);
 
   // Set tree position
   std::vector<std::vector<bool>> tree_pos(8, std::vector<bool>(8, false));

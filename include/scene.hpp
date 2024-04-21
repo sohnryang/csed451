@@ -21,7 +21,7 @@ void setup_camera(ecs::Context<Registry> &ctx, int col);
 
 void create_character(ecs::Context<Registry> &ctx, int col);
 
-void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
+void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
                   TileType tile_type);
 
 void create_map(ecs::Context<Registry> &ctx);
