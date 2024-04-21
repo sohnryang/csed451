@@ -63,11 +63,11 @@ void setup_camera(ecs::Context<Registry> &ctx, int col) {
   ctx.registry().camera_config.push_back(components::CameraConfig(
       {glm::vec3(character_pos, 0.5, -1), glm::vec3(character_pos, 0, -100),
        glm::vec3(0, 1, 0), 60, 1, 0.1, 100}));
-  glm::vec3 camera_pos = {5, 8, 8},
-            midpoint = {STEP_SIZE, 0, -STEP_SIZE};
+  glm::vec3 camera_pos = {4, 8, 10},
+            midpoint = {0, 0, -STEP_SIZE};
   ctx.registry().camera_config.push_back(components::CameraConfig(
       {midpoint + camera_pos, midpoint,
-       glm::vec3(0, 1, 0), 55, 1, 0.1, 100}));
+       glm::vec3(0, 1, 0), 60, 1, 0.1, 100}));
   /*
   ctx.registry().camera_config.push_back(components::CameraConfig(
       {midpoint + glm::vec3(0, 60, 5), midpoint, glm::vec3(0, 1, 0), 55, 1, 0.1, 100}));
@@ -260,7 +260,7 @@ void create_map(ecs::Context<Registry> &ctx) {
     // Generate car with 40% density
     // 70% car, 30% truck
     for (double j = (-2.5 * GRID_SIZE) * STEP_SIZE;
-         j <= (2.5 * GRID_SIZE); j += 3.0) {
+         j <= (1.5 * GRID_SIZE); j += 3.0) {
       if (ctx.registry().random_probability(ctx, CAR_SPAWN_DENSITY)) {
         if (ctx.registry().random_probability(ctx, TRUCK_RATE))
           create_truck(ctx, j, i, vel);
