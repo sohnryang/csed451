@@ -42,7 +42,7 @@ int Registry::random_tree_number(ecs::Context<Registry> &ctx) {
 double Registry::random_speed(ecs::Context<Registry> &ctx) {
   while (true) {
     double ret = random_speed_dist(ctx.random_gen());
-    if (std::abs(ret) < 0.1)
+    if (std::abs(ret) < 0.5)
       continue;
     return ret;
   }
