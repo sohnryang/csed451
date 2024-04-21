@@ -39,8 +39,8 @@ struct Registry {
   glm::vec3 camera_init;
   std::unordered_map<std::string, std::vector<glm::vec3>> model_vertices;
   const std::vector<std::string> model_filenames = {
-      "rooster.obj", "tree.obj",     "car.obj",
-      "truck.obj",   "sneakers.obj", "floor.obj"};
+      "rooster.obj", "tree.obj", "car.obj", "truck.obj",
+      "sneakers.obj", "floor.obj", "floor2.obj"};
 
 
   size_t map_bottom = 0;

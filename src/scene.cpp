@@ -97,8 +97,8 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
 
 void fill_map_row(ecs::Context<Registry> &ctx, std::size_t row_index,
                   TileType tile_type) {
-  const auto vertices = ctx.registry().model_vertices["floor.obj"];
-  float delta_y = -1.0;
+  const auto vertices = ctx.registry().model_vertices["floor2.obj"];
+  float delta_y = 0.0;
   if (tile_type == TileType::ROAD)
     delta_y -= ROAD_OFFSET;
   ctx.registry().add_mesh(
