@@ -3,12 +3,15 @@
 #include <ecs/entities.hpp>
 #include <ecs/systems.hpp>
 
+#include <cstddef>
 #include <queue>
 #include <random>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include <components.hpp>
+#include <model.hpp>
 
 enum class GameState { IN_PROGRESS, LOSE, WIN };
 
@@ -37,14 +40,14 @@ struct Registry {
   int view_mode = 0;
   std::vector<components::CameraConfig> camera_config;
   glm::vec3 camera_init;
-  std::unordered_map<std::string, std::vector<glm::vec3>> model_vertices;
   const std::vector<std::string> model_filenames = {
-      "rooster.obj", "tree.obj", "car.obj", "truck.obj",
+      "rooster.obj",  "tree.obj",  "car.obj",   "truck.obj",
       "sneakers.obj", "floor.obj", "floor2.obj"};
+  std::unordered_map<std::string, std::size_t> model_indices;
+  std::vector<Model> models;
 
-
-  size_t map_bottom = 0;
-  size_t map_top_generated = 0;
+  std::size_t map_bottom = 0;
+  std::size_t map_top_generated = 0;
   TileType last_generated = TileType::GRASS;
   std::uniform_int_distribution<int> random_tile_type_dist =
       std::uniform_int_distribution<int>(0, 1);
@@ -58,6 +61,8 @@ struct Registry {
       std::uniform_real_distribution<double>(-3, 3);
   std::uniform_real_distribution<double> random_probability_dist =
       std::uniform_real_distribution<double>(0.0, 1.0);
+
+  Registry();
 
   ecs::entities::EntityId add_mesh(ecs::Context<Registry> &ctx,
                                    components::Mesh &&mesh);

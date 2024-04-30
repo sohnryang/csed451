@@ -120,19 +120,21 @@ void Render::update_single(ecs::Context<Registry> &ctx,
     glColor3f(0, 0, 0);
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1, 1);
-    render_single(mesh);
+    render_single(ctx, mesh);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glColor3f(1, 1, 1);
   }
   glDisable(GL_POLYGON_OFFSET_FILL);
-  render_single(mesh);
+  render_single(ctx, mesh);
   render_children(ctx, id);
   glPopMatrix();
 }
 
-void Render::render_single(const components::Mesh &mesh) {
+void Render::render_single(ecs::Context<Registry> &ctx,
+                           const components::Mesh &mesh) {
+  const auto &vertices = ctx.registry().models[mesh.model_index].vertices;
   glBegin(GL_TRIANGLES);
-  for (const auto &v : mesh.vertices)
+  for (const auto &v : vertices)
     glVertex3f(v[0], v[1], v[2]);
   glEnd();
 }
@@ -157,7 +159,7 @@ void Render::render_children(ecs::Context<Registry> &ctx,
       glLoadMatrixf(glm::value_ptr(child_mat * animations.at(child_id).mat));
     else
       glLoadMatrixf(glm::value_ptr(child_mat));
-    render_single(mesh);
+    render_single(ctx, mesh);
     render_children(ctx, child_id);
     glPopMatrix();
   }
@@ -304,7 +306,6 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   const auto character_id = ctx.registry().character_id;
   auto &meshes = ctx.registry().meshes;
   const auto &character_mesh = meshes.at(character_id);
-  const auto &character_vertices = character_mesh.vertices;
   const auto &animation = ctx.registry().animations[character_id];
   const auto character_center =
       character_mesh.mat * animation.mat * glm::vec4(0, 0, 0, 1);
@@ -339,7 +340,6 @@ void Character::update_single(ecs::Context<Registry> &ctx,
   } else if (!ctx.registry().pass_through) {
     const auto &car = ctx.registry().cars[id];
     const auto &car_mesh = meshes.at(id);
-    const auto &car_vertices = car_mesh.vertices;
     const auto car_bb = car.model_bb.transform(car_mesh.mat);
     if (character_bb.intersect_with(car_bb))
       ctx.registry().state = GameState::LOSE;

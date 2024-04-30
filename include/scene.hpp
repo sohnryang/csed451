@@ -15,8 +15,6 @@ const float SHOE_OFFSET = 0.3;
 const float CAR_SPAWN_DENSITY = 0.4f;
 const float TRUCK_RATE = 0.3f;
 
-void load_models(ecs::Context<Registry> &ctx);
-
 void setup_camera(ecs::Context<Registry> &ctx, int col);
 
 void create_character(ecs::Context<Registry> &ctx, int col);

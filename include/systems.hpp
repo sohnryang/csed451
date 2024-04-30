@@ -21,7 +21,7 @@ private:
   void update_single(ecs::Context<Registry> &ctx,
                      ecs::entities::EntityId id) override;
 
-  void render_single(const components::Mesh &mesh);
+  void render_single(ecs::Context<Registry> &ctx, const components::Mesh &mesh);
 
   void render_children(ecs::Context<Registry> &ctx, ecs::entities::EntityId id);
 

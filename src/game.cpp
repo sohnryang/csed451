@@ -67,7 +67,6 @@ int main(int argc, char **argv) {
   ctx_ptr =
       std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
 
-  load_models(*ctx_ptr);
   create_map(*ctx_ptr);
 
   glutDisplayFunc(display);

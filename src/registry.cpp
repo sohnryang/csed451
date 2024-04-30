@@ -3,9 +3,54 @@
 #include <ecs/entities.hpp>
 #include <ecs/systems.hpp>
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
+#include <cstddef>
+#include <iostream>
 #include <utility>
 
 #include <components.hpp>
+
+Registry::Registry() : models(model_filenames.size()) {
+  for (std::size_t i = 0; i < model_filenames.size(); i++) {
+    model_indices[model_filenames[i]] = i;
+
+    const auto &filename = model_filenames[i];
+    tinyobj::ObjReaderConfig reader_config;
+    reader_config.mtl_search_path = "./";
+    tinyobj::ObjReader reader;
+
+    if (!reader.ParseFromFile(filename, reader_config))
+      throw std::runtime_error("obj file parse failed");
+
+    if (!reader.Warning().empty())
+      std::cout << "TinyObjReader: " << reader.Warning();
+
+    const auto &attrib = reader.GetAttrib();
+    const auto &shapes = reader.GetShapes();
+    const auto &materials = reader.GetMaterials();
+    std::vector<glm::vec3> vertices;
+    for (std::size_t s = 0; s < shapes.size(); s++) {
+      std::size_t index_offset = 0;
+      for (std::size_t f = 0; f < shapes[s].mesh.num_face_vertices.size();
+           f++) {
+        const auto fv = shapes[s].mesh.num_face_vertices[f];
+        for (std::size_t v = 0; v < fv; v++) {
+          const auto idx = shapes[s].mesh.indices[index_offset + v];
+          const auto vx = attrib.vertices[3 * idx.vertex_index],
+                     vy = attrib.vertices[3 * idx.vertex_index + 1],
+                     vz = attrib.vertices[3 * idx.vertex_index + 2];
+          vertices.push_back(glm::vec3(vx, vy, vz));
+        }
+        index_offset += fv;
+      }
+    }
+    models[i] = Model(std::move(vertices));
+
+    std::cout << "Loaded obj file: " << filename << std::endl;
+  }
+}
 
 ecs::entities::EntityId Registry::add_mesh(ecs::Context<Registry> &ctx,
                                            components::Mesh &&mesh) {

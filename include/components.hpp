@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include <cstddef>
 #include <map>
 #include <queue>
 #include <vector>
@@ -10,7 +11,7 @@
 
 namespace components {
 struct Mesh {
-  std::vector<glm::vec3> vertices;
+  std::size_t model_index;
   glm::mat4 mat;
 };
 
