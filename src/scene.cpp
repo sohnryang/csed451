@@ -34,9 +34,10 @@ void setup_camera(ecs::Context<Registry> &ctx, int col) {
 
 void create_character(ecs::Context<Registry> &ctx, int col) {
   const auto character_pos = grid_to_world(0, col, 0, col).midpoint()[0];
+  const auto model_index = ctx.registry().model_indices["rooster.obj"];
   const auto id = ctx.registry().add_mesh(
       ctx, {
-               ctx.registry().model_indices["rooster.obj"],
+               model_index,
                glm::translate(glm::mat4(1), glm::vec3(character_pos, 0, 0)),
            });
   ctx.registry().camera_init = glm::vec3(character_pos, 0, 0);
@@ -52,6 +53,7 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
   };
   auto &character = ctx.registry().characters[id];
   auto &mesh = ctx.registry().meshes[id];
+  character.model_bb = ctx.registry().models[model_index].bounding_box;
 }
 
 void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
