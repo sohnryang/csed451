@@ -8,7 +8,8 @@ add_executable(
   bounding_box.cpp
   grid.cpp
   scene.cpp
-  model.cpp)
+  model.cpp
+  shader_program.cpp)
 target_link_libraries(crossy_ponix OpenGL::GL GLUT::GLUT GLEW::glew ECS)
 target_compile_definitions(crossy_ponix PRIVATE GL_SILENCE_DEPRECATION)
 target_include_directories(crossy_ponix PRIVATE ${TINY_OBJ_LOADER_INCLUDE_DIR})
