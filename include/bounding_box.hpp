@@ -2,6 +2,16 @@
 
 #include <glm/glm.hpp>
 
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+
+#define __gl_h_
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
+
 #include <vector>
 
 struct BoundingBox {
@@ -26,6 +36,9 @@ struct BoundingBox3D {
   glm::vec3 max_point;
 
   static BoundingBox3D from_vertices(const std::vector<glm::vec3> &vertices);
+  static BoundingBox3D
+  from_vertex_index_array(const std::vector<float> &vertices,
+                          const std::vector<GLuint> &indices);
   BoundingBox3D() = default;
   BoundingBox3D(const BoundingBox3D &) = default;
   BoundingBox3D(BoundingBox3D &&) = default;

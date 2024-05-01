@@ -4,6 +4,18 @@
 
 #include <glm/ext/matrix_transform.hpp>
 
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+
+#define __gl_h_
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
+
+#include <vector>
+
 BoundingBox::BoundingBox(const glm::vec2 &top_left,
                          const glm::vec2 &bottom_right)
     : top_left(top_left), bottom_right(bottom_right) {}
@@ -40,6 +52,25 @@ BoundingBox3D::from_vertices(const std::vector<glm::vec3> &vertices) {
     xmax = std::max(xmax, v[0]);
     ymax = std::max(ymax, v[1]);
     zmax = std::max(zmax, v[2]);
+  }
+  return {{xmin, ymin, zmin}, {xmax, ymax, zmax}};
+}
+
+BoundingBox3D
+BoundingBox3D::from_vertex_index_array(const std::vector<float> &vertices,
+                                       const std::vector<GLuint> &indices) {
+  float xmin = vertices[3 * indices[0]], xmax = xmin,
+        ymin = vertices[3 * indices[0] + 1], ymax = ymin,
+        zmin = vertices[3 * indices[0] + 2], zmax = zmin;
+  for (const auto index : indices) {
+    float x = vertices[3 * index], y = vertices[3 * index + 1],
+          z = vertices[3 * index + 2];
+    xmin = std::min(xmin, x);
+    xmax = std::max(xmax, x);
+    ymin = std::min(ymin, y);
+    ymax = std::max(ymax, y);
+    zmin = std::min(zmin, z);
+    zmax = std::max(zmax, z);
   }
   return {{xmin, ymin, zmin}, {xmax, ymax, zmax}};
 }
