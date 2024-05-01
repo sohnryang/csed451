@@ -4,7 +4,8 @@
 #define __gl_h_
 #include <GLUT/glut.h>
 #else
-#include <gl/glut.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #endif
 
 #include <glm/glm.hpp>
@@ -69,6 +70,10 @@ void display() {
 }
 
 int main(int argc, char **argv) {
+#ifndef __APPLE__
+  glewInit();
+#endif
+
   std::string filename = "teapot.obj";
   tinyobj::ObjReaderConfig reader_config;
   reader_config.mtl_search_path = "./";
@@ -86,8 +91,12 @@ int main(int argc, char **argv) {
   }
 
   glutInit(&argc, argv);
+#ifdef __APPLE__
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH |
                       GLUT_3_2_CORE_PROFILE);
+#else
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+#endif
   glutInitWindowSize(512, 512);
   glutCreateWindow("Teapot");
 
