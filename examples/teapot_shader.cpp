@@ -1,4 +1,3 @@
-#include <cstddef>
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
 
@@ -14,6 +13,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <chrono>
+#include <cstddef>
 #include <iostream>
 #include <string>
 #include <vector>
