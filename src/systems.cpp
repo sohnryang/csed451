@@ -30,15 +30,23 @@
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,
                           ecs::entities::EntityId id) {
-  return ctx.registry().meshes.count(id) &&
+  return (!is_fill || ctx.registry().hidden_line_removal) &&
+         ctx.registry().meshes.count(id) &&
          ctx.entity_manager().entity_graph()[id].parent == id;
 }
 
 void Render::pre_update(ecs::Context<Registry> &ctx) {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glUseProgram(ctx.registry().shader_program.program_id);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  set_color(ctx, {1, 1, 1, 1});
+  if (is_fill) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    set_color(ctx, {0, 0, 0, 1});
+    glDepthFunc(GL_LESS);
+  } else {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    set_color(ctx, {1, 1, 1, 1});
+    glDepthFunc(GL_LEQUAL);
+  }
 
   if (ctx.registry().hidden_line_removal) {
     glEnable(GL_CULL_FACE);
@@ -48,7 +56,10 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
   }
 }
 
-void Render::post_update(ecs::Context<Registry> &ctx) { glutSwapBuffers(); }
+void Render::post_update(ecs::Context<Registry> &ctx) {
+  if (is_fill)
+    glutSwapBuffers();
+}
 
 void Render::update_single(ecs::Context<Registry> &ctx,
                            ecs::entities::EntityId id) {
@@ -126,13 +137,7 @@ void Render::render_children(ecs::Context<Registry> &ctx,
   }
 }
 
-Render::Render() {
-  glClearColor(0, 0, 0, 1);
-  glDepthFunc(GL_LESS);
-  glDepthRange(0, 1);
-  glClearDepth(1);
-  glEnable(GL_DEPTH_TEST);
-}
+Render::Render(bool is_fill) : is_fill(is_fill) {}
 
 bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
                                 ecs::entities::EntityId id) {

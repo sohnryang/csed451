@@ -11,6 +11,8 @@
 namespace systems {
 class Render : public ecs::systems::System<Registry> {
 private:
+  const bool is_fill;
+
   bool should_apply(ecs::Context<Registry> &ctx,
                     ecs::entities::EntityId id) override;
 
@@ -31,7 +33,7 @@ private:
                        const glm::mat4 &base_mat);
 
 public:
-  Render();
+  Render(bool is_fill);
 };
 
 class InputHandler : public ecs::systems::System<Registry> {

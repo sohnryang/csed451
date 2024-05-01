@@ -73,7 +73,8 @@ int main(int argc, char **argv) {
 
   std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
   systems.emplace_back(new systems::Animation);
-  systems.emplace_back(new systems::Render);
+  systems.emplace_back(new systems::Render(false));
+  systems.emplace_back(new systems::Render(true));
   systems.emplace_back(new systems::InputHandler);
   systems.emplace_back(new systems::Character);
   systems.emplace_back(new systems::Car);
@@ -83,6 +84,12 @@ int main(int argc, char **argv) {
   ctx_ptr->registry().shader_program =
       ShaderProgram("transform.glsl", "wireframe.glsl");
   glUseProgram(ctx_ptr->registry().shader_program.program_id);
+
+  glClearColor(0, 0, 0, 1);
+  glDepthFunc(GL_LEQUAL);
+  glDepthRange(0, 1);
+  glClearDepth(1);
+  glEnable(GL_DEPTH_TEST);
 
   create_map(*ctx_ptr);
 
