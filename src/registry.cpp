@@ -6,6 +6,16 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+
+#define __gl_h_
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
+
 #include <cstddef>
 #include <iostream>
 #include <utility>
@@ -27,26 +37,22 @@ Registry::Registry() : models(model_filenames.size()) {
     if (!reader.Warning().empty())
       std::cout << "TinyObjReader: " << reader.Warning();
 
-    const auto &attrib = reader.GetAttrib();
     const auto &shapes = reader.GetShapes();
-    const auto &materials = reader.GetMaterials();
-    std::vector<glm::vec3> vertices;
+    std::vector<GLuint> indices;
     for (std::size_t s = 0; s < shapes.size(); s++) {
       std::size_t index_offset = 0;
       for (std::size_t f = 0; f < shapes[s].mesh.num_face_vertices.size();
            f++) {
         const auto fv = shapes[s].mesh.num_face_vertices[f];
-        for (std::size_t v = 0; v < fv; v++) {
-          const auto idx = shapes[s].mesh.indices[index_offset + v];
-          const auto vx = attrib.vertices[3 * idx.vertex_index],
-                     vy = attrib.vertices[3 * idx.vertex_index + 1],
-                     vz = attrib.vertices[3 * idx.vertex_index + 2];
-          vertices.push_back(glm::vec3(vx, vy, vz));
-        }
+        for (std::size_t v = 0; v < fv; v++)
+          indices.push_back(
+              shapes[s].mesh.indices[index_offset + v].vertex_index);
+
         index_offset += fv;
       }
     }
-    models[i] = Model(std::move(vertices));
+    const auto &attrib = reader.GetAttrib();
+    models[i] = Model(attrib.vertices, indices);
 
     std::cout << "Loaded obj file: " << filename << std::endl;
   }

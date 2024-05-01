@@ -12,6 +12,7 @@
 
 #include "components.hpp"
 #include "model.hpp"
+#include "shader_program.hpp"
 
 enum class GameState { IN_PROGRESS, LOSE, WIN };
 
@@ -45,6 +46,7 @@ struct Registry {
       "sneakers.obj", "floor.obj", "floor2.obj"};
   std::unordered_map<std::string, std::size_t> model_indices;
   std::vector<Model> models;
+  ShaderProgram shader_program;
 
   std::size_t map_bottom = 0;
   std::size_t map_top_generated = 0;

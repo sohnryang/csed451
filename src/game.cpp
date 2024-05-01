@@ -8,13 +8,18 @@
 #include <glm/ext/matrix_transform.hpp>
 
 #ifdef __APPLE__
+#include <OpenGL/gl3.h>
+
+#define __gl_h_
 #include <GLUT/glut.h>
 #else
-#include <gl/glut.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #endif
 
 #include "registry.hpp"
 #include "scene.hpp"
+#include "shader_program.hpp"
 #include "systems.hpp"
 
 // TODO: use singleton
@@ -53,8 +58,16 @@ void keyboard_handle_non_special(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char **argv) {
+#ifndef __APPLE__
+  glewInit();
+#endif
   glutInit(&argc, argv);
+#ifdef __APPLE__
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH |
+                      GLUT_3_2_CORE_PROFILE);
+#else
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+#endif
   glutInitWindowSize(512, 512);
   glutCreateWindow("Crossy Ponix");
 
@@ -66,6 +79,10 @@ int main(int argc, char **argv) {
   systems.emplace_back(new systems::Car);
   ctx_ptr =
       std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
+
+  ctx_ptr->registry().shader_program =
+      ShaderProgram("transform.glsl", "wireframe.glsl");
+  glUseProgram(ctx_ptr->registry().shader_program.program_id);
 
   create_map(*ctx_ptr);
 

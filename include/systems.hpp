@@ -23,7 +23,12 @@ private:
 
   void render_single(ecs::Context<Registry> &ctx, const components::Mesh &mesh);
 
-  void render_children(ecs::Context<Registry> &ctx, ecs::entities::EntityId id);
+  void set_transform_mat(ecs::Context<Registry> &ctx, const glm::mat4 &mat);
+
+  void set_color(ecs::Context<Registry> &ctx, const glm::vec4 &color);
+
+  void render_children(ecs::Context<Registry> &ctx, ecs::entities::EntityId id,
+                       const glm::mat4 &base_mat);
 
 public:
   Render();

@@ -10,9 +10,13 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #ifdef __APPLE__
+#include <OpenGL/gl3.h>
+
+#define __gl_h_
 #include <GLUT/glut.h>
 #else
-#include <gl/glut.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #endif
 
 #include <cmath>
@@ -23,7 +27,6 @@
 #include "components.hpp"
 #include "grid.hpp"
 #include "registry.hpp"
-#include "scene.hpp"
 
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,
@@ -34,8 +37,9 @@ bool Render::should_apply(ecs::Context<Registry> &ctx,
 
 void Render::pre_update(ecs::Context<Registry> &ctx) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glColor3f(1, 1, 1);
+  glUseProgram(ctx.registry().shader_program.program_id);
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  set_color(ctx, {1, 1, 1, 1});
 
   if (ctx.registry().hidden_line_removal) {
     glEnable(GL_CULL_FACE);
@@ -43,7 +47,35 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
   } else {
     glDisable(GL_CULL_FACE);
   }
+}
 
+void Render::post_update(ecs::Context<Registry> &ctx) {
+  const auto state = ctx.registry().state;
+  if (state != GameState::IN_PROGRESS) {
+    const std::string text =
+        state == GameState::LOSE ? "GAME OVER" : "YOU WIN!!";
+    set_color(ctx, {1, 1, 0, 1});
+    float old_line_width;
+    glGetFloatv(GL_LINE_WIDTH, &old_line_width);
+    glLineWidth(5);
+
+    const auto char_width = 0.2f;
+
+    for (std::size_t i = 0; i < text.length(); i++) {
+      const auto transform_mat =
+          glm::translate(glm::mat4(1), {-0.95f + i * char_width, 0.0, 0.75}) *
+          glm::scale(glm::mat4(1), {1.0f / 400, 1.0f / 400, 1});
+      set_transform_mat(ctx, transform_mat);
+      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[i]);
+    }
+    glLineWidth(old_line_width);
+    set_color(ctx, {1, 1, 1, 1});
+  }
+  glutSwapBuffers();
+}
+
+void Render::update_single(ecs::Context<Registry> &ctx,
+                           ecs::entities::EntityId id) {
   glm::vec3 camera_delta =
       glm::vec3(ctx.registry().meshes[ctx.registry().character_id].mat[3]) +
       glm::vec3(ctx.registry().animations[ctx.registry().character_id].mat[3]) -
@@ -52,116 +84,69 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
 
   const auto &camera_config =
       ctx.registry().camera_config[ctx.registry().view_mode];
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(camera_config.fovy, camera_config.aspect_ratio,
-                 camera_config.znear, camera_config.zfar);
+  const auto camera_mat = glm::perspective(
+      glm::radians(camera_config.fovy), camera_config.aspect_ratio,
+      camera_config.znear, camera_config.zfar);
   // glOrtho(-4, 4, -4, 4, camera_config.znear, camera_config.zfar);
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  gluLookAt(camera_config.eye[0], camera_config.eye[1], camera_config.eye[2],
-            camera_config.center[0], camera_config.center[1],
-            camera_config.center[2], camera_config.up[0], camera_config.up[1],
-            camera_config.up[2]);
+  auto lookat_mat =
+      glm::lookAt(camera_config.eye, camera_config.center, camera_config.up);
   if (ctx.registry().view_mode == 2)
-    glTranslatef(0, -camera_delta[1], -camera_delta[2]);
+    lookat_mat = lookat_mat * glm::translate(glm::mat4(1), {0, -camera_delta[1],
+                                                            -camera_delta[2]});
   else
-    glTranslatef(-camera_delta[0], -camera_delta[1], -camera_delta[2]);
-  glPushMatrix();
-}
+    lookat_mat = lookat_mat * glm::translate(glm::mat4(1), -camera_delta);
 
-void Render::post_update(ecs::Context<Registry> &ctx) {
-  const auto state = ctx.registry().state;
-  if (state != GameState::IN_PROGRESS) {
-    const std::string text =
-        state == GameState::LOSE ? "GAME OVER" : "YOU WIN!!";
-    glColor3f(1, 1, 0);
-    float old_line_width;
-    glGetFloatv(GL_LINE_WIDTH, &old_line_width);
-    glLineWidth(5);
-
-    const auto char_width = 0.2f;
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    for (std::size_t i = 0; i < text.length(); i++) {
-      glPushMatrix();
-      glTranslatef(-0.95f + i * char_width, 0.0, 0.75);
-      glScalef(1.0f / 400, 1.0f / 400, 1);
-      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[i]);
-      glPopMatrix();
-    }
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glLineWidth(old_line_width);
-  }
-  glPopMatrix();
-  glutSwapBuffers();
-}
-
-void Render::update_single(ecs::Context<Registry> &ctx,
-                           ecs::entities::EntityId id) {
   const auto &mesh = ctx.registry().meshes.at(id);
   const auto &animations = ctx.registry().animations;
-  glPushMatrix();
+  auto transform_mat = camera_mat * lookat_mat * mesh.mat;
   if (animations.count(id))
-    glMultMatrixf(glm::value_ptr(mesh.mat * animations.at(id).mat));
-  else
-    glMultMatrixf(glm::value_ptr(mesh.mat));
-  if (ctx.registry().hidden_line_removal) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glColor3f(0, 0, 0);
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1, 1);
-    render_single(ctx, mesh);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glColor3f(1, 1, 1);
-  }
+    transform_mat = transform_mat * animations.at(id).mat;
   glDisable(GL_POLYGON_OFFSET_FILL);
+  set_transform_mat(ctx, transform_mat);
   render_single(ctx, mesh);
-  render_children(ctx, id);
-  glPopMatrix();
+  render_children(ctx, id, transform_mat);
 }
 
 void Render::render_single(ecs::Context<Registry> &ctx,
                            const components::Mesh &mesh) {
-  const auto &vertices = ctx.registry().models[mesh.model_index].vertices;
-  glBegin(GL_TRIANGLES);
-  for (const auto &v : vertices)
-    glVertex3f(v[0], v[1], v[2]);
-  glEnd();
+  const auto &model = ctx.registry().models[mesh.model_index];
+  const auto &vao_id = model.vao_id;
+  glBindVertexArray(vao_id);
+  glDrawElements(GL_TRIANGLES, model.index_count, GL_UNSIGNED_INT, nullptr);
+  glBindVertexArray(0);
+}
+
+void Render::set_transform_mat(ecs::Context<Registry> &ctx,
+                               const glm::mat4 &mat) {
+  const auto transform_mat_location = glGetUniformLocation(
+      ctx.registry().shader_program.program_id, "transform_mat");
+  glUniformMatrix4fv(transform_mat_location, 1, GL_FALSE, glm::value_ptr(mat));
+}
+
+void Render::set_color(ecs::Context<Registry> &ctx, const glm::vec4 &color) {
+  const auto color_location =
+      glGetUniformLocation(ctx.registry().shader_program.program_id, "color");
+  glUniform4fv(color_location, 1, glm::value_ptr(color));
 }
 
 void Render::render_children(ecs::Context<Registry> &ctx,
-                             ecs::entities::EntityId id) {
+                             ecs::entities::EntityId id,
+                             const glm::mat4 &base_mat) {
   const auto &meshes = ctx.registry().meshes;
   const auto &animations = ctx.registry().animations;
-
-  float matrix_raw[16];
-  glGetFloatv(GL_MODELVIEW_MATRIX, matrix_raw);
-  const auto base_mat = glm::make_mat4(matrix_raw);
 
   for (const auto child_id : ctx.entity_manager().entity_graph()[id].children) {
     if (!meshes.count(child_id))
       continue;
 
-    glPushMatrix();
     const auto &mesh = meshes.at(child_id);
-    const auto child_mat = base_mat * mesh.mat;
+    auto child_mat = base_mat * mesh.mat;
     if (animations.count(child_id))
-      glLoadMatrixf(glm::value_ptr(child_mat * animations.at(child_id).mat));
-    else
-      glLoadMatrixf(glm::value_ptr(child_mat));
+      child_mat = child_mat * animations.at(child_id).mat;
+    set_transform_mat(ctx, child_mat);
     render_single(ctx, mesh);
-    render_children(ctx, child_id);
-    glPopMatrix();
+    render_children(ctx, child_id, child_mat);
   }
 }
 
