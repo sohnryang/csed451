@@ -1,3 +1,4 @@
+#include <cstddef>
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
 
@@ -21,7 +22,7 @@
 #include <tiny_obj_loader.h>
 
 GLuint program_id, vertex_shader_id, fragment_shader_id, vao_id;
-std::vector<glm::vec3> vertices;
+std::size_t index_count;
 std::chrono::time_point<std::chrono::system_clock> last_updated;
 const GLchar *vertex_shader = R"(#version 330 core
 layout (location = 0) in vec3 pos;
@@ -60,7 +61,7 @@ void display() {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
   glBindVertexArray(vao_id);
-  glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+  glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
 
   glutSwapBuffers();
@@ -89,26 +90,6 @@ int main(int argc, char **argv) {
                       GLUT_3_2_CORE_PROFILE);
   glutInitWindowSize(512, 512);
   glutCreateWindow("Teapot");
-
-  auto &attrib = reader.GetAttrib();
-  auto &shapes = reader.GetShapes();
-  auto &materials = reader.GetMaterials();
-  for (std::size_t s = 0; s < shapes.size(); s++) {
-    std::size_t index_offset = 0;
-    for (std::size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
-      const auto fv = shapes[s].mesh.num_face_vertices[f];
-
-      for (std::size_t v = 0; v < fv; v++) {
-        tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
-        tinyobj::real_t vx = attrib.vertices[3 * idx.vertex_index],
-                        vy = attrib.vertices[3 * idx.vertex_index + 1],
-                        vz = attrib.vertices[3 * idx.vertex_index + 2];
-        vertices.push_back({vx, vy, vz});
-      }
-
-      index_offset += fv;
-    }
-  }
 
   program_id = glCreateProgram();
 
@@ -143,11 +124,32 @@ int main(int argc, char **argv) {
 
   std::cout << "Loaded obj file" << std::endl;
 
+  const auto &attrib = reader.GetAttrib();
   GLuint buffer_id;
   glGenBuffers(1, &buffer_id);
   glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
-  glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(float) * vertices.size(),
-               glm::value_ptr(vertices.front()), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * attrib.vertices.size(),
+               &attrib.vertices[0], GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  const auto &shapes = reader.GetShapes();
+  GLuint element_buffer_id;
+  std::vector<GLuint> vertex_indices;
+  for (std::size_t s = 0; s < shapes.size(); s++) {
+    std::size_t index_offset = 0;
+    for (std::size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+      const auto fv = shapes[s].mesh.num_face_vertices[f];
+      for (std::size_t v = 0; v < fv; v++)
+        vertex_indices.push_back(
+            shapes[s].mesh.indices[index_offset + v].vertex_index);
+      index_offset += fv;
+    }
+  }
+  index_count = vertex_indices.size();
+  glGenBuffers(1, &element_buffer_id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_id);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * vertex_indices.size(),
+               &vertex_indices[0], GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   std::cout << "Loaded to buffer" << std::endl;
@@ -156,6 +158,7 @@ int main(int argc, char **argv) {
   glBindVertexArray(vao_id);
   glEnableVertexAttribArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_id);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   glBindVertexArray(0);
 
