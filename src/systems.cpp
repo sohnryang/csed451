@@ -22,7 +22,6 @@
 #include <cmath>
 #include <cstddef>
 #include <iterator>
-#include <string>
 
 #include "components.hpp"
 #include "grid.hpp"
@@ -49,30 +48,7 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
   }
 }
 
-void Render::post_update(ecs::Context<Registry> &ctx) {
-  const auto state = ctx.registry().state;
-  if (state != GameState::IN_PROGRESS) {
-    const std::string text =
-        state == GameState::LOSE ? "GAME OVER" : "YOU WIN!!";
-    set_color(ctx, {1, 1, 0, 1});
-    float old_line_width;
-    glGetFloatv(GL_LINE_WIDTH, &old_line_width);
-    glLineWidth(5);
-
-    const auto char_width = 0.2f;
-
-    for (std::size_t i = 0; i < text.length(); i++) {
-      const auto transform_mat =
-          glm::translate(glm::mat4(1), {-0.95f + i * char_width, 0.0, 0.75}) *
-          glm::scale(glm::mat4(1), {1.0f / 400, 1.0f / 400, 1});
-      set_transform_mat(ctx, transform_mat);
-      glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[i]);
-    }
-    glLineWidth(old_line_width);
-    set_color(ctx, {1, 1, 1, 1});
-  }
-  glutSwapBuffers();
-}
+void Render::post_update(ecs::Context<Registry> &ctx) { glutSwapBuffers(); }
 
 void Render::update_single(ecs::Context<Registry> &ctx,
                            ecs::entities::EntityId id) {
