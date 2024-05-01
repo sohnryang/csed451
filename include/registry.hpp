@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ecs/entities.hpp>
-#include <ecs/systems.hpp>
+#include "ecs/entities.hpp"
+#include "ecs/systems.hpp"
 
 #include <cstddef>
 #include <queue>
@@ -10,8 +10,8 @@
 #include <unordered_set>
 #include <vector>
 
-#include <components.hpp>
-#include <model.hpp>
+#include "components.hpp"
+#include "model.hpp"
 
 enum class GameState { IN_PROGRESS, LOSE, WIN };
 

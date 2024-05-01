@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include <bounding_box.hpp>
+#include "bounding_box.hpp"
 
 const std::size_t GRID_SIZE = 8;
 const float STEP_SIZE = 2.0f;

@@ -1,6 +1,6 @@
-#include <scene.hpp>
+#include "scene.hpp"
 
-#include <ecs/systems.hpp>
+#include "ecs/systems.hpp"
 
 #include <glm/glm.hpp>
 
@@ -8,11 +8,10 @@
 
 #include <cstddef>
 
-#include <bounding_box.hpp>
-#include <components.hpp>
-#include <grid.hpp>
-#include <registry.hpp>
-#include <systems.hpp>
+#include "bounding_box.hpp"
+#include "components.hpp"
+#include "grid.hpp"
+#include "registry.hpp"
 
 void setup_camera(ecs::Context<Registry> &ctx, int col) {
   const auto character_pos = grid_to_world(0, col, 0, col).midpoint()[0];

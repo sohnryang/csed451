@@ -1,7 +1,7 @@
-#include <registry.hpp>
+#include "registry.hpp"
 
-#include <ecs/entities.hpp>
-#include <ecs/systems.hpp>
+#include "ecs/entities.hpp"
+#include "ecs/systems.hpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
@@ -10,7 +10,7 @@
 #include <iostream>
 #include <utility>
 
-#include <components.hpp>
+#include "components.hpp"
 
 Registry::Registry() : models(model_filenames.size()) {
   for (std::size_t i = 0; i < model_filenames.size(); i++) {

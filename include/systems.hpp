@@ -1,12 +1,12 @@
 #pragma once
 
-#include <ecs/entities.hpp>
-#include <ecs/systems.hpp>
+#include "ecs/entities.hpp"
+#include "ecs/systems.hpp"
 
 #include <glm/glm.hpp>
 
-#include <components.hpp>
-#include <registry.hpp>
+#include "components.hpp"
+#include "registry.hpp"
 
 namespace systems {
 class Render : public ecs::systems::System<Registry> {
