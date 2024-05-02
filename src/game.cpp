@@ -1,6 +1,7 @@
 #include "ecs/systems.hpp"
 
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -58,9 +59,6 @@ void keyboard_handle_non_special(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char **argv) {
-#ifndef __APPLE__
-  glewInit();
-#endif
   glutInit(&argc, argv);
 #ifdef __APPLE__
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH |
@@ -70,6 +68,10 @@ int main(int argc, char **argv) {
 #endif
   glutInitWindowSize(512, 512);
   glutCreateWindow("Crossy Ponix");
+
+#ifndef __APPLE__
+  glewInit();
+#endif
 
   std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
   systems.emplace_back(new systems::Animation);

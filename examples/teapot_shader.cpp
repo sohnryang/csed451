@@ -70,10 +70,6 @@ void display() {
 }
 
 int main(int argc, char **argv) {
-#ifndef __APPLE__
-  glewInit();
-#endif
-
   std::string filename = "teapot.obj";
   tinyobj::ObjReaderConfig reader_config;
   reader_config.mtl_search_path = "./";
@@ -100,6 +96,13 @@ int main(int argc, char **argv) {
   glutInitWindowSize(512, 512);
   glutCreateWindow("Teapot");
 
+#ifndef __APPLE__
+  GLenum init_status = glewInit();
+  if (init_status != GLEW_OK) {
+    std::cerr << "GLEW init error: " << glewGetErrorString(init_status) << std::endl;
+    std::exit(1);
+  }
+#endif
   program_id = glCreateProgram();
 
   vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
