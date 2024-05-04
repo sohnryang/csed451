@@ -93,7 +93,9 @@ int main(int argc, char **argv) {
   glClearDepth(1);
   glEnable(GL_DEPTH_TEST);
 
-  create_map(*ctx_ptr);
+  create_map_init(*ctx_ptr);
+  while (ctx_ptr->registry().map_top_generated <= 20)
+    create_map(*ctx_ptr);
 
   glutDisplayFunc(display);
   glutIdleFunc(idle);

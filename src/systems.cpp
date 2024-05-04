@@ -26,6 +26,7 @@
 #include "components.hpp"
 #include "grid.hpp"
 #include "registry.hpp"
+#include "scene.hpp"
 
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,

@@ -49,7 +49,8 @@ struct Registry {
   ShaderProgram shader_program;
 
   std::size_t map_bottom = 0;
-  std::size_t map_top_generated = 0;
+  std::size_t map_top_generated = 1;
+  bool item_placed = false;
   TileType last_generated = TileType::GRASS;
   std::uniform_int_distribution<int> random_tile_type_dist =
       std::uniform_int_distribution<int>(0, 1);
