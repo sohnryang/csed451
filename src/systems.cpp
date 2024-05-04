@@ -192,9 +192,13 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     switch (character.current_action) {
     case components::ActionKind::MOVE_FORWARD:
       mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, -STEP_SIZE));
+      ctx.registry().player_row++;
+      if (ctx.registry().map_top_generated - ctx.registry().player_row < 24)
+        create_map(ctx);
       break;
     case components::ActionKind::MOVE_BACK:
       mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, STEP_SIZE));
+      ctx.registry().player_row--;
       break;
     case components::ActionKind::MOVE_LEFT:
       mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(-STEP_SIZE, 0, 0));

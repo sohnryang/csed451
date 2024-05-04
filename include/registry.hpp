@@ -48,7 +48,7 @@ struct Registry {
   std::vector<Model> models;
   ShaderProgram shader_program;
 
-  std::size_t map_bottom = 0;
+  std::size_t player_row = 0;
   std::size_t map_top_generated = 1;
   bool item_placed = false;
   TileType last_generated = TileType::GRASS;
