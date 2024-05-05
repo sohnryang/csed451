@@ -198,7 +198,12 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
         ctx.registry().score = ctx.registry().player_row;
         std::cout << "Score: " << ctx.registry().score << std::endl;
       }
-      if (ctx.registry().map_top_generated - ctx.registry().player_row < 24)
+      if (ctx.registry().map_top_generated > 256) {
+        ctx.registry().map_generate_finished = true;
+        create_map_finish(ctx);
+      }
+      if (!ctx.registry().map_generate_finished &&
+          ctx.registry().map_top_generated - ctx.registry().player_row < 24)
         create_map(ctx);
       break;
     case components::ActionKind::MOVE_BACK:

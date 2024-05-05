@@ -31,3 +31,5 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
                   const std::size_t row_index, const float vel);
 
 void create_map_init(ecs::Context<Registry> &ctx);
+
+void create_map_finish(ecs::Context<Registry> &ctx);

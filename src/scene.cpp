@@ -277,3 +277,12 @@ void create_map_init(ecs::Context<Registry>& ctx) {
     ctx.registry().action_restrictions[restriction_id] = {bb, {action}, true};
   }
 }
+
+void create_map_finish(ecs::Context<Registry> &ctx) {
+  auto top = ctx.registry().map_top_generated;
+  for (int i = 0; i < 32; i++)
+    fill_map_row(ctx, top + i, TileType::GRASS);
+  const auto win_zone_id = ctx.entity_manager().next_id();
+  ctx.registry().win_zones[win_zone_id] = {
+      grid_to_world(top, 0, top, GRID_SIZE - 1)};
+}
