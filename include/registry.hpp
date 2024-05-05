@@ -32,7 +32,6 @@ struct Registry {
   std::unordered_set<ecs::entities::EntityId> wheels;
   std::unordered_set<ecs::entities::EntityId> truck_plates;
 
-  
   GameState state = GameState::IN_PROGRESS;
   ecs::entities::EntityId character_id;
   std::queue<InputKind> input_queue;

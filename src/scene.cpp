@@ -153,7 +153,8 @@ bool check_map_valid(std::vector<std::vector<bool>> check) {
       return true;
     for (int i = 0; i < 4; i++) {
       int nx = cur.first + dx[i], ny = cur.second + dy[i];
-      if (0 <= nx && nx < check.size() && 0 <= ny && ny < GRID_SIZE && !check[nx][ny]) {
+      if (0 <= nx && nx < check.size() && 0 <= ny && ny < GRID_SIZE &&
+          !check[nx][ny]) {
         check[nx][ny] = true;
         q.push({nx, ny});
       }
@@ -169,7 +170,8 @@ void create_map(ecs::Context<Registry> &ctx) {
     fill_map_row(ctx, ctx.registry().map_top_generated + i, TileType::GRASS);
 
   // Set tree position
-  std::vector<std::vector<bool>> tree_pos(grass_length + 2, std::vector<bool>(GRID_SIZE, false));
+  std::vector<std::vector<bool>> tree_pos(grass_length + 2,
+                                          std::vector<bool>(GRID_SIZE, false));
   int start_col = 0;
   while (true) {
     for (int i = 1; i <= grass_length; i++)
@@ -206,7 +208,6 @@ void create_map(ecs::Context<Registry> &ctx) {
   }
 
   ctx.registry().map_top_generated += grass_length;
-
 
   int road_length = ctx.registry().random_tile_length(ctx);
   for (int i = 0; i < road_length; i++)
@@ -250,7 +251,7 @@ void create_map(ecs::Context<Registry> &ctx) {
   }
 }
 
-void create_map_init(ecs::Context<Registry>& ctx) {
+void create_map_init(ecs::Context<Registry> &ctx) {
   for (int i = -4; i <= 0; i++)
     fill_map_row(ctx, ctx.registry().map_top_generated + i, TileType::GRASS);
 
