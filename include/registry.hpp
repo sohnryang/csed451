@@ -26,13 +26,14 @@ struct Registry {
   std::unordered_map<ecs::entities::EntityId, components::ActionRestriction>
       action_restrictions;
   std::unordered_map<ecs::entities::EntityId, components::Car> cars;
-  GameState state = GameState::IN_PROGRESS;
   std::unordered_map<ecs::entities::EntityId, components::WinZone> win_zones;
   std::unordered_map<ecs::entities::EntityId, components::Animation> animations;
   std::unordered_map<ecs::entities::EntityId, components::ShoeItem> shoe_items;
   std::unordered_set<ecs::entities::EntityId> wheels;
   std::unordered_set<ecs::entities::EntityId> truck_plates;
 
+  
+  GameState state = GameState::IN_PROGRESS;
   ecs::entities::EntityId character_id;
   std::queue<InputKind> input_queue;
   std::unordered_set<components::ActionKind> blocked_actions;
@@ -49,6 +50,7 @@ struct Registry {
   ShaderProgram shader_program;
 
   std::size_t player_row = 0;
+  std::size_t score = 0;
   std::size_t map_top_generated = 1;
   bool item_placed = false;
   TileType last_generated = TileType::GRASS;

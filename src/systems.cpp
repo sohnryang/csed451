@@ -194,6 +194,10 @@ void Character::post_update(ecs::Context<Registry> &ctx) {
     case components::ActionKind::MOVE_FORWARD:
       mesh.mat *= glm::translate(glm::mat4(1), glm::vec3(0, 0, -STEP_SIZE));
       ctx.registry().player_row++;
+      if (ctx.registry().player_row > ctx.registry().score) {
+        ctx.registry().score = ctx.registry().player_row;
+        std::cout << "Score: " << ctx.registry().score << std::endl;
+      }
       if (ctx.registry().map_top_generated - ctx.registry().player_row < 24)
         create_map(ctx);
       break;
