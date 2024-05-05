@@ -21,6 +21,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <iostream>
 #include <iterator>
 
 #include "components.hpp"
@@ -295,8 +296,10 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     }
   } else if (win_zones.count(id)) {
     const auto &win_zone = win_zones.at(id);
-    if (character_bb.contained_in(win_zone.bounding_box))
+    if (character_bb.contained_in(win_zone.bounding_box)) {
       ctx.registry().state = GameState::WIN;
+      std::cout << "YOU WIN!" << std::endl;
+    }
   } else if (shoe_items.count(id)) {
     const auto &shoe_item = shoe_items[id];
     const auto &shoe_mesh = meshes.at(id);
@@ -312,8 +315,10 @@ void Character::update_single(ecs::Context<Registry> &ctx,
     const auto &car = ctx.registry().cars[id];
     const auto &car_mesh = meshes.at(id);
     const auto car_bb = car.model_bb.transform(car_mesh.mat);
-    if (character_bb.intersect_with(car_bb))
+    if (character_bb.intersect_with(car_bb)) {
       ctx.registry().state = GameState::LOSE;
+      std::cout << "GAME OVER" << std::endl;
+    }
   }
 }
 
