@@ -81,6 +81,7 @@ file(
        "${ASSETS_DIR}/tree_texture.png"
        "${ASSETS_DIR}/car.obj"
        "${ASSETS_DIR}/car.mtl"
+       "${ASSETS_DIR}/car_texture.png"
        "${ASSETS_DIR}/truck.obj"
        "${ASSETS_DIR}/truck.mtl"
        "${ASSETS_DIR}/truck_texture.jpg"
