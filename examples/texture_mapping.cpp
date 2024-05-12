@@ -64,7 +64,7 @@ void display() {
           .count();
   const auto transform_mat =
       perspective_with_lookat * glm::translate(glm::mat4(1), {0, -0.5, 0}) *
-      glm::scale(glm::mat4(1), {0.5, 0.5, 0.5}) *
+      glm::scale(glm::mat4(1), {0.75, 0.75, 0.75}) *
       glm::rotate(glm::mat4(1), glm::radians(20 * delta), {0, 1, 0});
   const auto transform_mat_location =
       glGetUniformLocation(program_id, "transform_mat");
@@ -85,7 +85,7 @@ void display() {
 }
 
 int main(int argc, char **argv) {
-  const std::string filename = "tree.obj";
+  const std::string filename = "car.obj";
   tinyobj::ObjReaderConfig reader_config;
   reader_config.mtl_search_path = "./";
   tinyobj::ObjReader reader;
@@ -103,10 +103,10 @@ int main(int argc, char **argv) {
 
   glutInit(&argc, argv);
 #ifdef __APPLE__
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH |
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE |
                       GLUT_3_2_CORE_PROFILE);
 #else
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE);
 #endif
   glutInitWindowSize(512, 512);
   glutCreateWindow("Teapot");
@@ -228,14 +228,14 @@ int main(int argc, char **argv) {
   int width, height, channel_count;
   stbi_set_flip_vertically_on_load(true);
   std::uint8_t *texture_data =
-      stbi_load("tree_texture.png", &width, &height, &channel_count, 0);
+      stbi_load("car_texture.png", &width, &height, &channel_count, 0);
   if (texture_data == nullptr) {
     std::cerr << "Texture file read failed" << std::endl;
     std::exit(1);
   }
   std::cout << "Texture loaded with " << channel_count << " channels"
             << std::endl;
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, texture_data);
   glGenerateMipmap(GL_TEXTURE_2D);
   stbi_image_free(texture_data);
@@ -244,6 +244,7 @@ int main(int argc, char **argv) {
   glDepthRange(0, 1);
   glClearDepth(1);
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_MULTISAMPLE);
 
   last_updated = std::chrono::system_clock::now();
 
