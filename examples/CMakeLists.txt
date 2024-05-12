@@ -9,3 +9,8 @@ add_gl_executable_single_file(teapot teapot.cpp)
 target_include_directories(teapot PRIVATE ${TINY_OBJ_LOADER_INCLUDE_DIR})
 add_gl_executable_single_file(teapot_shader teapot_shader.cpp)
 target_include_directories(teapot_shader PRIVATE ${TINY_OBJ_LOADER_INCLUDE_DIR})
+add_gl_executable_single_file(texture_mapping texture_mapping.cpp)
+target_include_directories(
+  texture_mapping
+  PRIVATE ${TINY_OBJ_LOADER_INCLUDE_DIR}
+  PRIVATE ${STB_INCLUDE_DIR})
