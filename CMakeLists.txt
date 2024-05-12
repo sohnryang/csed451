@@ -68,6 +68,7 @@ endfunction()
 
 set(TINY_OBJ_LOADER_INCLUDE_DIR
     "${PROJECT_SOURCE_DIR}/third_party/tinyobjloader")
+set(STB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third_party/stb")
 set(ASSETS_DIR "${PROJECT_SOURCE_DIR}/assets")
 file(
   COPY "${ASSETS_DIR}/teapot.obj"
