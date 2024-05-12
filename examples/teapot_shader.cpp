@@ -99,7 +99,8 @@ int main(int argc, char **argv) {
 #ifndef __APPLE__
   GLenum init_status = glewInit();
   if (init_status != GLEW_OK) {
-    std::cerr << "GLEW init error: " << glewGetErrorString(init_status) << std::endl;
+    std::cerr << "GLEW init error: " << glewGetErrorString(init_status)
+              << std::endl;
     std::exit(1);
   }
 #endif
