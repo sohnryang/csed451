@@ -92,6 +92,7 @@ file(
        "${ASSETS_DIR}/floor.mtl"
        "${ASSETS_DIR}/floor2.obj"
        "${ASSETS_DIR}/floor2.mtl"
+       "${ASSETS_DIR}/empty_texture.png"
        "${ASSETS_DIR}/transform.glsl"
        "${ASSETS_DIR}/wireframe.glsl"
   DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
