@@ -53,7 +53,7 @@ void main() {
   vec4 pos_modelview = modelview_mat * vec4(pos, 1.0);
   gl_Position = projection_mat * pos_modelview;
 
-  vec3 transformed_normal = normalize(modelview_mat * vec4(normal, 0.0)).xyz;
+  vec3 transformed_normal = normalize(modelview_mat * vec4(normal, 1.0)).xyz;
   vec3 light_direction = normalize(light_pos - pos_modelview.xyz);
   vec3 ambient = ambient_intensity * mat_ambient;
   vec3 diffuse = max(dot(light_direction, transformed_normal), 0.0) * diffuse_intensity * mat_diffuse;
