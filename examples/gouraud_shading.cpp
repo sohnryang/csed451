@@ -108,7 +108,7 @@ void display() {
 }
 
 int main(int argc, char **argv) {
-  const std::string filename = "tree.obj";
+  const std::string filename = "car.obj";
   tinyobj::ObjReaderConfig reader_config;
   reader_config.mtl_search_path = "./";
   tinyobj::ObjReader reader;
@@ -294,7 +294,7 @@ int main(int argc, char **argv) {
   int width, height, channel_count;
   stbi_set_flip_vertically_on_load(true);
   std::uint8_t *texture_data =
-      stbi_load("tree_texture.png", &width, &height, &channel_count, 0);
+      stbi_load("car_texture.png", &width, &height, &channel_count, 0);
   if (texture_data == nullptr) {
     std::cerr << "Texture file read failed" << std::endl;
     std::exit(1);
@@ -321,7 +321,7 @@ int main(int argc, char **argv) {
 
   const auto ambient_intensity_location =
       glGetUniformLocation(program_id, "ambient_intensity");
-  glUniform1f(ambient_intensity_location, 0);
+  glUniform1f(ambient_intensity_location, 0.25);
 
   const auto diffuse_intensity_location =
       glGetUniformLocation(program_id, "diffuse_intensity");
@@ -329,7 +329,7 @@ int main(int argc, char **argv) {
 
   const auto specular_intensity_location =
       glGetUniformLocation(program_id, "specular_intensity");
-  glUniform1f(specular_intensity_location, 0.5);
+  glUniform1f(specular_intensity_location, 1);
 
   const auto projection_mat_location =
       glGetUniformLocation(program_id, "projection_mat");
