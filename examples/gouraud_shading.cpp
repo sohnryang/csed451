@@ -57,7 +57,7 @@ void main() {
   vec3 light_direction = normalize(light_pos - pos_modelview.xyz);
   vec3 ambient = ambient_intensity * mat_ambient;
   vec3 diffuse = max(dot(light_direction, transformed_normal), 0.0) * diffuse_intensity * mat_diffuse;
-  vec3 eye = normalize(-pos);
+  vec3 eye = normalize(-pos_modelview.xyz);
   vec3 halfway = normalize(light_direction + eye);
   float ks = pow(max(dot(transformed_normal, halfway), 0.0), mat_shininess);
   vec3 specular = specular_intensity * ks * mat_specular;
