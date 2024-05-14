@@ -19,3 +19,8 @@ target_include_directories(
   gouraud_shading
   PRIVATE ${TINY_OBJ_LOADER_INCLUDE_DIR}
   PRIVATE ${STB_INCLUDE_DIR})
+add_gl_executable_single_file(phong_shading phong_shading.cpp)
+target_include_directories(
+  phong_shading
+  PRIVATE ${TINY_OBJ_LOADER_INCLUDE_DIR}
+  PRIVATE ${STB_INCLUDE_DIR})
