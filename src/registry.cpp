@@ -50,6 +50,7 @@ Registry::Registry()
 
     shader_programs[GOURAUD_SHADER] =
         ShaderProgram("gouraud.vert", "gouraud.frag");
+    shader_programs[PHONG_SHADER] = ShaderProgram("phong.vert", "phong.frag");
 
     std::cout << "Loaded obj file: " << filename << std::endl;
   }

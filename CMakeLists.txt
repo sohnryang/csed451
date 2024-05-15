@@ -97,6 +97,8 @@ file(
        "${ASSETS_DIR}/wireframe.glsl"
        "${ASSETS_DIR}/gouraud.vert"
        "${ASSETS_DIR}/gouraud.frag"
+       "${ASSETS_DIR}/phong.vert"
+       "${ASSETS_DIR}/phong.frag"
   DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 add_subdirectory(src)
