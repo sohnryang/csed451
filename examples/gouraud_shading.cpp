@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -40,40 +41,64 @@ layout (location = 6) in float mat_shininess;
 layout (location = 7) in vec2 tex_coord;
 
 uniform vec3 light_pos;
+uniform vec3 directional_light;
 uniform float ambient_intensity;
-uniform float diffuse_intensity;
-uniform float specular_intensity;
+uniform float diffuse_intensity_point;
+uniform float specular_intensity_point;
+uniform float diffuse_intensity_directional;
+uniform float specular_intensity_directional;
 uniform mat4 projection_mat;
 uniform mat4 modelview_mat;
 
-out vec3 color_out;
-out vec2 tex_coord_out;
+out vec3 ambient_frag;
+out vec3 diffuse_frag;
+out vec3 specular_frag;
+out vec2 tex_coord_frag;
+
+vec3 diffuse_light(vec3 light_direction, vec3 normal, float intensity) {
+  return max(dot(light_direction, normal), 0.0) * intensity * mat_diffuse;
+}
+
+vec3 specular_light(vec3 light_direction, vec4 pos_modelview, vec3 normal, float intensity) {
+  vec3 eye = normalize(-pos_modelview.xyz);
+  vec3 halfway = normalize(light_direction + eye);
+  float ks = pow(max(dot(normal, halfway), 0.0), mat_shininess);
+  vec3 specular = intensity * ks * mat_specular;
+  if (dot(light_direction, normal) < 0.0) specular = vec3(0.0, 0.0, 0.0);
+  return specular;
+}
 
 void main() {
   vec4 pos_modelview = modelview_mat * vec4(pos, 1.0);
   gl_Position = projection_mat * pos_modelview;
 
   vec3 transformed_normal = normalize(modelview_mat * vec4(normal, 1.0)).xyz;
-  vec3 light_direction = normalize(light_pos - pos_modelview.xyz);
-  vec3 ambient = ambient_intensity * mat_ambient;
-  vec3 diffuse = max(dot(light_direction, transformed_normal), 0.0) * diffuse_intensity * mat_diffuse;
-  vec3 eye = normalize(-pos_modelview.xyz);
-  vec3 halfway = normalize(light_direction + eye);
-  float ks = pow(max(dot(transformed_normal, halfway), 0.0), mat_shininess);
-  vec3 specular = specular_intensity * ks * mat_specular;
-  if (dot(light_direction, transformed_normal) < 0.0) specular = vec3(0.0, 0.0, 0.0);
-  color_out = ambient + diffuse + specular;
-  tex_coord_out = tex_coord;
+  vec3 point_light_direction = normalize(light_pos - pos_modelview.xyz);
+  vec3 directional_light_direction = normalize(-directional_light);
+
+  ambient_frag = ambient_intensity * mat_ambient;
+
+  vec3 diffuse_point = diffuse_light(point_light_direction, transformed_normal, diffuse_intensity_point);
+  vec3 diffuse_directional = diffuse_light(directional_light_direction, transformed_normal, diffuse_intensity_directional);
+  diffuse_frag = diffuse_point + diffuse_directional;
+
+  vec3 specular_point = specular_light(point_light_direction, pos_modelview, transformed_normal, specular_intensity_point);
+  vec3 specular_directional = specular_light(directional_light_direction, pos_modelview, transformed_normal, specular_intensity_directional);
+  specular_frag = specular_point + specular_directional;
+
+  tex_coord_frag = tex_coord;
 })",
              *fragment_shader = R"(#version 330 core
-in vec3 color_out;
-in vec2 tex_coord_out;
+in vec3 ambient_frag;
+in vec3 diffuse_frag;
+in vec3 specular_frag;
+in vec2 tex_coord_frag;
 uniform sampler2D texture_sampler;
 
 out vec4 FragColor;
 
 void main() {
-  FragColor = vec4(color_out, 1.0) * texture(texture_sampler, tex_coord_out);
+  FragColor = vec4(ambient_frag + specular_frag, 1.0) + vec4(diffuse_frag, 1.0) * texture(texture_sampler, tex_coord_frag);
 })";
 glm::mat4 perspective_with_lookat =
     glm::perspective(glm::radians(40.0f), 1.0f, 0.1f, 5.0f) *
@@ -85,14 +110,14 @@ void display() {
   const auto delta =
       std::chrono::duration_cast<std::chrono::duration<float>>(duration)
           .count();
-  const auto modelview_mat =
-      glm::translate(glm::mat4(1), {0, -0.5, 0}) *
-      glm::scale(glm::mat4(1), {0.75, 0.75, 0.75}) *
-      glm::rotate(glm::mat4(1), glm::radians(20 * delta), {0, 1, 0});
-  const auto modelview_mat_location =
-      glGetUniformLocation(program_id, "modelview_mat");
-  glUniformMatrix4fv(modelview_mat_location, 1, GL_FALSE,
-                     glm::value_ptr(modelview_mat));
+
+  const auto directional_light =
+      glm::vec3(std::cos(20 * glm::radians(delta)),
+                std::sin(20 * glm::radians(delta)), 0.0f);
+  const auto directional_light_location =
+      glGetUniformLocation(program_id, "directional_light");
+  glUniform3fv(directional_light_location, 1,
+               glm::value_ptr(directional_light));
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -108,7 +133,7 @@ void display() {
 }
 
 int main(int argc, char **argv) {
-  const std::string filename = "car.obj";
+  const std::string filename = "tree.obj";
   tinyobj::ObjReaderConfig reader_config;
   reader_config.mtl_search_path = "./";
   tinyobj::ObjReader reader;
@@ -294,7 +319,7 @@ int main(int argc, char **argv) {
   int width, height, channel_count;
   stbi_set_flip_vertically_on_load(true);
   std::uint8_t *texture_data =
-      stbi_load("car_texture.png", &width, &height, &channel_count, 0);
+      stbi_load("tree_texture.png", &width, &height, &channel_count, 0);
   if (texture_data == nullptr) {
     std::cerr << "Texture file read failed" << std::endl;
     std::exit(1);
@@ -321,20 +346,37 @@ int main(int argc, char **argv) {
 
   const auto ambient_intensity_location =
       glGetUniformLocation(program_id, "ambient_intensity");
-  glUniform1f(ambient_intensity_location, 0.25);
+  glUniform1f(ambient_intensity_location, 0);
 
-  const auto diffuse_intensity_location =
-      glGetUniformLocation(program_id, "diffuse_intensity");
-  glUniform1f(diffuse_intensity_location, 5);
+  const auto diffuse_intensity_point_location =
+      glGetUniformLocation(program_id, "diffuse_intensity_point");
+  glUniform1f(diffuse_intensity_point_location, 0);
 
-  const auto specular_intensity_location =
-      glGetUniformLocation(program_id, "specular_intensity");
-  glUniform1f(specular_intensity_location, 1);
+  const auto specular_intensity_point_location =
+      glGetUniformLocation(program_id, "specular_intensity_point");
+  glUniform1f(specular_intensity_point_location, 0);
+
+  const auto diffuse_intensity_directional_location =
+      glGetUniformLocation(program_id, "diffuse_intensity_directional");
+  glUniform1f(diffuse_intensity_directional_location, 5);
+
+  const auto specular_intensity_directional_location =
+      glGetUniformLocation(program_id, "specular_intensity_directional");
+  glUniform1f(specular_intensity_directional_location, 1);
 
   const auto projection_mat_location =
       glGetUniformLocation(program_id, "projection_mat");
   glUniformMatrix4fv(projection_mat_location, 1, GL_FALSE,
                      glm::value_ptr(perspective_with_lookat));
+
+  const auto modelview_mat =
+      glm::translate(glm::mat4(1), {0, -0.5, 0}) *
+      glm::scale(glm::mat4(1), {0.75, 0.75, 0.75}) *
+      glm::rotate(glm::mat4(1), glm::radians(240.0f), {0, 1, 0});
+  const auto modelview_mat_location =
+      glGetUniformLocation(program_id, "modelview_mat");
+  glUniformMatrix4fv(modelview_mat_location, 1, GL_FALSE,
+                     glm::value_ptr(modelview_mat));
 
   glutDisplayFunc(display);
   glutMainLoop();
