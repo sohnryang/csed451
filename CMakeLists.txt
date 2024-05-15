@@ -95,6 +95,8 @@ file(
        "${ASSETS_DIR}/empty_texture.png"
        "${ASSETS_DIR}/transform.glsl"
        "${ASSETS_DIR}/wireframe.glsl"
+       "${ASSETS_DIR}/gouraud.vert"
+       "${ASSETS_DIR}/gouraud.frag"
   DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 add_subdirectory(src)
