@@ -43,22 +43,8 @@ Registry::Registry()
     if (!reader.Warning().empty())
       std::cout << "TinyObjReader: " << reader.Warning();
 
-    const auto &shapes = reader.GetShapes();
-    std::vector<GLuint> indices;
-    for (std::size_t s = 0; s < shapes.size(); s++) {
-      std::size_t index_offset = 0;
-      for (std::size_t f = 0; f < shapes[s].mesh.num_face_vertices.size();
-           f++) {
-        const auto fv = shapes[s].mesh.num_face_vertices[f];
-        for (std::size_t v = 0; v < fv; v++)
-          indices.push_back(
-              shapes[s].mesh.indices[index_offset + v].vertex_index);
-
-        index_offset += fv;
-      }
-    }
-    const auto &attrib = reader.GetAttrib();
-    models[i] = Model(attrib.vertices, indices);
+    models[i] =
+        Model(reader.GetAttrib(), reader.GetShapes(), reader.GetMaterials());
 
     std::cout << "Loaded obj file: " << filename << std::endl;
   }

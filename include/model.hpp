@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <tiny_obj_loader.h>
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
@@ -27,5 +27,7 @@ struct Model {
   Model(Model &&) = default;
   Model &operator=(const Model &) = default;
   Model &operator=(Model &&) = default;
-  Model(const std::vector<float> &vertices, const std::vector<GLuint> &indices);
+  Model(const tinyobj::attrib_t &attrib,
+        const std::vector<tinyobj::shape_t> &shapes,
+        const std::vector<tinyobj::material_t> &materials);
 };
