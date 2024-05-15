@@ -92,7 +92,7 @@ void main() {
   float ks = pow(max(dot(transformed_normal, halfway), 0.0), mat_shininess_frag);
   vec3 specular = ks * specular_product_frag;
   vec3 shaded = ambient_frag + diffuse + specular;
-  FragColor = vec4(shaded, 1.0) * texture(texture_sampler, tex_coord_frag);
+  FragColor = vec4(ambient_frag + specular, 1.0) + vec4(diffuse, 1.0) *  texture(texture_sampler, tex_coord_frag);
 })";
 glm::mat4 perspective_with_lookat =
     glm::perspective(glm::radians(40.0f), 1.0f, 0.1f, 5.0f) *
@@ -334,13 +334,13 @@ int main(int argc, char **argv) {
 
   last_updated = std::chrono::system_clock::now();
 
-  const auto light_pos = glm::vec3(0, 1.0, 1.0);
+  const auto light_pos = glm::vec3(0, 1.0, 2.0);
   const auto light_pos_location = glGetUniformLocation(program_id, "light_pos");
   glUniform3fv(light_pos_location, 1, glm::value_ptr(light_pos));
 
   const auto ambient_intensity_location =
       glGetUniformLocation(program_id, "ambient_intensity");
-  glUniform1f(ambient_intensity_location, 0.25);
+  glUniform1f(ambient_intensity_location, 0);
 
   const auto diffuse_intensity_location =
       glGetUniformLocation(program_id, "diffuse_intensity");
