@@ -42,33 +42,17 @@ void main() {
   gl_Position = projection_mat * pos_modelview;
 
   vec3 transformed_normal = normalize(modelview_mat * vec4(normal, 1.0)).xyz;
-  vec3 light_direction = normalize(light_pos - pos_modelview.xyz);
-  ambient_frag = ambient_intensity * mat_ambient;
-  diffuse_frag = max(dot(light_direction, transformed_normal), 0.0) * diffuse_intensity * mat_diffuse;
-  vec3 eye = normalize(-pos_modelview.xyz);
-  vec3 halfway = normalize(light_direction + eye);
-  float ks = pow(max(dot(transformed_normal, halfway), 0.0), mat_shininess);
-  specular_frag = specular_intensity * ks * mat_specular;
-  if (dot(light_direction, transformed_normal) < 0.0)
-    specular_frag = vec3(0.0, 0.0, 0.0);
-  tex_coord_frag = tex_coord;
-}
-
-void main() {
-  vec4 pos_modelview = modelview_mat * vec4(pos, 1.0);
-  gl_Position = projection_mat * pos_modelview;
-
-  vec3 transformed_normal = normalize(modelview_mat * vec4(normal, 1.0)).xyz;
   vec3 point_light_direction = normalize(light_pos - pos_modelview.xyz);
   vec3 directional_light_direction = normalize(-directional_light);
+  float inverse_square = min(distance(light_pos, pos_modelview.xyz), 0.1);
 
   ambient_frag = ambient_intensity * mat_ambient;
 
-  vec3 diffuse_point = diffuse_light(point_light_direction, transformed_normal, diffuse_intensity_point);
+  vec3 diffuse_point = inverse_square * diffuse_light(point_light_direction, transformed_normal, diffuse_intensity_point);
   vec3 diffuse_directional = diffuse_light(directional_light_direction, transformed_normal, diffuse_intensity_directional);
   diffuse_frag = diffuse_point + diffuse_directional;
 
-  vec3 specular_point = specular_light(point_light_direction, pos_modelview, transformed_normal, specular_intensity_point);
+  vec3 specular_point = inverse_square * specular_light(point_light_direction, pos_modelview, transformed_normal, specular_intensity_point);
   vec3 specular_directional = specular_light(directional_light_direction, pos_modelview, transformed_normal, specular_intensity_directional);
   specular_frag = specular_point + specular_directional;
 

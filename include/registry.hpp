@@ -42,6 +42,10 @@ struct Registry {
   int view_mode = 0;
   std::vector<components::CameraConfig> camera_config;
   glm::vec3 camera_init;
+  components::LightConfig light_config = {
+      glm::vec3(), glm::vec3(), 0, 10, 3, 0, 0,
+  };
+  float directional_light_angle = 0.0f;
   const std::vector<std::string> model_filenames = {
       "rooster.obj",  "tree.obj",  "car.obj",   "truck.obj",
       "sneakers.obj", "floor.obj", "floor2.obj"};
@@ -52,7 +56,10 @@ struct Registry {
       "car_texture.png", "truck_texture.jpg"};
   std::unordered_map<std::string, std::size_t> texture_indicies;
   std::vector<Texture> textures;
-  ShaderProgram shader_program;
+
+  static constexpr std::size_t GOURAUD_SHADER = 0, PHONG_SHADER = 1;
+  std::vector<ShaderProgram> shader_programs;
+  std::size_t program_index = GOURAUD_SHADER;
 
   std::size_t player_row = 0;
   std::size_t score = 0;

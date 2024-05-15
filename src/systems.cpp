@@ -32,52 +32,30 @@
 namespace systems {
 bool Render::should_apply(ecs::Context<Registry> &ctx,
                           ecs::entities::EntityId id) {
-  return (!is_fill || ctx.registry().hidden_line_removal) &&
-         ctx.registry().meshes.count(id) &&
+  return ctx.registry().meshes.count(id) &&
          ctx.entity_manager().entity_graph()[id].parent == id;
 }
 
 void Render::pre_update(ecs::Context<Registry> &ctx) {
-  glUseProgram(ctx.registry().shader_program.program_id);
-  if (is_fill) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    set_color(ctx, {0, 0, 0, 1});
-    glDepthFunc(GL_LESS);
-  } else {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    set_color(ctx, {1, 1, 1, 1});
-    glDepthFunc(GL_LEQUAL);
-  }
+  const auto program_index = ctx.registry().program_index;
+  const auto shader_program = ctx.registry().shader_programs[program_index];
+  glUseProgram(shader_program.program_id);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glDepthFunc(GL_LEQUAL);
 
-  if (ctx.registry().hidden_line_removal) {
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-  } else {
-    glDisable(GL_CULL_FACE);
-  }
-}
-
-void Render::post_update(ecs::Context<Registry> &ctx) {
-  if (is_fill)
-    glutSwapBuffers();
-}
-
-void Render::update_single(ecs::Context<Registry> &ctx,
-                           ecs::entities::EntityId id) {
-  glm::vec3 camera_delta =
-      glm::vec3(ctx.registry().meshes[ctx.registry().character_id].mat[3]) +
-      glm::vec3(ctx.registry().animations[ctx.registry().character_id].mat[3]) -
-      ctx.registry().camera_init;
-  // printf("%f %f %f\n", camera_delta[0], camera_delta[1], camera_delta[2]);
-
+  const auto &character_mesh =
+      ctx.registry().meshes[ctx.registry().character_id];
+  const auto &character_animation =
+      ctx.registry().animations[ctx.registry().character_id];
+  auto character_pos = glm::vec3(character_mesh.mat * character_animation.mat *
+                                 glm::vec4(0, 0, 0, 1));
+  glm::vec3 camera_delta = character_pos - ctx.registry().camera_init;
   const auto &camera_config =
       ctx.registry().camera_config[ctx.registry().view_mode];
   const auto camera_mat = glm::perspective(
       glm::radians(camera_config.fovy), camera_config.aspect_ratio,
       camera_config.znear, camera_config.zfar);
-  // glOrtho(-4, 4, -4, 4, camera_config.znear, camera_config.zfar);
-
   auto lookat_mat =
       glm::lookAt(camera_config.eye, camera_config.center, camera_config.up);
   if (ctx.registry().view_mode == 2)
@@ -85,38 +63,119 @@ void Render::update_single(ecs::Context<Registry> &ctx,
                                                             -camera_delta[2]});
   else
     lookat_mat = lookat_mat * glm::translate(glm::mat4(1), -camera_delta);
+  set_projection_mat(ctx, camera_mat * lookat_mat);
 
+  auto &light_config = ctx.registry().light_config;
+  light_config.light_pos = character_pos + glm::vec3(1.0, 1.0, -2.0);
+  auto &angle = ctx.registry().directional_light_angle;
+  angle =
+      std::fmod(angle + glm::radians(20 * ctx.delta_time()), glm::pi<float>());
+  light_config.directional_light =
+      glm::vec3(-std::cos(angle), -std::sin(angle), 0.0f);
+  set_light_pos(ctx, light_config.light_pos);
+  set_directional_light(ctx, light_config.directional_light);
+  set_ambient_intensity(ctx, light_config.ambient_intensity);
+  set_diffuse_intensity_point(ctx, light_config.diffuse_intensity_point);
+  set_specular_intensity_point(ctx, light_config.specular_intensity_point);
+  set_diffuse_intensity_directional(ctx,
+                                    light_config.diffuse_intensity_directional);
+  set_specular_intensity_directional(
+      ctx, light_config.specular_intensity_directional);
+}
+
+void Render::post_update(ecs::Context<Registry> &ctx) { glutSwapBuffers(); }
+
+void Render::update_single(ecs::Context<Registry> &ctx,
+                           ecs::entities::EntityId id) {
   const auto &mesh = ctx.registry().meshes.at(id);
   const auto &animations = ctx.registry().animations;
-  auto transform_mat = camera_mat * lookat_mat * mesh.mat;
+  auto modelview_mat = mesh.mat;
   if (animations.count(id))
-    transform_mat = transform_mat * animations.at(id).mat;
+    modelview_mat = modelview_mat * animations.at(id).mat;
   glDisable(GL_POLYGON_OFFSET_FILL);
-  set_transform_mat(ctx, transform_mat);
+  set_modelview_mat(ctx, modelview_mat);
   render_single(ctx, mesh);
-  render_children(ctx, id, transform_mat);
+  render_children(ctx, id, modelview_mat);
 }
 
 void Render::render_single(ecs::Context<Registry> &ctx,
                            const components::Mesh &mesh) {
   const auto &model = ctx.registry().models[mesh.model_index];
+  const auto &texture = ctx.registry().textures[mesh.texture_index];
   const auto &vao_id = model.vao_id;
+  const auto &texture_id = texture.texture_id;
   glBindVertexArray(vao_id);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
   glDrawElements(GL_TRIANGLES, model.index_count, GL_UNSIGNED_INT, nullptr);
   glBindVertexArray(0);
 }
 
-void Render::set_transform_mat(ecs::Context<Registry> &ctx,
-                               const glm::mat4 &mat) {
-  const auto transform_mat_location = glGetUniformLocation(
-      ctx.registry().shader_program.program_id, "transform_mat");
-  glUniformMatrix4fv(transform_mat_location, 1, GL_FALSE, glm::value_ptr(mat));
+void Render::set_uniform_float(ecs::Context<Registry> &ctx, const char *name,
+                               float value) {
+  const auto program_index = ctx.registry().program_index;
+  const auto shader_program = ctx.registry().shader_programs[program_index];
+  const auto location = glGetUniformLocation(shader_program.program_id, name);
+  glUniform1f(location, value);
 }
 
-void Render::set_color(ecs::Context<Registry> &ctx, const glm::vec4 &color) {
-  const auto color_location =
-      glGetUniformLocation(ctx.registry().shader_program.program_id, "color");
-  glUniform4fv(color_location, 1, glm::value_ptr(color));
+void Render::set_uniform_vec3(ecs::Context<Registry> &ctx, const char *name,
+                              const glm::vec3 &value) {
+  const auto program_index = ctx.registry().program_index;
+  const auto shader_program = ctx.registry().shader_programs[program_index];
+  const auto location = glGetUniformLocation(shader_program.program_id, name);
+  glUniform3fv(location, 1, glm::value_ptr(value));
+}
+
+void Render::set_light_pos(ecs::Context<Registry> &ctx, const glm::vec3 &pos) {
+  set_uniform_vec3(ctx, "light_pos", pos);
+}
+
+void Render::set_directional_light(ecs::Context<Registry> &ctx,
+                                   const glm::vec3 &direction) {
+  set_uniform_vec3(ctx, "directional_light", direction);
+}
+
+void Render::set_ambient_intensity(ecs::Context<Registry> &ctx,
+                                   float intensity) {
+  set_uniform_float(ctx, "ambient_intensity", intensity);
+}
+
+void Render::set_diffuse_intensity_point(ecs::Context<Registry> &ctx,
+                                         float intensity) {
+  set_uniform_float(ctx, "diffuse_intensity_point", intensity);
+}
+
+void Render::set_specular_intensity_point(ecs::Context<Registry> &ctx,
+                                          float intensity) {
+  set_uniform_float(ctx, "specular_intensity_point", intensity);
+}
+
+void Render::set_diffuse_intensity_directional(ecs::Context<Registry> &ctx,
+                                               float intensity) {
+  set_uniform_float(ctx, "diffuse_intensity_directional", intensity);
+}
+
+void Render::set_specular_intensity_directional(ecs::Context<Registry> &ctx,
+                                                float intensity) {
+  set_uniform_float(ctx, "specular_intensity_directional", intensity);
+}
+
+void Render::set_uniform_mat4(ecs::Context<Registry> &ctx, const char *name,
+                              const glm::mat4 &value) {
+  const auto program_index = ctx.registry().program_index;
+  const auto shader_program = ctx.registry().shader_programs[program_index];
+  const auto location = glGetUniformLocation(shader_program.program_id, name);
+  glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Render::set_projection_mat(ecs::Context<Registry> &ctx,
+                                const glm::mat4 &mat) {
+  set_uniform_mat4(ctx, "projection_mat", mat);
+}
+
+void Render::set_modelview_mat(ecs::Context<Registry> &ctx,
+                               const glm::mat4 &mat) {
+  set_uniform_mat4(ctx, "modelview_mat", mat);
 }
 
 void Render::render_children(ecs::Context<Registry> &ctx,
@@ -133,13 +192,11 @@ void Render::render_children(ecs::Context<Registry> &ctx,
     auto child_mat = base_mat * mesh.mat;
     if (animations.count(child_id))
       child_mat = child_mat * animations.at(child_id).mat;
-    set_transform_mat(ctx, child_mat);
+    set_projection_mat(ctx, child_mat);
     render_single(ctx, mesh);
     render_children(ctx, child_id, child_mat);
   }
 }
-
-Render::Render(bool is_fill) : is_fill(is_fill) {}
 
 bool InputHandler::should_apply(ecs::Context<Registry> &ctx,
                                 ecs::entities::EntityId id) {

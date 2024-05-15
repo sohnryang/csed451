@@ -12,6 +12,7 @@
 namespace components {
 struct Mesh {
   std::size_t model_index;
+  std::size_t texture_index;
   glm::mat4 mat;
 };
 
@@ -76,5 +77,15 @@ struct CameraConfig {
   float aspect_ratio;
   float znear;
   float zfar;
+};
+
+struct LightConfig {
+  glm::vec3 light_pos;
+  glm::vec3 directional_light;
+  float ambient_intensity;
+  float diffuse_intensity_point;
+  float specular_intensity_point;
+  float diffuse_intensity_directional;
+  float specular_intensity_directional;
 };
 } // namespace components

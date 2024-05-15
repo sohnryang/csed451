@@ -1,7 +1,6 @@
 #include "ecs/systems.hpp"
 
 #include <memory>
-#include <stdexcept>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -20,7 +19,6 @@
 
 #include "registry.hpp"
 #include "scene.hpp"
-#include "shader_program.hpp"
 #include "systems.hpp"
 
 // TODO: use singleton
@@ -75,17 +73,12 @@ int main(int argc, char **argv) {
 
   std::vector<std::shared_ptr<ecs::systems::System<Registry>>> systems;
   systems.emplace_back(new systems::Animation);
-  systems.emplace_back(new systems::Render(false));
-  systems.emplace_back(new systems::Render(true));
+  systems.emplace_back(new systems::Render);
   systems.emplace_back(new systems::InputHandler);
   systems.emplace_back(new systems::Character);
   systems.emplace_back(new systems::Car);
   ctx_ptr =
       std::make_shared<ecs::Context<Registry>>(Registry(), std::move(systems));
-
-  ctx_ptr->registry().shader_program =
-      ShaderProgram("transform.glsl", "wireframe.glsl");
-  glUseProgram(ctx_ptr->registry().shader_program.program_id);
 
   glClearColor(0, 0, 0, 1);
   glDepthFunc(GL_LEQUAL);

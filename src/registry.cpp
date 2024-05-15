@@ -25,10 +25,12 @@
 #include <utility>
 
 #include "components.hpp"
+#include "shader_program.hpp"
 #include "texture.hpp"
 
 Registry::Registry()
-    : models(model_filenames.size()), textures(texture_filenames.size()) {
+    : models(model_filenames.size()), textures(texture_filenames.size()),
+      shader_programs(2) {
   for (std::size_t i = 0; i < model_filenames.size(); i++) {
     model_indices[model_filenames[i]] = i;
 
@@ -45,6 +47,9 @@ Registry::Registry()
 
     models[i] =
         Model(reader.GetAttrib(), reader.GetShapes(), reader.GetMaterials());
+
+    shader_programs[GOURAUD_SHADER] =
+        ShaderProgram("gouraud.vert", "gouraud.frag");
 
     std::cout << "Loaded obj file: " << filename << std::endl;
   }

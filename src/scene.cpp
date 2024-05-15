@@ -34,9 +34,12 @@ void setup_camera(ecs::Context<Registry> &ctx, int col) {
 void create_character(ecs::Context<Registry> &ctx, int col) {
   const auto character_pos = grid_to_world(0, col, 0, col).midpoint()[0];
   const auto model_index = ctx.registry().model_indices["rooster.obj"];
+  const auto texture_index =
+      ctx.registry().texture_indicies["rooster_texture.jpg"];
   const auto id = ctx.registry().add_mesh(
       ctx, {
                model_index,
+               texture_index,
                glm::translate(glm::mat4(1), glm::vec3(character_pos, 0, 0)),
            });
   ctx.registry().camera_init = glm::vec3(character_pos, 0, 0);
@@ -60,9 +63,11 @@ void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
   float delta_y = 0.0;
   if (tile_type == TileType::ROAD)
     delta_y -= ROAD_OFFSET;
+  const auto texture_index =
+      ctx.registry().texture_indicies["empty_texture.png"];
   ctx.registry().add_mesh(
       ctx,
-      {ctx.registry().model_indices["floor2.obj"],
+      {ctx.registry().model_indices["floor2.obj"], texture_index,
        glm::translate(glm::mat4(1),
                       glm::vec3(0, delta_y, (int)row_index * -STEP_SIZE))});
 }
@@ -72,9 +77,11 @@ void create_tree(ecs::Context<Registry> &ctx, std::size_t row_index,
   // might move this constant (0.75) to somewhere
   const auto tree_pos =
       grid_to_world(row_index, col_index, row_index, col_index).midpoint();
+  const auto texture_index =
+      ctx.registry().texture_indicies["tree_texture.png"];
   const auto id = ctx.registry().add_mesh(
       ctx,
-      {ctx.registry().model_indices["tree.obj"],
+      {ctx.registry().model_indices["tree.obj"], texture_index,
        glm::translate(glm::mat4(1), glm::vec3(tree_pos[0], 0, tree_pos[2]))});
 
   const std::vector<std::pair<BoundingBox3D, components::ActionKind>>
@@ -105,7 +112,9 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
     translate_mat =
         glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
   const auto model_index = ctx.registry().model_indices["car.obj"];
-  const auto id = ctx.registry().add_mesh(ctx, {model_index, translate_mat});
+  const auto texture_index = ctx.registry().texture_indicies["car_texture.png"];
+  const auto id =
+      ctx.registry().add_mesh(ctx, {model_index, texture_index, translate_mat});
   const auto &mesh = ctx.registry().meshes[id];
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0),
                              ctx.registry().models[model_index].bounding_box};
@@ -120,7 +129,10 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
     translate_mat =
         glm::scale(glm::mat4(1), glm::vec3(-1.0f, 1.0f, 1.0f)) * translate_mat;
   const auto model_index = ctx.registry().model_indices["truck.obj"];
-  const auto id = ctx.registry().add_mesh(ctx, {model_index, translate_mat});
+  const auto texture_index =
+      ctx.registry().texture_indicies["truck_texture.jpg"];
+  const auto id =
+      ctx.registry().add_mesh(ctx, {model_index, texture_index, translate_mat});
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
   const auto &mesh = ctx.registry().meshes[id];
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0),
@@ -132,8 +144,11 @@ void create_shoe_item(ecs::Context<Registry> &ctx, std::size_t row_index,
   const auto position = glm::vec3(col_index * STEP_SIZE - 3.5f * STEP_SIZE,
                                   SHOE_OFFSET, -STEP_SIZE * row_index);
   const auto model_index = ctx.registry().model_indices["sneakers.obj"];
-  const auto shoe_id = ctx.registry().add_mesh(
-      ctx, {model_index, glm::translate(glm::mat4(1), position)});
+  const auto texture_index =
+      ctx.registry().texture_indicies["empty_texture.png"];
+  const auto shoe_id =
+      ctx.registry().add_mesh(ctx, {model_index, texture_index,
+                                    glm::translate(glm::mat4(1), position)});
   ctx.registry().shoe_items[shoe_id] = {
       ctx.registry().models[model_index].bounding_box};
 }
