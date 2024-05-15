@@ -6,6 +6,9 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
 
@@ -17,12 +20,15 @@
 #endif
 
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <utility>
 
 #include "components.hpp"
+#include "texture.hpp"
 
-Registry::Registry() : models(model_filenames.size()) {
+Registry::Registry()
+    : models(model_filenames.size()), textures(texture_filenames.size()) {
   for (std::size_t i = 0; i < model_filenames.size(); i++) {
     model_indices[model_filenames[i]] = i;
 
@@ -55,6 +61,22 @@ Registry::Registry() : models(model_filenames.size()) {
     models[i] = Model(attrib.vertices, indices);
 
     std::cout << "Loaded obj file: " << filename << std::endl;
+  }
+
+  stbi_set_flip_vertically_on_load(true);
+  for (std::size_t i = 0; i < texture_filenames.size(); i++) {
+    const auto filename = texture_filenames[i];
+    texture_indicies[filename] = i;
+
+    int width, height, channel_count;
+    std::uint8_t *texture_data =
+        stbi_load(filename.c_str(), &width, &height, &channel_count, 0);
+    if (texture_data == nullptr)
+      throw std::runtime_error("texture load failed");
+    textures[i] = Texture(texture_data, width, height, channel_count);
+    stbi_image_free(texture_data);
+
+    std::cout << "Loaded texture file: " << filename << std::endl;
   }
 }
 

@@ -13,6 +13,7 @@
 #include "components.hpp"
 #include "model.hpp"
 #include "shader_program.hpp"
+#include "texture.hpp"
 
 enum class GameState { IN_PROGRESS, LOSE, WIN };
 
@@ -46,6 +47,11 @@ struct Registry {
       "sneakers.obj", "floor.obj", "floor2.obj"};
   std::unordered_map<std::string, std::size_t> model_indices;
   std::vector<Model> models;
+  const std::vector<std::string> texture_filenames = {
+      "empty_texture.png", "rooster_texture.jpg", "tree_texture.png",
+      "car_texture.png", "truck_texture.jpg"};
+  std::unordered_map<std::string, std::size_t> texture_indicies;
+  std::vector<Texture> textures;
   ShaderProgram shader_program;
 
   std::size_t player_row = 0;
