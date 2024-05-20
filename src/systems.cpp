@@ -92,6 +92,8 @@ void Render::update_single(ecs::Context<Registry> &ctx,
   if (animations.count(id))
     modelview_mat = modelview_mat * animations.at(id).mat;
   set_modelview_mat(ctx, modelview_mat);
+  set_diffuse_on(ctx, ctx.registry().diffuse_on);
+  set_normal_mapping_on(ctx, ctx.registry().normal_mapping_on);
   render_single(ctx, mesh);
   render_children(ctx, id, modelview_mat);
 }
@@ -174,6 +176,23 @@ void Render::set_projection_mat(ecs::Context<Registry> &ctx,
 void Render::set_modelview_mat(ecs::Context<Registry> &ctx,
                                const glm::mat4 &mat) {
   set_uniform_mat4(ctx, "modelview_mat", mat);
+}
+
+void Render::set_uniform_boolean(ecs::Context<Registry> &ctx, const char *name,
+                               bool value) {
+  const auto program_index = ctx.registry().program_index;
+  const auto shader_program = ctx.registry().shader_programs[program_index];
+  const auto location = glGetUniformLocation(shader_program.program_id, name);
+  glUniform1i(location, (int)value);
+}
+
+void Render::set_diffuse_on(ecs::Context<Registry> &ctx,
+                                                bool flag) {
+  set_uniform_boolean(ctx, "diffuse_on", flag);
+}
+
+void Render::set_normal_mapping_on(ecs::Context<Registry> &ctx, bool flag) {
+  set_uniform_boolean(ctx, "normal_mapping_on", flag);
 }
 
 void Render::render_children(ecs::Context<Registry> &ctx,
