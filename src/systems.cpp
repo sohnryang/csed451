@@ -42,7 +42,6 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
   glUseProgram(shader_program.program_id);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glDepthFunc(GL_LEQUAL);
 
   const auto &character_mesh =
       ctx.registry().meshes[ctx.registry().character_id];
@@ -92,7 +91,6 @@ void Render::update_single(ecs::Context<Registry> &ctx,
   auto modelview_mat = mesh.mat;
   if (animations.count(id))
     modelview_mat = modelview_mat * animations.at(id).mat;
-  glDisable(GL_POLYGON_OFFSET_FILL);
   set_modelview_mat(ctx, modelview_mat);
   render_single(ctx, mesh);
   render_children(ctx, id, modelview_mat);
