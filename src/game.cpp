@@ -48,12 +48,14 @@ void keyboard_handle(int key, int x, int y) {
 void keyboard_handle_non_special(unsigned char key, int x, int y) {
   if (key == 'p')
     ctx_ptr->registry().pass_through = !ctx_ptr->registry().pass_through;
-  if (key == 'r')
-    ctx_ptr->registry().hidden_line_removal =
-        !ctx_ptr->registry().hidden_line_removal;
+
   if (key == 'v')
     ctx_ptr->registry().view_mode = (ctx_ptr->registry().view_mode + 1) %
                                     ctx_ptr->registry().camera_config.size();
+  if (key == 'x')
+    ctx_ptr->registry().program_index =
+        (ctx_ptr->registry().program_index + 1) %
+        ctx_ptr->registry().shader_programs.size();
 }
 
 int main(int argc, char **argv) {

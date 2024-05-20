@@ -38,7 +38,6 @@ struct Registry {
   std::queue<InputKind> input_queue;
   std::unordered_set<components::ActionKind> blocked_actions;
   bool pass_through = false;
-  bool hidden_line_removal = false;
   int view_mode = 0;
   std::vector<components::CameraConfig> camera_config;
   glm::vec3 camera_init;
