@@ -55,6 +55,13 @@ private:
 
   void set_modelview_mat(ecs::Context<Registry> &ctx, const glm::mat4 &mat);
 
+  void set_uniform_boolean(ecs::Context<Registry> &ctx, const char *name,
+                         bool value);
+
+  void set_diffuse_on(ecs::Context<Registry> &ctx, bool flag);
+
+  void set_normal_mapping_on(ecs::Context<Registry> &ctx, bool flag);
+
   void render_children(ecs::Context<Registry> &ctx, ecs::entities::EntityId id,
                        const glm::mat4 &base_mat);
 };

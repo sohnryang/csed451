@@ -15,6 +15,7 @@ in vec2 tex_coord_frag;
 uniform vec3 light_pos;
 uniform vec3 directional_light;
 uniform sampler2D texture_sampler;
+uniform int diffuse_on;
 
 out vec4 FragColor;
 
@@ -49,5 +50,6 @@ void main() {
   vec3 specular = specular_point + specular_directional;
 
   vec3 shaded = ambient_frag + diffuse + specular;
-  FragColor = vec4(ambient_frag + specular, 1.0) + vec4(diffuse, 1.0) *  texture(texture_sampler, tex_coord_frag);
+  FragColor = vec4(ambient_frag + specular, 1.0) + 
+	(diffuse_on > 0.0 ? vec4(diffuse, 1.0) : vec4(1.0, 1.0, 1.0, 1.0)) * texture(texture_sampler, tex_coord_frag);
 }

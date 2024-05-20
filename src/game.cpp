@@ -56,6 +56,12 @@ void keyboard_handle_non_special(unsigned char key, int x, int y) {
     ctx_ptr->registry().program_index =
         (ctx_ptr->registry().program_index + 1) %
         ctx_ptr->registry().shader_programs.size();
+
+  if (key == 't')
+    ctx_ptr->registry().diffuse_on = !ctx_ptr->registry().diffuse_on;
+
+  if (key == 'n')
+    ctx_ptr->registry().normal_mapping_on = !ctx_ptr->registry().normal_mapping_on;
 }
 
 int main(int argc, char **argv) {
