@@ -42,7 +42,7 @@ struct Registry {
   std::vector<components::CameraConfig> camera_config;
   glm::vec3 camera_init;
   components::LightConfig light_config = {
-      glm::vec3(), glm::vec3(), 0, 10, 3, 0, 0,
+      glm::vec3(), glm::vec3(), 0, 3, 1, 4, 1,
   };
   float directional_light_angle = 0.0f;
   const std::vector<std::string> model_filenames = {

@@ -10,5 +10,5 @@ uniform sampler2D texture_sampler;
 out vec4 FragColor;
 
 void main() {
-  FragColor = vec4(ambient_frag + specular_frag, 1.0) + vec4(diffuse_frag, 1.0) * texture(texture_sampler, tex_coord_frag);
+  FragColor = vec4(ambient_frag + specular_frag + diffuse_frag * texture(texture_sampler, tex_coord_frag).xyz, 1.0);
 }

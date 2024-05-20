@@ -31,9 +31,9 @@ vec3 specular_light(vec3 light_direction, vec4 pos_modelview, vec3 normal, float
   vec3 eye = normalize(-pos_modelview.xyz);
   vec3 halfway = normalize(light_direction + eye);
   float ks = pow(max(dot(normal, halfway), 0.0), mat_shininess);
-  vec3 specular = intensity * ks * mat_specular;
-  if (dot(light_direction, normal) < 0.0)
-    specular = vec3(0.0, 0.0, 0.0);
+  vec3 specular = vec3(0.0, 0.0, 0.0);
+  if (dot(light_direction, normal) >= 0.0)
+    specular = intensity * ks * mat_specular;
   return specular;
 }
 
@@ -41,10 +41,10 @@ void main() {
   vec4 pos_modelview = modelview_mat * vec4(pos, 1.0);
   gl_Position = projection_mat * pos_modelview;
 
-  vec3 transformed_normal = normalize(modelview_mat * vec4(normal, 1.0)).xyz;
+  vec3 transformed_normal = normalize(modelview_mat * vec4(normal, 0.0)).xyz;
   vec3 point_light_direction = normalize(light_pos - pos_modelview.xyz);
   vec3 directional_light_direction = normalize(-directional_light);
-  float inverse_square = min(distance(light_pos, pos_modelview.xyz), 0.1);
+  float inverse_square = 1 / (1 + pow(distance(light_pos, pos_modelview.xyz), 2));
 
   ambient_frag = ambient_intensity * mat_ambient;
 

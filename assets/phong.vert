@@ -34,7 +34,7 @@ void main() {
   pos_modelview_frag = modelview_mat * vec4(pos, 1.0);
   gl_Position = projection_mat * pos_modelview_frag;
 
-  transformed_normal_frag = normalize(modelview_mat * vec4(normal, 1.0)).xyz;
+  transformed_normal_frag = normalize(modelview_mat * vec4(normal, 0.0)).xyz;
   light_direction_frag = normalize(light_pos - pos_modelview_frag.xyz);
   eye_frag = normalize(-pos_modelview_frag.xyz);
 
