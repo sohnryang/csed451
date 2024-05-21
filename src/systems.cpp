@@ -105,7 +105,13 @@ void Render::render_single(ecs::Context<Registry> &ctx,
   const auto &vao_id = model.vao_id;
   const auto &texture_id = texture.texture_id;
   glBindVertexArray(vao_id);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture_id);
+  if (ctx.registry().program_index == Registry::PHONG_SHADER) {
+    const auto normal = ctx.registry().textures[mesh.normal_index];
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, normal.texture_id);
+  }
   glDrawElements(GL_TRIANGLES, model.index_count, GL_UNSIGNED_INT, nullptr);
   glBindVertexArray(0);
 }
@@ -179,15 +185,14 @@ void Render::set_modelview_mat(ecs::Context<Registry> &ctx,
 }
 
 void Render::set_uniform_boolean(ecs::Context<Registry> &ctx, const char *name,
-                               bool value) {
+                                 bool value) {
   const auto program_index = ctx.registry().program_index;
   const auto shader_program = ctx.registry().shader_programs[program_index];
   const auto location = glGetUniformLocation(shader_program.program_id, name);
   glUniform1i(location, (int)value);
 }
 
-void Render::set_diffuse_on(ecs::Context<Registry> &ctx,
-                                                bool flag) {
+void Render::set_diffuse_on(ecs::Context<Registry> &ctx, bool flag) {
   set_uniform_boolean(ctx, "diffuse_on", flag);
 }
 

@@ -15,6 +15,7 @@ in vec2 tex_coord_frag;
 uniform vec3 light_pos;
 uniform vec3 directional_light;
 uniform sampler2D texture_sampler;
+uniform sampler2D normal_sampler;
 uniform int diffuse_on;
 
 out vec4 FragColor;
