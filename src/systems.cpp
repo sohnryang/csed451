@@ -80,6 +80,8 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
                                     light_config.diffuse_intensity_directional);
   set_specular_intensity_directional(
       ctx, light_config.specular_intensity_directional);
+  set_diffuse_on(ctx, ctx.registry().diffuse_on);
+  set_normal_mapping_on(ctx, ctx.registry().normal_mapping_on);
 }
 
 void Render::post_update(ecs::Context<Registry> &ctx) { glutSwapBuffers(); }
@@ -92,7 +94,6 @@ void Render::update_single(ecs::Context<Registry> &ctx,
   if (animations.count(id))
     modelview_mat = modelview_mat * animations.at(id).mat;
   set_modelview_mat(ctx, modelview_mat);
-  set_diffuse_on(ctx, ctx.registry().diffuse_on);
   set_normal_mapping_on(ctx, ctx.registry().normal_mapping_on);
   render_single(ctx, mesh);
   render_children(ctx, id, modelview_mat);
