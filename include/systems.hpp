@@ -26,6 +26,9 @@ private:
   void set_uniform_float(ecs::Context<Registry> &ctx, const char *name,
                          float value);
 
+  void set_uniform_int(ecs::Context<Registry> &ctx, const char *name,
+                       int value);
+
   void set_uniform_vec3(ecs::Context<Registry> &ctx, const char *name,
                         const glm::vec3 &value);
 
@@ -56,7 +59,7 @@ private:
   void set_modelview_mat(ecs::Context<Registry> &ctx, const glm::mat4 &mat);
 
   void set_uniform_boolean(ecs::Context<Registry> &ctx, const char *name,
-                         bool value);
+                           bool value);
 
   void set_diffuse_on(ecs::Context<Registry> &ctx, bool flag);
 

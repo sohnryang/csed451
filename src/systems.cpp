@@ -105,10 +105,12 @@ void Render::render_single(ecs::Context<Registry> &ctx,
   const auto &vao_id = model.vao_id;
   const auto &texture_id = texture.texture_id;
   glBindVertexArray(vao_id);
+  set_uniform_int(ctx, "texture_sampler", 0);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture_id);
   if (ctx.registry().program_index == Registry::PHONG_SHADER) {
     const auto normal = ctx.registry().textures[mesh.normal_index];
+    set_uniform_int(ctx, "normal_sampler", 0);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, normal.texture_id);
   }
@@ -122,6 +124,14 @@ void Render::set_uniform_float(ecs::Context<Registry> &ctx, const char *name,
   const auto shader_program = ctx.registry().shader_programs[program_index];
   const auto location = glGetUniformLocation(shader_program.program_id, name);
   glUniform1f(location, value);
+}
+
+void Render::set_uniform_int(ecs::Context<Registry> &ctx, const char *name,
+                             int value) {
+  const auto program_index = ctx.registry().program_index;
+  const auto shader_program = ctx.registry().shader_programs[program_index];
+  const auto location = glGetUniformLocation(shader_program.program_id, name);
+  glUniform1i(location, value);
 }
 
 void Render::set_uniform_vec3(ecs::Context<Registry> &ctx, const char *name,
