@@ -61,10 +61,12 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
 void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
                   TileType tile_type) {
   float delta_y = 0.0;
-  if (tile_type == TileType::ROAD)
-    delta_y -= ROAD_OFFSET;
-  const auto texture_index =
+  std::size_t texture_index =
       ctx.registry().texture_indicies["ground_texture.jpg"];
+  if (tile_type == TileType::ROAD) {
+    delta_y -= ROAD_OFFSET;
+    texture_index = ctx.registry().texture_indicies["road_texture.jpg"];
+  }
   ctx.registry().add_mesh(
       ctx,
       {ctx.registry().model_indices["floor2.obj"], texture_index,
