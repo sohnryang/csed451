@@ -67,8 +67,8 @@ void Render::pre_update(ecs::Context<Registry> &ctx) {
   auto &light_config = ctx.registry().light_config;
   light_config.light_pos = character_pos + glm::vec3(1.0, 1.0, -2.0);
   auto &angle = ctx.registry().directional_light_angle;
-  angle =
-      std::fmod(angle + glm::radians(20 * ctx.delta_time()), glm::pi<float>());
+  angle = std::fmod(angle + glm::radians(20 * ctx.delta_time()),
+                    2 * glm::pi<float>());
   light_config.directional_light =
       glm::vec3(-std::cos(angle), -std::sin(angle), 0.0f);
   set_light_pos(ctx, light_config.light_pos);
