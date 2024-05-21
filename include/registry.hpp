@@ -57,6 +57,7 @@ struct Registry {
       "car_texture.png",   "truck_texture.jpg",   "ground_texture.jpg",
       "road_texture.jpg"};
   std::unordered_map<std::string, std::size_t> texture_indicies;
+  std::unordered_map<std::string, std::size_t> normal_indices;
   std::vector<Texture> textures;
 
   static constexpr std::size_t GOURAUD_SHADER = 0, PHONG_SHADER = 1;

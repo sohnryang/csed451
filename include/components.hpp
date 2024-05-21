@@ -13,6 +13,7 @@ namespace components {
 struct Mesh {
   std::size_t model_index;
   std::size_t texture_index;
+  std::size_t normal_index;
   glm::mat4 mat;
 };
 
