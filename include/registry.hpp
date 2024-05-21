@@ -54,9 +54,10 @@ struct Registry {
   std::vector<Model> models;
   const std::vector<std::string> texture_filenames = {
       "empty_texture.png", "rooster_texture.jpg", "tree_texture.png",
-      "car_texture.png",   "truck_texture.jpg",   "ground_texture.jpg"};
+      "car_texture.png",   "truck_texture.jpg",   "ground_texture.jpg",
+      "road_texture.jpg"};
   const std::vector<std::string> normal_filenames = {
-      "empty_normal.png", "ground_normal.jpg"};
+      "empty_normal.png", "ground_normal.jpg", "road_normal.jpg"};
   std::unordered_map<std::string, std::size_t> texture_indicies;
   std::vector<Texture> textures;
 

@@ -63,12 +63,15 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
 void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
                   TileType tile_type) {
   float delta_y = 0.0;
-  if (tile_type == TileType::ROAD)
-    delta_y -= ROAD_OFFSET;
-  const auto texture_index =
+  std::size_t texture_index =
       ctx.registry().texture_indicies["ground_texture.jpg"];
-  const auto normal_index = 
+  std::size_t normal_index =
       ctx.registry().texture_indicies["ground_normal.jpg"];
+  if (tile_type == TileType::ROAD) {
+    delta_y -= ROAD_OFFSET;
+    texture_index = ctx.registry().texture_indicies["road_texture.jpg"];
+    normal_index = ctx.registry().texture_indicies["road_normal.png"];
+  }
   ctx.registry().add_mesh(
       ctx,
       {ctx.registry().model_indices["floor2.obj"], texture_index, normal_index,
@@ -118,8 +121,8 @@ void create_car(ecs::Context<Registry> &ctx, const float pos_x,
   const auto model_index = ctx.registry().model_indices["car.obj"];
   const auto texture_index = ctx.registry().texture_indicies["car_texture.png"];
   const auto normal_index = ctx.registry().texture_indicies["empty_normal.png"];
-  const auto id =
-      ctx.registry().add_mesh(ctx, {model_index, texture_index, normal_index, translate_mat});
+  const auto id = ctx.registry().add_mesh(
+      ctx, {model_index, texture_index, normal_index, translate_mat});
   const auto &mesh = ctx.registry().meshes[id];
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0),
                              ctx.registry().models[model_index].bounding_box};
@@ -137,8 +140,8 @@ void create_truck(ecs::Context<Registry> &ctx, const float pos_x,
   const auto texture_index =
       ctx.registry().texture_indicies["truck_texture.jpg"];
   const auto normal_index = ctx.registry().texture_indicies["empty_normal.png"];
-  const auto id =
-      ctx.registry().add_mesh(ctx, {model_index, texture_index, normal_index, translate_mat});
+  const auto id = ctx.registry().add_mesh(
+      ctx, {model_index, texture_index, normal_index, translate_mat});
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0)};
   const auto &mesh = ctx.registry().meshes[id];
   ctx.registry().cars[id] = {glm::vec3(vel, 0.0, 0.0),
