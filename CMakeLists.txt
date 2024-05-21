@@ -92,6 +92,8 @@ file(
        "${ASSETS_DIR}/floor.mtl"
        "${ASSETS_DIR}/floor2.obj"
        "${ASSETS_DIR}/floor2.mtl"
+       "${ASSETS_DIR}/ground_texture.jpg"
+       "${ASSETS_DIR}/ground_normal.jpg"
        "${ASSETS_DIR}/empty_texture.png"
        "${ASSETS_DIR}/transform.glsl"
        "${ASSETS_DIR}/wireframe.glsl"
