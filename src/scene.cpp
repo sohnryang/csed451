@@ -65,11 +65,12 @@ void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
   float delta_y = 0.0;
   std::size_t texture_index =
       ctx.registry().texture_indicies["ground_texture.jpg"];
-  std::size_t normal_index = ctx.registry().normal_indices["ground_normal.jpg"];
+  std::size_t normal_index =
+      ctx.registry().texture_indicies["ground_normal.jpg"];
   if (tile_type == TileType::ROAD) {
     delta_y -= ROAD_OFFSET;
     texture_index = ctx.registry().texture_indicies["road_texture.jpg"];
-    normal_index = ctx.registry().normal_indices["road_normal.png"];
+    normal_index = ctx.registry().texture_indicies["road_normal.png"];
   }
   ctx.registry().add_mesh(
       ctx,
