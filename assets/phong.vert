@@ -7,6 +7,8 @@ layout (location = 3) in vec3 mat_diffuse;
 layout (location = 4) in vec3 mat_specular;
 layout (location = 5) in float mat_shininess;
 layout (location = 6) in vec2 tex_coord;
+layout (location = 7) in vec3 tangent;
+layout (location = 8) in vec3 bitangent;
 
 uniform vec3 light_pos;
 uniform vec3 directional_light;
@@ -20,6 +22,7 @@ uniform mat4 modelview_mat;
 
 out vec4 pos_modelview_frag;
 out vec3 transformed_normal_frag;
+out mat3 tbn_frag;
 out vec3 eye_frag;
 out vec3 light_direction_frag;
 out vec3 ambient_frag;
@@ -35,6 +38,9 @@ void main() {
   gl_Position = projection_mat * pos_modelview_frag;
 
   transformed_normal_frag = normalize(modelview_mat * vec4(normal, 0.0)).xyz;
+  vec3 transformed_tangent = normalize(modelview_mat * vec4(tangent, 0.0)).xyz;
+  vec3 transformed_bitangent = normalize(modelview_mat * vec4(bitangent, 0.0)).xyz;
+  tbn_frag = mat3(transformed_tangent, transformed_bitangent, transformed_normal_frag);
   light_direction_frag = normalize(light_pos - pos_modelview_frag.xyz);
   eye_frag = normalize(-pos_modelview_frag.xyz);
 

@@ -2,6 +2,7 @@
 
 in vec4 pos_modelview_frag;
 in vec3 transformed_normal_frag;
+in mat3 tbn_frag;
 in vec3 eye_frag;
 in vec3 light_direction_frag;
 in vec3 ambient_frag;
@@ -35,10 +36,10 @@ vec3 specular_light(vec3 light_direction, vec4 pos_modelview, vec3 normal, vec3 
 }
 
 void main() {
-  vec3 transformed_normal = normalize(transformed_normal_frag);
+  vec3 normal_map = texture(normal_sampler, tex_coord_frag).rgb * 2 - 1;
+  vec3 transformed_normal = normalize(tbn_frag * normal_map);
   vec3 eye = normalize(eye_frag);
   vec3 light_direction = normalize(light_direction_frag);
-  vec3 halfway = normalize(light_direction + eye);
 
   float inverse_square = 1 / (1 + pow(distance(light_pos, pos_modelview_frag.xyz), 2));
   vec3 diffuse_point = inverse_square * diffuse_light(light_direction, transformed_normal, diffuse_product_point_frag);

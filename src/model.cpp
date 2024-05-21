@@ -22,7 +22,7 @@ Model::Model(const tinyobj::attrib_t &attrib,
              const std::vector<tinyobj::shape_t> &shapes,
              const std::vector<tinyobj::material_t> &materials) {
   const auto vertex_count = attrib.vertices.size() / 3;
-  const auto stride_units = 18;
+  const auto stride_units = 24;
   std::vector<GLfloat> buffer_data(stride_units * vertex_count);
   for (std::size_t i = 0; i < vertex_count; i++)
     for (std::size_t j = 0; j < 3; j++)
@@ -66,6 +66,52 @@ Model::Model(const tinyobj::attrib_t &attrib,
           for (std::size_t i = 0; i < 2; i++)
             buffer_data[stride_units * vertex_index + 16 + i] =
                 attrib.texcoords[2 * texcoord_index + i];
+      }
+      if (fv >= 3) {
+        const auto index0 = shapes[s].mesh.indices[index_offset].vertex_index,
+                   index1 =
+                       shapes[s].mesh.indices[index_offset + 1].vertex_index,
+                   index2 =
+                       shapes[s].mesh.indices[index_offset + 2].vertex_index;
+        const glm::vec3 v0 = {attrib.vertices[3 * index0],
+                              attrib.vertices[3 * index0 + 1],
+                              attrib.vertices[3 * index0 + 2]},
+                        v1 = {attrib.vertices[3 * index1],
+                              attrib.vertices[3 * index1 + 1],
+                              attrib.vertices[3 * index1 + 2]},
+                        v2 = {attrib.vertices[3 * index2],
+                              attrib.vertices[3 * index2 + 1],
+                              attrib.vertices[3 * index2 + 2]};
+        const auto texindex0 =
+                       shapes[s].mesh.indices[index_offset].texcoord_index,
+                   texindex1 =
+                       shapes[s].mesh.indices[index_offset + 1].texcoord_index,
+                   texindex2 =
+                       shapes[s].mesh.indices[index_offset + 2].texcoord_index;
+        const glm::vec2 uv0 = {attrib.texcoords[2 * texindex0],
+                               attrib.texcoords[2 * texindex0 + 1]},
+                        uv1 = {attrib.texcoords[2 * texindex1],
+                               attrib.texcoords[2 * texindex1 + 1]},
+                        uv2 = {attrib.texcoords[2 * texindex2],
+                               attrib.texcoords[2 * texindex2 + 1]};
+        const auto delta_pos1 = v1 - v0, delta_pos2 = v2 - v0;
+        const auto delta_uv1 = uv1 - uv0, delta_uv2 = uv2 - uv0;
+        float r =
+            1.0f / (delta_uv1.x * delta_uv2.y - delta_uv1.y * delta_uv2.x);
+        const auto tangent =
+                       (delta_pos1 * delta_uv2.y - delta_pos2 * delta_uv1.y) *
+                       r,
+                   bitangent =
+                       (delta_pos2 * delta_uv1.x - delta_pos1 * delta_uv2.x) *
+                       r;
+        for (std::size_t i = 0; i < 3; i++) {
+          buffer_data[stride_units * index0 + 18 + i] = tangent[i];
+          buffer_data[stride_units * index1 + 18 + i] = tangent[i];
+          buffer_data[stride_units * index2 + 18 + i] = tangent[i];
+          buffer_data[stride_units * index0 + 21 + i] = bitangent[i];
+          buffer_data[stride_units * index1 + 21 + i] = bitangent[i];
+          buffer_data[stride_units * index2 + 21 + i] = bitangent[i];
+        }
       }
       index_offset += fv;
     }
@@ -115,5 +161,11 @@ Model::Model(const tinyobj::attrib_t &attrib,
   glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, stride_size,
                         (void *)(16 * buffer_elem_size));
   glEnableVertexAttribArray(6);
+  glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, stride_size,
+                        (void *)(18 * buffer_elem_size));
+  glEnableVertexAttribArray(7);
+  glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, stride_size,
+                        (void *)(21 * buffer_elem_size));
+  glEnableVertexAttribArray(8);
   glBindVertexArray(0);
 }
