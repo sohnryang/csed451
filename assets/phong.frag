@@ -18,6 +18,7 @@ uniform vec3 directional_light;
 uniform sampler2D texture_sampler;
 uniform sampler2D normal_sampler;
 uniform int diffuse_on;
+uniform int normal_mapping_on;
 
 out vec4 FragColor;
 
@@ -36,8 +37,11 @@ vec3 specular_light(vec3 light_direction, vec4 pos_modelview, vec3 normal, vec3 
 }
 
 void main() {
-  vec3 normal_map = texture(normal_sampler, tex_coord_frag).rgb * 2 - 1;
-  vec3 transformed_normal = normalize(tbn_frag * normal_map);
+  vec3 transformed_normal = normalize(transformed_normal_frag);
+  if (normal_mapping_on > 0) {
+    vec3 normal_map = texture(normal_sampler, tex_coord_frag).rgb * 2 - 1;
+    transformed_normal = normalize(-tbn_frag * normal_map);
+  }
   vec3 eye = normalize(eye_frag);
   vec3 light_direction = normalize(light_direction_frag);
 

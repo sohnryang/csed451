@@ -114,6 +114,11 @@ void Render::render_single(ecs::Context<Registry> &ctx,
     set_uniform_int(ctx, "normal_sampler", 0);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, normal.texture_id);
+    set_uniform_int(
+        ctx, "normal_mapping_on",
+        ctx.registry().normal_mapping_on &&
+            mesh.normal_index !=
+                ctx.registry().texture_indicies["empty_normal.png"]);
   }
   glDrawElements(GL_TRIANGLES, model.index_count, GL_UNSIGNED_INT, nullptr);
   glBindVertexArray(0);
