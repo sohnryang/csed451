@@ -64,7 +64,7 @@ void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
   if (tile_type == TileType::ROAD)
     delta_y -= ROAD_OFFSET;
   const auto texture_index =
-      ctx.registry().texture_indicies["empty_texture.png"];
+      ctx.registry().texture_indicies["ground_texture.jpg"];
   ctx.registry().add_mesh(
       ctx,
       {ctx.registry().model_indices["floor2.obj"], texture_index,
