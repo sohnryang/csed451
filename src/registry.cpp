@@ -29,7 +29,8 @@
 #include "texture.hpp"
 
 Registry::Registry()
-    : models(model_filenames.size()), textures(texture_filenames.size()),
+    : models(model_filenames.size()), 
+      textures(texture_filenames.size() + normal_filenames.size()),
       shader_programs(2) {
   for (std::size_t i = 0; i < model_filenames.size(); i++) {
     model_indices[model_filenames[i]] = i;
@@ -66,6 +67,23 @@ Registry::Registry()
     if (texture_data == nullptr)
       throw std::runtime_error("texture load failed");
     textures[i] = Texture(texture_data, width, height, channel_count);
+    stbi_image_free(texture_data);
+
+    std::cout << "Loaded texture file: " << filename << std::endl;
+  }
+
+  stbi_set_flip_vertically_on_load(true);
+  for (std::size_t i = 0; i < normal_filenames.size(); i++) {
+    auto idx = texture_filenames.size() + i;
+    const auto filename = normal_filenames[i];
+    texture_indicies[filename] = idx;
+
+    int width, height, channel_count;
+    std::uint8_t *texture_data =
+        stbi_load(filename.c_str(), &width, &height, &channel_count, 0);
+    if (texture_data == nullptr)
+      throw std::runtime_error("texture load failed");
+    textures[idx] = Texture(texture_data, width, height, channel_count);
     stbi_image_free(texture_data);
 
     std::cout << "Loaded texture file: " << filename << std::endl;

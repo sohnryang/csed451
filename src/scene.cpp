@@ -36,8 +36,7 @@ void create_character(ecs::Context<Registry> &ctx, int col) {
   const auto model_index = ctx.registry().model_indices["rooster.obj"];
   const auto texture_index =
       ctx.registry().texture_indicies["rooster_texture.jpg"];
-  const auto normal_index =
-      ctx.registry().texture_indicies["empty_normal.png"];
+  const auto normal_index = ctx.registry().texture_indicies["empty_normal.png"];
   const auto id = ctx.registry().add_mesh(
       ctx, {
                model_index,
@@ -69,7 +68,7 @@ void fill_map_row(ecs::Context<Registry> &ctx, int row_index,
   const auto texture_index =
       ctx.registry().texture_indicies["ground_texture.jpg"];
   const auto normal_index = 
-      ctx.registry().normal_indicies["ground_normal.jpg"];
+      ctx.registry().texture_indicies["ground_normal.jpg"];
   ctx.registry().add_mesh(
       ctx,
       {ctx.registry().model_indices["floor2.obj"], texture_index, normal_index,
