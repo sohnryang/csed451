@@ -99,6 +99,9 @@ file(
        "${ASSETS_DIR}/gouraud.frag"
        "${ASSETS_DIR}/phong.vert"
        "${ASSETS_DIR}/phong.frag"
+       "${ASSETS_DIR}/Ground_Dirt_009_BaseColor.jpg"
+       "${ASSETS_DIR}/Ground_Dirt_009_Normal.jpg"
+       "${ASSETS_DIR}/empty_normal.png"
   DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 add_subdirectory(src)
